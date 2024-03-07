@@ -56,8 +56,165 @@ document.querySelectorAll("a.nav-link").forEach(el => el.addEventListener("click
     }
 }))
  
+document.getElementById("list").addEventListener("click", list);
+document.getElementById("get").addEventListener("click", get);
+document.getElementById("update").addEventListener("click", update);
+document.getElementById("create").addEventListener("click", create);
+document.getElementById("delete").addEventListener("click", del);
 
 // Clear the parameters from the url
 //window.history.replaceState({}, document.title, "/home/");
+
+async function list() {
+
+    const query = `
+        {
+          people {
+            items {
+              id
+              Name
+            }
+          }
+        }`;
+        
+    const endpoint = "/data-api/graphql";
+    const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: query })
+    });
+    const result = await response.json();
+    console.table(result.data.people.items);
+}
+
+async function get() {
+
+    const id = '1';
+  
+    const gql = `
+      query getById($id: ID!) {
+        person_by_pk(id: $id) {
+          id
+          Name
+        }
+      }`;
+  
+    const query = {
+      query: gql,
+      variables: {
+        id: id,
+      },
+    };
+  
+    const endpoint = "/data-api/graphql";
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(query),
+    });
+    const result = await response.json();
+    console.table(result.data.person_by_pk);
+  }
+
+  async function update() {
+
+    const id = '1';
+    const data = {
+      id: id,
+      Name: "Molly"
+    };
+  
+    const gql = `
+      mutation update($id: ID!, $_partitionKeyValue: String!, $item: UpdatePersonInput!) {
+        updatePerson(id: $id, _partitionKeyValue: $_partitionKeyValue, item: $item) {
+          id
+          Name
+        }
+      }`;
+  
+    const query = {
+      query: gql,
+      variables: {
+        id: id,
+        _partitionKeyValue: id,
+        item: data
+      } 
+    };
+  
+    const endpoint = "/data-api/graphql";
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(query)
+    });
+  
+    const result = await res.json();
+    console.table(result.data.updatePerson);
+  }
+
+  async function create() {
+
+    const data = {
+      id: "3",
+      Name: "Pedro"
+    };
+  
+    const gql = `
+      mutation create($item: CreatePersonInput!) {
+        createPerson(item: $item) {
+          id
+          Name
+        }
+      }`;
+    
+    const query = {
+      query: gql,
+      variables: {
+        item: data
+      } 
+    };
+    
+    const endpoint = "/data-api/graphql";
+    const result = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(query)
+    });
+  
+    const response = await result.json();
+    console.table(response.data.createPerson);
+  }
+
+  async function del() {
+
+    const id = '3';
+  
+    const gql = `
+      mutation del($id: ID!, $_partitionKeyValue: String!) {
+        deletePerson(id: $id, _partitionKeyValue: $_partitionKeyValue) {
+          id
+        }
+      }`;
+  
+    const query = {
+      query: gql,
+      variables: {
+        id: id,
+      _partitionKeyValue: id
+      }
+    };
+  
+    const endpoint = "/data-api/graphql";
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(query)
+    });
+  
+    const result = await response.json();
+    console.log(`Record deleted: ${ JSON.stringify(result.data) }`);
+  }
+
+  
 
 

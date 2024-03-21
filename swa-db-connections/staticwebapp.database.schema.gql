@@ -1,4 +1,13 @@
-type Person @model {
+type MediaInfo @model {
   id: ID
-  Name: String
+  MediaTypeId: Int
+  TakenDateTime: String
+  CategoryTags: String
+  MenuTags: String
+  AlbumTags: String
+  Title: String
+  Description: String
+  People: String
+  ToBeProcessed: Boolean
 }
+

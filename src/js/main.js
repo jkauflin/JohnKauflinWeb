@@ -1,5 +1,5 @@
 /*==============================================================================
- * (C) Copyright 2015,2016,2017,2022,2023 John J Kauflin, All rights reserved. 
+ * (C) Copyright 2015,2023 John J Kauflin, All rights reserved. 
  *----------------------------------------------------------------------------
  * DESCRIPTION: 
  *----------------------------------------------------------------------------
@@ -36,6 +36,10 @@
  * 					the link-tile-tab show to media gallery, and got rid of
  * 					the seperate navtab.js just to avoid confusion
  * 2023-07-23 JJK   Modified to conform to ES6 module standard
+ * ---------------------------------------------------------------------------
+ * 2024-03-10 JJK   Migrating to an Azure static web app (SWA)
+ *    swa start ./src --data-api-location swa-db-connections
+ * 2024-03-17 JJK   
  *============================================================================*/
 
 // Keep track of the state of the navbar collapse (shown or hidden)
@@ -56,15 +60,18 @@ document.querySelectorAll("a.nav-link").forEach(el => el.addEventListener("click
     }
 }))
  
+/*
 document.getElementById("list").addEventListener("click", list);
 document.getElementById("get").addEventListener("click", get);
 document.getElementById("update").addEventListener("click", update);
 document.getElementById("create").addEventListener("click", create);
 document.getElementById("delete").addEventListener("click", del);
+*/
 
 // Clear the parameters from the url
 //window.history.replaceState({}, document.title, "/home/");
 
+/*
 async function list() {
 
     const query = `
@@ -214,7 +221,7 @@ async function get() {
     const result = await response.json();
     console.log(`Record deleted: ${ JSON.stringify(result.data) }`);
   }
-
+*/
   
 
 

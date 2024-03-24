@@ -74,7 +74,7 @@ export function getFileName(index) {
 // Query the database for menu and file information and store in js variables
 //------------------------------------------------------------------------------------------------------------
 export async function queryMediaInfo(paramData) {
-    console.log("$$$ in the QueryMediaInfo")
+    console.log(">>>>> in the QueryMediaInfo")
 
 /*
     mediainfos

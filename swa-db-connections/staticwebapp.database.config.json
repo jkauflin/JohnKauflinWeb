@@ -26,8 +26,10 @@
     }
   },
   "entities": {
-    "MediaInfo": {
+    "Book": {
       "source": "MediaInfo",
+      "rest": false,
+      "graphql": true,
       "permissions": [
         {
           "actions": ["*"],

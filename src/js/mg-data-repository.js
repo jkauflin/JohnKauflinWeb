@@ -76,30 +76,85 @@ export function getFileName(index) {
 export async function queryMediaInfo(paramData) {
     console.log("$$$ in the QueryMediaInfo")
 
-    const query = `
-    {
-        MediaInfo(limit:3) {
-            id
-            MediaTypeId
-            TakenDateTime
-            CategoryTags
+/*
+    mediainfos
+{
+  books(first: 5, orderBy: { title: DESC }) {
+    items {
+      id
+      title
+    }
+  }
+}
+*/
+    const queryLIST = `{
+      books(first: 1) {
+        items {
+          id
+          MediaTypeId
+          TakenDateTime
+          CategoryTags
+          MenuTags
+          AlbumTags
+          Title
+          Description
+          People
+          ToBeProcessed
         }
+      }
     }`;
 
-    /* LIST
-    const query = `
-    {
-        people {
-            items {
-                id
-                Name
-            }
+    const idVal = '1932 Martha Jane Foose 18yrs Julienne HS senior.jpg'
+    const gql = `
+      query getById($inId: ID!) {
+        book_by_pk(id: $inId) {
+          id
+          MediaTypeId
+          TakenDateTime
+          CategoryTags
+          MenuTags
+          AlbumTags
+          Title
+          Description
+          People
+          ToBeProcessed
         }
-    }`;
+      }`
+
+    const apiQuery = {
+        query: gql,
+        variables: {
+            inId: idVal
+        }
+    }
+
+    /*
+    const gql3 = `{
+      query getById($inId: ID!) {
+        person_by_pk(id: $inId) {
+            id
+          }
+      }`
+    const idVal = '2'
+    const apiQuery2 = {
+        query: gql3,
+        variables: {
+            inId: idVal,
+        },
+    }
     */
-   /*
-    const id = '20230101_135846803_iOS.jpg';
-  
+
+    // main parameter list has parameter name and TYPE!
+    const gql2 = `
+    mutation update($id: ID!, $_partitionKeyValue: String!, $item: UpdatePersonInput!) {
+      updatePerson(id: $id, _partitionKeyValue: $_partitionKeyValue, item: $item) {
+        id
+        Name
+      }
+    }`;
+
+
+    /*
     const gql = `
       query getById($id: ID!) {
         MediaInfo_by_pk(id: $id) {
@@ -110,24 +165,30 @@ export async function queryMediaInfo(paramData) {
         }
       }`;
   
-    const query = {
+    const query = `{
       query: gql,
       variables: {
         id: id,
       },
-    };
-     */
+    }`;
+    */
 
     const endpoint = "/data-api/graphql";
     const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: query })
+        //body: JSON.stringify({ query: queryLIST })
+        body: JSON.stringify(apiQuery)
     });
     const result = await response.json();
-    //console.table(result.data.people.items);
-    console.log("result = "+result)
-    
+    if (result.errors != null) {
+        console.table(result.errors);
+    } else {
+        //console.log("result.data = "+result.data)
+        //console.table(result.data.books.items);
+        console.table(result.data.book_by_pk);
+        console.log("Title = "+result.data.book_by_pk.Title)
+    }
 
     /*
     let url = jjkgalleryRoot + "getMediaInfo.php"

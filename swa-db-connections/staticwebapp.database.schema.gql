@@ -1,4 +1,4 @@
-type MediaInfo @model {
+type Book @model {
   id: ID
   MediaTypeId: Int
   TakenDateTime: String
@@ -10,4 +10,3 @@ type MediaInfo @model {
   People: String
   ToBeProcessed: Boolean
 }
-

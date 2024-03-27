@@ -10,3 +10,19 @@ type Book @model {
   People: String
   ToBeProcessed: Boolean
 }
+
+type Mtype @model {
+  id: ID
+  MediaTypeId: Int
+  MediaTypeDesc: String
+  Category: [CategoryType]
+}
+
+type CategoryType {
+  CategoryName: String
+  Menu: [MenuType]
+}
+
+type MenuType {
+  MenuItem: String
+}

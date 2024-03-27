@@ -36,6 +36,17 @@
           "role": "anonymous"
         }
       ]
+    },
+    "Mtype": {
+      "source": "MediaType",
+      "rest": false,
+      "graphql": true,
+      "permissions": [
+        {
+          "actions": ["*"],
+          "role": "anonymous"
+        }
+      ]
     }
   }
 }

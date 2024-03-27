@@ -87,8 +87,8 @@ export async function queryMediaInfo(paramData) {
   }
 }
 */
-    const queryLIST = `{
-      books(first: 1) {
+    const queryLIST2 = `{
+      books(first: 2) {
         items {
           id
           MediaTypeId
@@ -104,90 +104,111 @@ export async function queryMediaInfo(paramData) {
       }
     }`;
 
-    const idVal = '1932 Martha Jane Foose 18yrs Julienne HS senior.jpg'
-    const gql = `
-      query getById($inId: ID!) {
-        book_by_pk(id: $inId) {
-          id
-          MediaTypeId
-          TakenDateTime
-          CategoryTags
-          MenuTags
-          AlbumTags
-          Title
-          Description
-          People
-          ToBeProcessed
+    const queryLIST = `{
+        mtypes {
+          items {
+            id
+            MediaTypeDesc
+            Category {
+                CategoryName
+                Menu {
+                    MenuItem
+                }
+            }
+          }
         }
-      }`
+      }`;
 
+/*
+type Mtype @model {
+  id: ID
+  MediaTypeId: Int
+  MediaTypeDesc: String
+  Category: [CategoryType]
+}
+
+type CategoryType {
+  CategoryName: String
+  Menu: [MenuType]
+}
+
+type MenuType {
+  MenuItem: String
+}
+
+*/
+    const gql = `
+        query getById($inId: ID!, $inTest: ID!) {
+            book_by_pk(id: $inId) {
+                id
+                MediaTypeId
+                TakenDateTime
+                CategoryTags
+                MenuTags
+                AlbumTags
+                Title
+                Description
+                People
+                ToBeProcessed
+            }
+            mtype_by_pk(id: $inTest) {
+                  id
+                  MediaTypeDesc
+                  Categories {
+                    CategoryName
+                  }
+            }
+        }`
+/*
+type Mtype @model {
+  id: ID
+  MediaTypeId: Int
+  MediaTypeDesc: String
+  Categories: [Category]
+}
+
+type Category {
+  CategoryName: String
+  Menus: [Menu]
+}
+
+type Menu {
+  MenuItem: String
+}
+
+*/
+    const idVal = '1932 Martha Jane Foose 18yrs Julienne HS senior.jpg'
+    let mediaTypeId = 1
     const apiQuery = {
         query: gql,
         variables: {
-            inId: idVal
-        }
-    }
-
-    /*
-    const gql3 = `{
-      query getById($inId: ID!) {
-        person_by_pk(id: $inId) {
-            id
-          }
-      }`
-    const idVal = '2'
-    const apiQuery2 = {
-        query: gql3,
-        variables: {
             inId: idVal,
-        },
-    }
-    */
-
-    // main parameter list has parameter name and TYPE!
-    const gql2 = `
-    mutation update($id: ID!, $_partitionKeyValue: String!, $item: UpdatePersonInput!) {
-      updatePerson(id: $id, _partitionKeyValue: $_partitionKeyValue, item: $item) {
-        id
-        Name
-      }
-    }`;
-
-
-    /*
-    const gql = `
-      query getById($id: ID!) {
-        MediaInfo_by_pk(id: $id) {
-          id
-          MediaTypeId
-          TakenDateTime
-          CategoryTags
+            inTest: mediaTypeId.toString()
         }
-      }`;
-  
-    const query = `{
-      query: gql,
-      variables: {
-        id: id,
-      },
-    }`;
-    */
+    }
 
     const endpoint = "/data-api/graphql";
     const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        //body: JSON.stringify({ query: queryLIST })
-        body: JSON.stringify(apiQuery)
+        body: JSON.stringify({ query: queryLIST })
+        //body: JSON.stringify(apiQuery)
     });
     const result = await response.json();
     if (result.errors != null) {
         console.table(result.errors);
     } else {
         //console.log("result.data = "+result.data)
+        //console.table(result.data.mtypes.items);
+        console.log("items[0].Category[1].CategoryName = "+result.data.mtypes.items[0].Category[1].CategoryName);
+        console.log("items[0].Category[1].Menu = "+result.data.mtypes.items[0].Category[1].Menu);
+        console.log("items[0].Category[1].Menu[0].MenuItem = "+result.data.mtypes.items[0].Category[1].Menu[0].MenuItem);
         //console.table(result.data.books.items);
-        console.table(result.data.book_by_pk);
-        console.log("Title = "+result.data.book_by_pk.Title)
+        //console.table(result.data.book_by_pk);
+        //console.log("Title = "+result.data.book_by_pk.Title)
+        //console.table(result.data.mtype_by_pk);
+        //console.log("data.mtype_by_pk.MediaTypeDesc = "+result.data.mtype_by_pk.MediaTypeDesc);
+        //console.log("data.mtype_by_pk.MediaTypeDesc = "+result.data.mtype_by_pk.Categories.CategoryName);
     }
 
     /*

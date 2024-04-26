@@ -3,7 +3,8 @@
   "configurations": {
     "johnkauflinweb": {
       "appLocation": "src",
-      "outputLocation": "src"
+      "outputLocation": "src",
+      "dataApiLocation": "swa-db-connections"
     }
   }
 }

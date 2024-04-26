@@ -1,0 +1,130 @@
+<!doctype html>
+<html class="no-js" lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="x-ua-compatible" content="ie=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+	<title>John J Kauflin</title>
+	<meta name="keywords" content="kauflin, jkauflin, jkauflin.com, johnkauflin, johnkauflin.com, john kauflin, john j kauflin, jjk, dayton, oh, ohio, personal, web, admin" />
+	<meta name="description" content="John J Kauflin personal website admin" />
+	<meta name="author" content="John J Kauflin" />
+
+	<link rel="icon" href="favicon.ico?ver=1.002">
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" 
+        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
+        integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous" />
+    <link rel="stylesheet" href="css/main.css">
+</head>
+
+
+<body>
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark" role="navigation">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">John J Kauflin ADMIN</a>
+        <button class="navbar-toggler shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <!-- Navbar links -->
+        <div class="collapse navbar-collapse justify-content-end" id="collapsibleNavbar">
+            <ul class="nav navbar-nav">
+                <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#HomePage">
+                    <i class="fa fa-home" ></i> Home</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+<div class="tab-content">
+
+	<div class="tab-pane show active" id="HomePage">
+        <div class="row">
+            <div class="col-sm-5 col-md-3 d-none d-sm-block">
+                <h1 class="ml-2">Welcome!</h1>
+            </div>
+
+            <div class="col-sm-6 col-md-8">
+                <div class="row">
+                    <p class="m-2">John J Kauflin ADMIN website.</p>
+                </div>
+
+                <div class="row ml-1 mb-1">
+                    <div class="container-fluid ">
+                        <button class="btn btn-success mt-2 mr-2 link-tile-tab media-page" data-MediaType="1" type="button" role="button">
+                            <i class="fa fa-camera fa-2x float-start"></i> Photos</button>
+                        <button class="btn btn-success mt-2 mr-2 link-tile-tab media-page" data-MediaType="2" type="button" role="button">
+                            <i class="fa fa-video-camera fa-2x float-start"></i> Videos</button>
+                        <button class="btn btn-success mt-2 mr-2 link-tile-tab media-page" data-MediaType="3" type="button" role="button">
+                            <i class="fa fa-music fa-2x float-start"></i> Music</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+	</div><!-- end of Home tab -->
+
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="MediaMenuCanvas" aria-labelledby="MediaMenuCanvasLabel">
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title" id="MediaMenuCanvasLabel">Menu</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div id="MediaOffcanvasMenu"></div>
+        </div>
+    </div>
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="MediaAlbumMenuCanvas" aria-labelledby="MediaAlbumMenuCanvasLabel">
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title" id="MediaAlbumMenuCanvasLabel">Albums</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div id="MediaOffcanvasAlbumMenu"></div>
+        </div>
+    </div>
+
+	<div class="tab-pane" id="MediaPage">
+	</div><!-- end of Media -->
+
+    <div class="modal" tabindex="-1" id="MediaModal">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 id="MediaModalTitle" class="modal-title"></h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div id="MediaModalBody" class="modal-body">
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <div class="modal" tabindex="-1" id="MediaLightbox"  data-bs-theme="dark">
+        <div class="modal-dialog modal-fullscreen">
+          <div class="modal-content">
+            <div class="modal-body">
+                <div id="MediaLightboxBody"></div>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+
+</div><!-- end of main tab content -->
+</div><!-- end of main container -->
+
+    <!-- Bootstrap core JavaScript ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <!-- Bootstrap 5 JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" 
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    <script src="js/admin.js" type="module"></script>
+
+</body>
+</html>

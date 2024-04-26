@@ -1,17 +1,236 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html class="no-js" lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="styles.css">
-  <title>Vanilla JavaScript App</title>
+	<meta charset="utf-8">
+	<meta http-equiv="x-ua-compatible" content="ie=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+	<title>John J Kauflin</title>
+	<meta name="keywords" content="kauflin, jkauflin, jkauflin.com, johnkauflin, johnkauflin.com, john kauflin, john j kauflin, jjk, dayton, oh, ohio, personal, web, van kauflin" />
+	<meta name="description" content="John J Kauflin personal website" />
+	<meta name="author" content="John J Kauflin" />
+	<meta property="og:url" content="https://johnkauflin.com" />
+	<meta property="og:type" content="article" />
+	<meta property="og:title" content="John J Kauflin website" />
+	<meta property="og:description" content="John J Kauflin personal website" />
+	<meta property="og:image" content="https://jjkwebstorage.blob.core.windows.net/images/johnk-headshot.jpg" />
+
+	<link rel="icon" href="favicon.ico?ver=1.002">
+	<link rel="manifest" href="site.webmanifest">
+    <link rel="apple-touch-icon" href="icon.png">
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" 
+        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
+        integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous" />
+    <link rel="stylesheet" href="css/main.css">
 </head>
 
-<body>
-  <main>
-    <h1>Vanilla JavaScript App</h1>
-  </main>
-</body>
 
+<body>
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark" role="navigation">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">John J Kauflin</a>
+        <button class="navbar-toggler shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <!-- Navbar links -->
+        <div class="collapse navbar-collapse justify-content-end" id="collapsibleNavbar">
+            <ul class="nav navbar-nav">
+                <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#HomePage">
+                    <i class="fa fa-home" ></i> Home</a></li>
+                <li class="nav-item"><a class="nav-link media-page" data-bs-toggle="tab" href="#MediaPage" data-MediaType="1">
+                    <i class="fa fa-camera" style="font-size: 1rem;"></i> Photos</a></li>
+                <li class="nav-item"><a class="nav-link media-page" data-bs-toggle="tab" href="#MediaPage" data-MediaType="2" >
+                    <i class="fa fa-video-camera" style="font-size: 1rem;"></i> Videos</a></li>
+                <li class="nav-item"><a class="nav-link media-page" data-bs-toggle="tab" href="#MediaPage" data-MediaType="3">
+                    <i class="fa fa-music"></i> Music</a></li>
+                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#InfoPage">
+                    <i class="fa fa-info-circle"></i> About</a></li>
+                    <!--
+                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#BotPage">
+                    <i class="fa fa-android"></i> JohnBot</a></li>
+                <li id="PlaylistNav" class="nav-item d-none"><a class="nav-link" data-bs-toggle="tab" href="#PlaylistPage">
+                    <i class="fa fa-spotify"></i> Playlist</a></li>
+                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#MediaPage" data-dir="Docs"><i
+                            class="fa fa-file"></i> Docs</a></li>
+                <li><a href="/wiki"><i class="fa fa-wikipedia-w"></i> Wiki</a></li>
+                -->
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+<div class="tab-content">
+
+	<div class="tab-pane show active" id="HomePage">
+        <div class="row">
+            <div class="col-sm-5 col-md-3 d-none d-sm-block">
+                <img src="https://jjkwebstorage.blob.core.windows.net/images/johnk-headshot.jpg" class="rounded-circle float-start mt-3 " alt="John Kauflin photo" width="90%">
+                <h1 class="ml-2">Welcome!</h1>
+            </div>
+
+            <div class="col-sm-6 col-md-8">
+                <div class="row">
+                    <p class="m-2">Welcome to the John J Kauflin personal website.</p>
+                </div>
+
+                <div class="row ml-1 mb-1">
+                    <div class="container-fluid ">
+                        <button class="btn btn-success mt-2 mr-2 link-tile-tab media-page" data-MediaType="1" type="button" role="button">
+                            <i class="fa fa-camera fa-2x float-start"></i> Photos</button>
+                        <button class="btn btn-success mt-2 mr-2 link-tile-tab media-page" data-MediaType="2" type="button" role="button">
+                            <i class="fa fa-video-camera fa-2x float-start"></i> Videos</button>
+                        <button class="btn btn-success mt-2 mr-2 link-tile-tab media-page" data-MediaType="3" type="button" role="button">
+                            <i class="fa fa-music fa-2x float-start"></i> Music</button>
+                        <!--
+                        <button class="btn btn-warning mt-2 mr-2 link-tile-tab" type="button" role="button" id="SolarTile">
+                            <i class="fa fa-sun-o fa-2x float-start"></i> Solar</button>
+                        -->
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!--
+                    <div class="card float-start m-1" style="width: 14rem;">
+                        Van Kauflin playlist
+                        <iframe width="200" height="110" src="https://www.youtube.com/embed/videoseries?si=b00EVJAIkvC3BZbS&amp;list=PLsga7fkzDdVcs7pgXT3zT5Ev8frFS2ReY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                    </div>
+                    -->
+                    <div class="card float-start m-1" style="width: 11rem;">
+                        JJK Family Best
+                        <a href="?albumKey=AL2">
+                            <img src="https://jjkwebstorage.blob.core.windows.net/photos/2003-09-08 John J Kauflin family at home.jpg" 
+                            class="rounded float-start mb-2" height="110">
+                        </a>
+                    </div>
+                    <div class="card float-start m-1" style="width: 11rem;">
+                        EA
+                        <a href="?albumKey=AL1">
+                            <img src="https://jjkwebstorage.blob.core.windows.net/photos/20170821_180859360_iOS.jpg" 
+                            class="rounded float-start mb-2" height="110">
+                        </a>
+                    </div>
+                    <div class="card float-start m-1" style="width: 11rem;">
+                        Dennis
+                        <a href="?albumKey=AL7">
+                            <img src="https://jjkwebstorage.blob.core.windows.net/photos/1987-12 018.jpg" 
+                            class="rounded float-start mb-2" height="110">
+                        </a>
+                    </div>
+                    <div class="card float-start m-1" style="width: 8rem;">
+                        Judith A Baker
+                        <a href="?albumKey=AL6">
+                            <img src="https://jjkwebstorage.blob.core.windows.net/photos/20231004_124622786_iOS.jpg" 
+                            class="rounded float-start mb-2" height="110">
+                        </a>
+                    </div>
+                    <div class="card float-start m-1" style="width: 8rem;">
+                        John E Kauflin
+                        <a href="?albumKey=AL5">
+                            <img src="https://jjkwebstorage.blob.core.windows.net/photos/20231004_124526522_iOS.jpg" 
+                            class="rounded float-start mb-2" height="110">
+                        </a>
+                    </div>
+                    <!--
+                    <div class="card float-start m-1" style="width: 14rem;">
+                        A 2012 Film by John Kauflin
+                        <iframe width="200" height="110" src="https://www.youtube.com/embed/Stis2U2FzkI?si=XARqEqtJsJPdANL7" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                    </div>
+                    <div class="card float-start m-1" style="width: 14rem;">
+                        2023 Nerdvana playing at IT Xmas party at HQ
+                        <iframe width="200" height="110" src="https://www.youtube.com/embed/UYKTAviEbbg?si=yii-SBfTK3OQdsb3" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                    </div>
+                    -->
+                </div>
+            </div>
+
+        </div>
+
+	</div><!-- end of Home tab -->
+
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="MediaMenuCanvas" aria-labelledby="MediaMenuCanvasLabel">
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title" id="MediaMenuCanvasLabel">Menu</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div id="MediaOffcanvasMenu"></div>
+        </div>
+    </div>
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="MediaAlbumMenuCanvas" aria-labelledby="MediaAlbumMenuCanvasLabel">
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title" id="MediaAlbumMenuCanvasLabel">Albums</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div id="MediaOffcanvasAlbumMenu"></div>
+        </div>
+    </div>
+
+	<div class="tab-pane" id="MediaPage">
+	</div><!-- end of Media -->
+
+    <div class="modal" tabindex="-1" id="MediaModal">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 id="MediaModalTitle" class="modal-title"></h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div id="MediaModalBody" class="modal-body">
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <div class="modal" tabindex="-1" id="MediaLightbox"  data-bs-theme="dark">
+        <div class="modal-dialog modal-fullscreen">
+          <div class="modal-content">
+            <div class="modal-body">
+                <div id="MediaLightboxBody"></div>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <div class="tab-pane" id="InfoPage">
+        <div class="row">
+			<div class="col-sm-7 col-lg-6">
+
+				<span>
+                    <img src="https://jjkwebstorage.blob.core.windows.net/images/johnk-headshot.jpg" class="rounded-circle float-start m-3" alt="John Kauflin photo" width="23%">
+Welcome to my website.  I hope this site also reflects the experiences I've had 
+with all the wonderful friends, family, bandmates, and workmates I've had in my life.  It's been my pleasure to know you all.
+This website is a place where I can collect and present pictures, videos, and music to honor the memory of people and things.  
+				</span>
+
+<h4 class="mt-3">My Families</h4>
+I've been involved with some great and interesting families including my Mom's, my Dad's, my Wife's, and my own. I appreciate
+my Mom taking all of those snapshots over the years, and my Dad for shooting the 8mm home movies when I was growing up. They are priceless
+memories of a great childhood.
+
+<h4 class="mt-3">My Bands</h4>
+Music has been one of the great joys of my life and I've had the honor and privilege of playing with some great musicians,
+and being part of a wonderful music community
+			</div>
+		</div><!-- row -->	                
+	</div><!-- end of Info -->
+
+</div><!-- end of main tab content -->
+</div><!-- end of main container -->
+
+    <!-- Bootstrap core JavaScript ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <!-- Bootstrap 5 JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" 
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    <script src="js/mediagallery.js" type="module"></script>
+    <script src="js/main.js" type="module"></script>
+
+</body>
 </html>

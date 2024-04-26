@@ -1,0 +1,21 @@
+{
+    "trailingSlash": "auto",
+    "routes": [
+      {
+        "route": "/admin*",
+        "allowedRoles": ["jjkadmin"]
+      }
+    ],
+    "responseOverrides": {
+      "401": {
+        "redirect": "/.auth/login/aad?post_login_redirect_uri=.referrer",
+        "statusCode": 302
+      }
+    },
+    "navigationFallback": {
+      "rewrite": "/index.html"
+    },
+    "mimeTypes": {
+      ".json": "text/json"
+    }
+}

@@ -34,6 +34,14 @@
             <ul class="nav navbar-nav">
                 <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#HomePage">
                     <i class="fa fa-home" ></i> Home</a></li>
+
+                <li class="nav-item"><a class="nav-link media-page" data-bs-toggle="tab" href="#MediaPage" data-MediaType="1">
+                    <i class="fa fa-camera" style="font-size: 1rem;"></i> Photos</a></li>
+                <li class="nav-item"><a class="nav-link media-page" data-bs-toggle="tab" href="#MediaPage" data-MediaType="2" >
+                    <i class="fa fa-video-camera" style="font-size: 1rem;"></i> Videos</a></li>
+                <li class="nav-item"><a class="nav-link media-page" data-bs-toggle="tab" href="#MediaPage" data-MediaType="3">
+                    <i class="fa fa-music"></i> Music</a></li>
+
             </ul>
         </div>
     </div>
@@ -69,55 +77,55 @@
 
 	</div><!-- end of Home tab -->
 
-    <div class="offcanvas offcanvas-start" tabindex="-1" id="MediaMenuCanvas" aria-labelledby="MediaMenuCanvasLabel">
-        <div class="offcanvas-header">
-          <h5 class="offcanvas-title" id="MediaMenuCanvasLabel">Menu</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body">
-            <div id="MediaOffcanvasMenu"></div>
-        </div>
-    </div>
-    <div class="offcanvas offcanvas-start" tabindex="-1" id="MediaAlbumMenuCanvas" aria-labelledby="MediaAlbumMenuCanvasLabel">
-        <div class="offcanvas-header">
-          <h5 class="offcanvas-title" id="MediaAlbumMenuCanvasLabel">Albums</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body">
-            <div id="MediaOffcanvasAlbumMenu"></div>
-        </div>
-    </div>
-
-	<div class="tab-pane" id="MediaPage">
-	</div><!-- end of Media -->
-
-    <div class="modal" tabindex="-1" id="MediaModal">
-        <div class="modal-dialog modal-dialog-centered modal-xl">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 id="MediaModalTitle" class="modal-title"></h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div id="MediaModalBody" class="modal-body">
-            </div>
-          </div>
-        </div>
-    </div>
-
-    <div class="modal" tabindex="-1" id="MediaLightbox"  data-bs-theme="dark">
-        <div class="modal-dialog modal-fullscreen">
-          <div class="modal-content">
-            <div class="modal-body">
-                <div id="MediaLightboxBody"></div>
-
-            </div>
-          </div>
-        </div>
-    </div>
-
+    <div class="tab-pane" id="MediaPage">
+    </div><!-- end of Media -->
 
 </div><!-- end of main tab content -->
 </div><!-- end of main container -->
+
+<div class="offcanvas offcanvas-start" tabindex="-1" id="MediaMenuCanvas" aria-labelledby="MediaMenuCanvasLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="MediaMenuCanvasLabel">Menu</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div id="MediaOffcanvasMenu"></div>
+    </div>
+</div>
+<div class="offcanvas offcanvas-start" tabindex="-1" id="MediaAlbumMenuCanvas" aria-labelledby="MediaAlbumMenuCanvasLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="MediaAlbumMenuCanvasLabel">Albums</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div id="MediaOffcanvasAlbumMenu"></div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" id="MediaModal">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 id="MediaModalTitle" class="modal-title"></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div id="MediaModalBody" class="modal-body">
+        </div>
+      </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" id="MediaLightbox"  data-bs-theme="dark">
+    <div class="modal-dialog modal-fullscreen">
+      <div class="modal-content">
+        <div class="modal-body">
+            <div id="MediaLightboxBody"></div>
+
+        </div>
+      </div>
+    </div>
+</div>
+
 
     <!-- Bootstrap core JavaScript ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->

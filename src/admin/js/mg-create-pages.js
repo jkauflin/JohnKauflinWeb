@@ -9,16 +9,20 @@ Modification History
 2024-03-29 JJK  Migrating to Azure SWA, blob storage, Cosmos DB with GraphQL
                 for queries.  Also, removing Admin functions to make this just
                 the presentation functions with no edit0
+2024-04-27 JJK  Adding editMode stuff from the old version for Admin
 ================================================================================*/
 import {mediaInfo,mediaType,getMenu,
     queryCategory,querySearchStr,queryMenuItem,queryAlbumKey,
-    categoryList,
+    categoryList,menuFilter,peopleList,
     contentDesc,
     queryMediaInfo,
-    getFilePath,getFileName
+    getFilePath,getFileName,
+    updateMediaInfo,
+    newVideosMediaInfo
 } from './mg-data-repository.js'
 import {mediaMenuCanvasId,buildMenuElements} from './mg-menu.js'
 import {mediaAlbumMenuCanvasId,buildAlbumMenuElements} from './mg-album.js'
+import {setContextMenuListeners} from './mg-contextmenu.js'
 import {displayElementInLightbox} from './mg-lightbox.js'
 import {playlistSongClass,audioPrevClass,audioNextClass,audioPlayer,setAudioListeners,
         emptyPlaylist,incrementPlaylistIndex,addSongToPlaylist,initSong} from './mg-audio-playlist.js'
@@ -61,6 +65,7 @@ var mediaDetailVideoList
 
 var currIndex = 0
 var currSelectAll = false
+var editMode = true
 
 
 // Remove all child nodes from an element
@@ -73,6 +78,9 @@ export function empty(node) {
     }
 }
 
+// Set the container and class for the contextmenu
+// >>>>> should I try to "pull" the container and class from CreatePages module?
+setContextMenuListeners(thumbnailContainer, imgThumbnailClass)
 setAudioListeners(thumbnailContainer)
 
 //-------------------------------------------------------------------------------------------------------
@@ -105,9 +113,25 @@ thumbnailContainer.addEventListener("click", function (event) {
             // If clicking on a Thumbnail, bring up in Lightbox or FileDetail (for Edit mode)
             let index = parseInt(event.target.getAttribute('data-index'))
             if (typeof index !== "undefined" && index !== null) {
-                displayElementInLightbox(index)
+                //displayElementInLightbox(index)
+                displayFileDetail(index)
             }
 
+    } else if (event.target && event.target.classList.contains(thumbCheckboxClass)) {
+            // Thumbnail card checkbox
+            //console.log("Clicked on image checkbox")
+            let index = parseInt(event.target.getAttribute('data-index'))
+            if (typeof index !== "undefined" && index !== null) {
+                if (mediaInfo.fileList[index].Selected) {
+                    mediaInfo.fileList[index].Selected = false
+                } else {
+                    mediaInfo.fileList[index].Selected = true
+
+                    if (editMode) {
+                        displayFileDetail(index)
+                    }
+                }
+            }
     } 
 })
 
@@ -158,8 +182,366 @@ thumbnailContainer.addEventListener("click", function (event) {
         }
         buildFilterElements(mediaType)
 
+            // Create Row and columns
+            editRow1.classList.add('row')
+
+            // Col 1
+            let editRow1Col1 = document.createElement("div")
+            editRow1Col1.classList.add('col-sm-5','col-md-6')
+
+            editRow1Col1.appendChild(thumbnailContainer);
+            editRow1.appendChild(editRow1Col1)
+
+            // Col 2
+            let editRow1Col2 = document.createElement("div")
+            editRow1Col2.classList.add('col-sm-4','col-md-4')
+
+            // GetNEW
+            let getNewButton = document.createElement("button")
+            getNewButton.classList.add('btn','btn-success','btn-sm','float-start','shadow-none','me-2','my-2')
+            getNewButton.setAttribute('type',"button")
+            getNewButton.setAttribute('role',"button")
+            getNewButton.textContent = "Get NEW"
+            editRow1Col2.appendChild(getNewButton)
+            getNewButton.addEventListener("click", function () {
+                let paramData = {
+                    MediaFilterMediaType: mediaType, 
+                    getNew: true}
+                queryMediaInfo(paramData);
+            });
+
+            // SelectALL
+            let selectAllButton = document.createElement("button")
+            selectAllButton.classList.add('btn','btn-primary','btn-sm','float-start','shadow-none','me-2','my-2')
+            selectAllButton.setAttribute('type',"button")
+            selectAllButton.setAttribute('role',"button")
+            selectAllButton.textContent = "Select ALL"
+            editRow1Col2.appendChild(selectAllButton)
+            selectAllButton.addEventListener("click", function () {
+                currIndex = 0
+                if (currSelectAll == true) {
+                    currSelectAll = false
+                } else {
+                    currSelectAll = true
+                }
+                // Loop through the current file list and set all to Selected
+                for (let index in mediaInfo.fileList) {
+                    mediaInfo.fileList[index].Selected = currSelectAll
+                }        
+                //displayFileDetail(currIndex) <<<<< can't select the 1st one because that will turn off the selected for all the rest
+                displayCurrFileList()
+            });
+
+            // Prev
+            let detailPrevButton = document.createElement("button")
+            //detailPrevButton.id = "MediaAdminSelectAllButton"
+            detailPrevButton.classList.add('btn','btn-warning','btn-sm','float-start','shadow-none','me-2','my-2')
+            detailPrevButton.setAttribute('type',"button")
+            detailPrevButton.setAttribute('role',"button")
+            detailPrevButton.textContent = "Prev"
+            editRow1Col2.appendChild(detailPrevButton)
+            detailPrevButton.addEventListener("click", function () {
+                if (currIndex > 0) {
+                    currIndex -= 1
+                    displayFileDetail(currIndex)
+                }            
+            });
+
+            // Next
+            let detailNextButton = document.createElement("button")
+            //detailNextButton.id = "MediaAdminGetNewButton"
+            detailNextButton.classList.add('btn','btn-info','btn-sm','float-start','shadow-none','me-2','my-2')
+            detailNextButton.setAttribute('type',"button")
+            detailNextButton.setAttribute('role',"button")
+            detailNextButton.textContent = "Next"
+            editRow1Col2.appendChild(detailNextButton)
+            detailNextButton.addEventListener("click", function () {
+                if (currIndex < mediaInfo.fileList.length-1) {
+                    currIndex += 1
+                    displayFileDetail(currIndex)
+                }            
+            });
+
+            // *** Detail TAGS ***
+            mediaDetailFilename = document.createElement("div")
+            editRow1Col2.appendChild(mediaDetailFilename)
+    
+            mediaDetailTitle = document.createElement("input")
+            mediaDetailTitle.classList.add('form-control','py-1','mb-1','shadow-none')
+            mediaDetailTitle.setAttribute('type', "text")
+            mediaDetailTitle.setAttribute('placeholder', "Title")
+            editRow1Col2.appendChild(mediaDetailTitle)
+    
+            mediaDetailTaken = document.createElement("input")
+            mediaDetailTaken.classList.add('form-control','py-1','mb-1','shadow-none')
+            mediaDetailTaken.setAttribute('type', "text")
+            mediaDetailTaken.setAttribute('placeholder', "Taken DateTime")
+            editRow1Col2.appendChild(mediaDetailTaken)
+    
+
+            if (mediaType == 1) {
+                mediaDetailImg = document.createElement("img")
+                mediaDetailImg.classList.add('img-fluid','rounded','mx-auto','d-block')
+                //mediaDetailImg.setAttribute('onerror', "this.onerror=null; this.remove()")
+                mediaDetailImg.setAttribute('onerror', "this.onerror=null;this.src='https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg';")
+                editRow1Col2.appendChild(mediaDetailImg)
+
+            } else if (mediaType == 2) {
+                //-----------------------------------------------------------------------------------------
+                // Build a UI to add new videos
+                //-----------------------------------------------------------------------------------------
+                let newVideosButton = document.createElement("button")
+                newVideosButton.classList.add('btn','btn-danger','btn-sm','float-start','shadow-none','me-2','my-2')
+                newVideosButton.setAttribute('type',"button")
+                newVideosButton.setAttribute('role',"button")
+                newVideosButton.textContent = "Add NEW Videos"
+                editRow1Col2.appendChild(newVideosButton)
+
+                mediaDetailVideoList = document.createElement("textarea")
+                mediaDetailVideoList.classList.add('form-control','py-1','mb-1','shadow-none')
+                mediaDetailVideoList.setAttribute('rows', "12")
+                mediaDetailVideoList.setAttribute('placeholder', "List of new video id's (and titles)")
+                editRow1Col2.appendChild(mediaDetailVideoList)
+                
+                newVideosButton.addEventListener("click", function () {
+                    let paramData = {
+                        MediaFilterMediaType: mediaType, 
+                        newVideos: true,
+                        mediaCategoryName: mediaCategorySelect.value,
+                        videoMenuItem: mediaDetailTitle.value,
+                        videoTaken: mediaDetailTaken.value,
+                        videoList: mediaDetailVideoList.value,
+                        videoDescription: mediaDetailDescription.value
+                    }
+                    newVideosMediaInfo(paramData)
+                });
+            }
+            editRow1.appendChild(editRow1Col2)
+
+
+            // Col 3
+            let editRow1Col3 = document.createElement("div")
+            editRow1Col3.classList.add('col-sm-3','col-md-2')
+            // Category
+            mediaCategorySelect = document.createElement("select")
+            mediaCategorySelect.classList.add('form-select','float-start','shadow-none','mt-2','py-1')
+            for (let index in categoryList) {
+                if (index == 1) {
+                    mediaCategorySelect.options[mediaCategorySelect.options.length] = new Option(categoryList[index], categoryList[index], true, true)
+                } else {
+                    mediaCategorySelect.options[mediaCategorySelect.options.length] = new Option(categoryList[index], categoryList[index])
+                }
+            }
+            editRow1Col3.appendChild(mediaCategorySelect);
+
+            mediaMenuSelect = document.createElement("select")
+            mediaMenuSelect.classList.add('form-select','float-start','shadow-none','mt-2','py-1')
+            for (let index in menuFilter) {
+                let tempPos = menuFilter[index].indexOf(' - ')
+                mediaMenuSelect.options[mediaMenuSelect.options.length] = new Option(menuFilter[index], menuFilter[index].substring(tempPos+3))
+            }
+            editRow1Col3.appendChild(mediaMenuSelect);
+
+            //-------------------------------------------------------------------------------------------------------------
+            // *** People list ***
+            //-------------------------------------------------------------------------------------------------------------
+            mediaPeopleSelect = document.createElement("select")
+            mediaPeopleSelect.classList.add('form-select','float-start','shadow-none','py-1')
+            for (let index in peopleList) {
+                mediaPeopleSelect.options[mediaPeopleSelect.options.length] = new Option(peopleList[index], index)
+            }
+
+            mediaPeopleInput = document.createElement("input")
+            mediaPeopleInput.classList.add('form-control','shadow-none','mt-2','py-1')
+            mediaPeopleInput.setAttribute('type',"text")
+            mediaPeopleInput.setAttribute('placeholder',"People filter")
+            editRow1Col3.appendChild(mediaPeopleInput);
+            // Filter the people list from entered value (checked after every key is typed)
+
+            mediaPeopleInput.addEventListener("keyup", function(event) {
+                //console.log("mediaPeopleInput.value = "+mediaPeopleInput.value);
+                let peopleInputVal = ""
+                if (mediaPeopleInput.value != null) {
+                    peopleInputVal = mediaPeopleInput.value
+                }
+
+                // Remove all options
+                for (let i = (mediaPeopleSelect.options.length-1); i > -1; i--) {
+                    mediaPeopleSelect.options.remove(i)
+                }
+
+                //let searchEx = new RegExp(`//${mediaPeopleInput.value}//i`);
+                //string pattern = @"\b[M]\w+";
+
+                //let searchStr = '/'+mediaPeopleInput.value+'/i'
+                //let re = new RegExp(`\b${mediaPeopleInput.value}\b`, 'i');
+                //let re = new RegExp(`\badam\b`, 'i');
+
+                // Add the ones that match the input value
+                for (let index in peopleList) {
+                    //if (peopleList[index].search(searchEx) >= 0) {
+                    //if (peopleList[index].search(/adam/i) >= 0) {
+                    //if (peopleList[index].search(re) >= 0) {
+                    if (peopleInputVal != "") {
+                        if (peopleList[index].indexOf(peopleInputVal) >= 0) {
+                            mediaPeopleSelect.options[mediaPeopleSelect.options.length] = new Option(peopleList[index], index)
+                        }
+                    } else {
+                        mediaPeopleSelect.options[mediaPeopleSelect.options.length] = new Option(peopleList[index], index)
+                    }
+                }
+            });
+
+            editRow1Col3.appendChild(mediaPeopleSelect);
+
+            /*
+            >>>>> original code
+            mediaPeopleList = document.createElement("input")
+            mediaPeopleList.classList.add('form-control','shadow-none','py-1')
+            mediaPeopleList.setAttribute('type',"text")
+            mediaPeopleList.setAttribute('placeholder',"People list")
+            */
+            mediaPeopleList = document.createElement("input")
+            mediaPeopleList.classList.add('form-control','shadow-none','py-1')
+            mediaPeopleList.setAttribute('type',"text")
+            mediaPeopleList.setAttribute('placeholder',"People list")
+
+/*
+<div class="input-group mb-3">
+  <input type="text" class="form-control" placeholder="Recipient's username">
+  <button class="btn btn-outline-secondary" type="button" id="button-addon2">Button</button>
+</div>
+*/
+
+            let replacePeopleButton = document.createElement("button")
+            replacePeopleButton.classList.add('btn','btn-primary','btn-sm','float-start','shadow-none','me-2','my-1')
+            replacePeopleButton.setAttribute('type',"button")
+            replacePeopleButton.setAttribute('role',"button")
+            replacePeopleButton.textContent = "Replace"
+            editRow1Col3.appendChild(replacePeopleButton)
+            replacePeopleButton.addEventListener("click", function () {
+                mediaPeopleList.value = peopleList[mediaPeopleSelect.value]
+            });
+
+            let appendPeopleButton = document.createElement("button")
+            appendPeopleButton.classList.add('btn','btn-warning','btn-sm','float-start','shadow-none','me-2','my-1')
+            appendPeopleButton.setAttribute('type',"button")
+            appendPeopleButton.setAttribute('role',"button")
+            appendPeopleButton.textContent = "Append"
+            editRow1Col3.appendChild(appendPeopleButton)
+            appendPeopleButton.addEventListener("click", function () {
+                if (mediaPeopleList.value) {
+                    mediaPeopleList.value = mediaPeopleList.value + ',' + peopleList[mediaPeopleSelect.value]
+                } else {
+                    mediaPeopleList.value = peopleList[mediaPeopleSelect.value]
+                }
+            });
+
+            editRow1Col3.appendChild(mediaPeopleList);
+
+            // Update
+            let editUpdateButton = document.createElement("button")
+            editUpdateButton.classList.add('btn','btn-info','btn-sm','float-start','shadow-none','mt-3','me-2')
+            editUpdateButton.setAttribute('type',"button")
+            editUpdateButton.setAttribute('role',"button")
+            editUpdateButton.textContent = "Update Selected"
+            editRow1Col3.appendChild(editUpdateButton)
+            editUpdateButton.addEventListener("click", function () {
+                //console.log("mediaCategorySelect.value = "+mediaCategorySelect.value)
+                //console.log("mediaMenuSelect.value = "+mediaMenuSelect.value)
+                //console.log("mediaPeopleList.value = "+mediaPeopleList.value)
+                mediaAdminMessage.textContent = ""
+
+                // update to selected objects in adminFileList
+                for (let index in mediaInfo.fileList) {
+                    let fi = mediaInfo.fileList[index]
+                    if (fi.Selected) {
+                        fi.Title = mediaDetailTitle.value
+                        fi.TakenDateTime = mediaDetailTaken.value
+                        fi.CategoryTags = mediaCategorySelect.value
+                        mediaDetailCategoryTags.value = mediaCategorySelect.value
+                        fi.MenuTags = mediaMenuSelect.value
+                        mediaDetailMenuTags.value = mediaMenuSelect.value
+                        fi.AlbumTags = mediaDetailAlbumTags.value
+                        fi.People = mediaPeopleList.value
+                        mediaDetailPeopleList.value = mediaPeopleList.value
+                        fi.Description = mediaDetailDescription.value
+                    }
+                }
+            });
+        
+            // Save
+            let editSaveButton = document.createElement("button")
+            //editSaveButton.id = "MediaAdminSaveButton"
+            editSaveButton.classList.add('btn','btn-success','btn-sm','float-start','shadow-none','mt-3','me-2','mb-3')
+            editSaveButton.setAttribute('type',"button")
+            editSaveButton.setAttribute('role',"button")
+            editSaveButton.textContent = "Save to DB"
+            editRow1Col3.appendChild(editSaveButton)
+            editSaveButton.addEventListener("click", function () {
+                currIndex = 0
+                updateMediaInfo()
+            });
+
+            // Category Tags
+            mediaDetailCategoryTags = document.createElement("input")
+            //mediaDetailCategoryTags.id = "MediaDetailCategoryTags"
+            mediaDetailCategoryTags.classList.add('form-control','py-1','mb-1','shadow-none')
+            mediaDetailCategoryTags.setAttribute('type', "text")
+            mediaDetailCategoryTags.setAttribute('placeholder', "Category tags")
+            mediaDetailCategoryTags.disabled = true
+            editRow1Col3.appendChild(mediaDetailCategoryTags)
+
+            // Menu Tags
+            mediaDetailMenuTags = document.createElement("input")
+            //mediaDetailMenuTags.id = "MediaDetailMenuTags"
+            mediaDetailMenuTags.classList.add('form-control','py-1','mb-1','shadow-none')
+            mediaDetailMenuTags.setAttribute('type', "text")
+            mediaDetailMenuTags.setAttribute('placeholder', "Menu tags")
+            mediaDetailMenuTags.disabled = true
+            editRow1Col3.appendChild(mediaDetailMenuTags)
+
+            // Album Tags
+            mediaDetailAlbumTags = document.createElement("input")
+            //mediaDetailAlbumTags.id = "MediaDetailAlbumTags"
+            mediaDetailAlbumTags.classList.add('form-control','py-1','mb-1','shadow-none')
+            mediaDetailAlbumTags.setAttribute('type', "text")
+            mediaDetailAlbumTags.setAttribute('placeholder', "Album tags")
+            editRow1Col3.appendChild(mediaDetailAlbumTags)
+
+            // People List
+            mediaDetailPeopleList = document.createElement("input")
+            //mediaDetailPeopleList.id = "MediaDetailPeopleList"
+            mediaDetailPeopleList.classList.add('form-control','py-1','mb-1','shadow-none')
+            mediaDetailPeopleList.setAttribute('type', "text")
+            mediaDetailPeopleList.setAttribute('placeholder', "People list")
+            mediaDetailPeopleList.disabled = true  //<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+            editRow1Col3.appendChild(mediaDetailPeopleList)
+
+            // Description
+            mediaDetailDescription = document.createElement("textarea")
+            //mediaDetailDescription.id = "MediaDetailDescription"
+            mediaDetailDescription.classList.add('form-control','py-1','mb-1','shadow-none')
+            mediaDetailDescription.setAttribute('rows', "6")
+            mediaDetailDescription.setAttribute('placeholder', "Description")
+            //mediaDetailDescription.value = fi.Description
+            editRow1Col3.appendChild(mediaDetailDescription)
+
+            // Admin Message
+            mediaAdminMessage = document.createElement("div")
+            mediaAdminMessage.id = "MediaAdminMessage"
+            mediaAdminMessage.classList.add('float-start')
+            mediaAdminMessage.textContent = "Number of images = " + (mediaInfo.fileList.length)
+            editRow1Col3.appendChild(mediaAdminMessage)
+            editRow1.appendChild(editRow1Col3)
+
+            mediaPageContainer.appendChild(editRow1);
+
+        
+        /*
         mediaPageContainer.appendChild(filterContainer);
         mediaPageContainer.appendChild(thumbnailContainer);
+        */
 
         displayCurrFileList()
     }
@@ -365,13 +747,44 @@ thumbnailContainer.addEventListener("click", function (event) {
                 titleMax = 12
             }
 
+            if (editMode) {
+                // If EditMode, add a checkbox to the thumb card
+                let cardCheckboxDiv = document.createElement("div")
+                cardCheckboxDiv.classList.add('form-check','mx-1','float-start','shadow-none')
+
+                let cardCheckbox = document.createElement("input")
+                //cardCheckbox.classList.add('form-check-input','mx-1','mb-1','float-end','shadow-none',thumbCheckboxClass)
+                cardCheckbox.classList.add('form-check-input','shadow-none',thumbCheckboxClass)
+                cardCheckbox.id = 'cb' + index
+                cardCheckbox.setAttribute('type', 'checkbox')
+                cardCheckbox.setAttribute('data-index', index)
+                cardCheckbox.checked = fi.Selected
+                cardCheckboxDiv.appendChild(cardCheckbox)
+
+                let cbLabel = document.createElement("label")
+                cbLabel.classList.add('form-check-label')
+                cbLabel.setAttribute('for',cardCheckbox.id)
+                if (fi.Title.length > titleMax) {
+                    cbLabel.textContent = fi.Title.substring(0,titleMax)
+                } else {
+                    cbLabel.textContent = fi.Title
+                }
+                cardCheckboxDiv.appendChild(cbLabel)
+
+                thumb.appendChild(cardCheckboxDiv)
+            }
+
             //-------------------------------------------------------------------------------------------------------------------
             // Display thumbnail according to media type (and add event links for lightbox and edit)
             //-------------------------------------------------------------------------------------------------------------------
             if (mediaType == 1) {
                 let img = document.createElement("img");
                 // add a class for event click
-                img.classList.add('rounded','float-start','mt-2','me-2',imgThumbnailClass)
+                if (editMode) {
+                    img.classList.add('rounded','float-start','m-1',imgThumbnailClass)
+                } else {
+                    img.classList.add('rounded','float-start','mt-2','me-2',imgThumbnailClass)
+                }
                 img.setAttribute('onerror', "this.onerror=null; this.remove()")
                 img.src = getFilePath(index,"Thumbs")
                 //img.src = getFilePath(index,"Smaller")
@@ -386,10 +799,25 @@ thumbnailContainer.addEventListener("click", function (event) {
                     imgCache.src = getFilePath(index,"Smaller")
                 }
 
-                thumb = img
+                if (editMode) {
+                    thumb.appendChild(img)
+                } else {
+                    thumb = img
+                }
                 thumbnailRow2Col1.appendChild(thumb)
 
             } else if (mediaType == 2) {
+                if (!editMode) {
+                    let videoLabel = document.createElement("label")
+                    videoLabel.classList.add('mx-1')
+                    if (fi.Title.length > titleMax) {
+                        videoLabel.textContent = fi.Title.substring(0,titleMax)
+                    } else {
+                        videoLabel.textContent = fi.Title
+                    }
+                    thumb.appendChild(videoLabel)
+                }
+
                 let iframe = document.createElement("iframe")
                 iframe.classList.add('m-1')
                 // Use the embed link for iframe (without https so it can be run locally for testing)
@@ -585,5 +1013,43 @@ thumbnailContainer.addEventListener("click", function (event) {
         thumbnailContainer.appendChild(thumbnailRow1)
         thumbnailContainer.appendChild(thumbnailRow2)
         thumbnailContainer.appendChild(thumbnailRow3)
+    }
+
+
+        //-------------------------------------------------------------------------------------------------------
+    // Display individual image for Edit mode
+    //-------------------------------------------------------------------------------------------------------
+    function displayFileDetail(index) {
+        //console.log("index = "+index)
+        currIndex = index
+        
+        // Get the correct image from the file list, and set the values of the screen components
+        let fi = mediaInfo.fileList[index]
+
+        mediaDetailFilename.textContent = fi.Name;
+        mediaDetailTitle.value = fi.Title
+        mediaDetailTaken.value = fi.TakenDateTime
+        mediaDetailCategoryTags.value = fi.CategoryTags
+        mediaDetailMenuTags.value = fi.MenuTags
+        mediaDetailAlbumTags.value = fi.AlbumTags
+        mediaDetailPeopleList.value = fi.People
+        mediaDetailDescription.value = fi.Description
+
+        // Set only the selected file in the thumbnail list
+        /*
+        for (let index2 in mediaInfo.fileList) {
+            if (index2 == index) {
+                mediaInfo.fileList[index2].Selected = true
+            } else {
+                mediaInfo.fileList[index2].Selected = false
+            }
+        }
+        */    
+        
+        // Re-display the file list to show the correct selected image
+        displayCurrFileList()
+
+        // Set the img src to get the smaller version of the image and display it on the screen
+        mediaDetailImg.src = getFilePath(index,"Smaller")
     }
 

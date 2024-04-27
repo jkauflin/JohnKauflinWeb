@@ -62,7 +62,8 @@ document.querySelectorAll("a.nav-link").forEach(el => el.addEventListener("click
         new bootstrap.Collapse(document.getElementsByClassName("navbar-collapse")[0]).hide()
     }
 }))
- 
+
+/*
 async function getUserInfo() {
     const response = await fetch('/.auth/me');
     const payload = await response.json();
@@ -73,7 +74,7 @@ async function getUserInfo() {
   (async () => {
   console.log(await getUserInfo());
   })();
-
+*/
 
 //=================================================================================================================
 // Bind events

@@ -16,11 +16,14 @@ Modification History
                 Cosmos DB and got all of the records copied.  Now able to
                 do GraphQL queries with "gte" on TakenFileTime integer,
                 contains on strings, orderBy on Taken, and first maxRows
+2024-04-26 JJK  Moved a copy to /admin for administration updates
 ================================================================================*/
 
 import {createMediaPage,displayCurrFileList,updateAdminMessage} from './mg-create-pages.js';
 import {setMenuList} from './mg-menu.js';
 import {setAlbumList,getAlbumName} from './mg-album.js';
+import {updateMessage} from './mg-contextmenu.js';
+
 export let mediaInfo = {
     menuList: [],
     filterList: [],
@@ -39,6 +42,10 @@ export var queryAlbumKey = ""
 
 export var categoryList = []
 let defaultCategory = "1 John J Kauflin"
+
+export var menuFilter = []
+export var peopleList = []
+
 
 // Look into using environment variables for this (like secrets for Azure credentials)
 let photosUri = "https://jjkwebstorage.blob.core.windows.net/photos/"
@@ -453,6 +460,9 @@ type Malbum @model {
             // Save the menu lists
             setMenuList(mediaInfo.menuList)
             setAlbumList(result.data.malbums.items)
+
+            //menuFilter = mediaInfo.menuFilter
+            //peopleList = mediaInfo.peopleList
         }
 
         // Save the parameters from the laste query
@@ -479,4 +489,89 @@ type Malbum @model {
 
         createMediaPage()
     }
+}
+
+//------------------------------------------------------------------------------------------------------------
+// Update the media info in the database table (Batch)
+//------------------------------------------------------------------------------------------------------------
+export function updateMediaInfo(inIndex) {
+    let index = -1
+    if (inIndex != null && inIndex >= 0) {
+        index = inIndex
+    }
+
+    // Assume current values and selected files in the mediaInfo.fileList are what we want updated
+    // unless the index is set, which indicates an individual update
+    /*
+    let paramData = {
+        MediaFilterMediaType: mediaType,
+        mediaInfoFileList: mediaInfo.fileList,
+        index: index
+    }
+
+    let url = jjkgalleryRoot + "updateMediaInfo.php"
+    fetch(url, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(paramData)
+    })
+    .then(response => response.text())
+    .then(returnMsg => {
+        //console.log("returnMsg = "+returnMsg)
+
+        if (index >= 0) {
+            updateMessage(returnMsg)
+            // If individual index-based update, just de-Select but leave it in the file list
+            mediaInfo.fileList[index].Selected = false
+        } else {
+            // Filter out the Selected files (that were updated)
+            updateAdminMessage(returnMsg)
+            mediaInfo.fileList = mediaInfo.fileList.filter(checkSelected);
+        }
+
+        displayCurrFileList()
+    }); // End of Fetch
+    */
+}
+
+//------------------------------------------------------------------------------------------------------------
+// Add new media info records in the database for new videos
+//------------------------------------------------------------------------------------------------------------
+export function newVideosMediaInfo(paramData) {
+
+    /*
+    let index = -1
+    if (inIndex != null && inIndex >= 0) {
+        index = inIndex
+    }
+
+    // Assume current values and selected files in the mediaInfo.fileList are what we want updated
+    // unless the index is set, which indicates an individual update
+    let paramData = {
+        MediaFilterMediaType: mediaType,
+        mediaInfoFileList: mediaInfo.fileList,
+        index: index
+    }
+    */
+
+    /*
+    let url = jjkgalleryRoot + "updateMediaInfo.php"
+    fetch(url, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(paramData)
+    })
+    .then(response => response.text())
+    .then(returnMsg => {
+        //console.log("returnMsg = "+returnMsg)
+
+        updateAdminMessage(returnMsg)
+
+        displayCurrFileList()
+    }); // End of Fetch
+    */
+}
+
+function checkSelected(fileInfo) {
+    return !fileInfo.Selected
 }

@@ -105,6 +105,7 @@ async function getUserInfo() {
             let paramData = {
                 MediaFilterMediaType: mediaType, 
                 getMenu: true,
+                getPeople: true,
                 MediaFilterCategory: "DEFAULT",
                 MediaFilterStartDate: "DEFAULT"}
     

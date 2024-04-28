@@ -34,6 +34,7 @@ export let mediaType = 1
 export let mediaTypeDesc = "Photos"
 export let contentDesc = ""
 export var getMenu = false
+export var getPeople = false
 
 export var queryCategory = ""
 export var querySearchStr = ""
@@ -144,10 +145,11 @@ export function getDateInt(inDateStr) {
 //------------------------------------------------------------------------------------------------------------
 export async function queryMediaInfo(paramData) {
     //console.log(">>>>> in the QueryMediaInfo, paramData.MediaFilterMediaType = "+paramData.MediaFilterMediaType)
-    console.log("--------------------------------------------------------------------")
-    console.log("$$$$$ in the ADMIN QueryMediaInfo, mediaType = "+mediaType)
+    //console.log("--------------------------------------------------------------------")
+    //console.log("$$$$$ in the ADMIN QueryMediaInfo, mediaType = "+mediaType)
 
     getMenu = paramData.getMenu
+    getPeople = paramData.getPeople
 
     // Set a default start date of 60 days back from current date
     mediaInfo.menuOrAlbumName = ""
@@ -192,8 +194,20 @@ export async function queryMediaInfo(paramData) {
         `
     }
 
-/*
+    let peopleQuery = ""
+    if (getPeople) {
+        peopleQuery = `
+        mpeoples 
+        {
+            items {
+                PeopleName
+            }
+        }
 
+        `
+    }
+
+/*
 type Malbum @model {
   id: ID
   MediaAlbumId: Int
@@ -299,14 +313,31 @@ type Malbum @model {
                 items {
                     Name
                     TakenDateTime
+                    CategoryTags
+                    MenuTags
+                    AlbumTags
                     Title
+                    Description
+                    People
+                    ToBeProcessed
                 }
             }
             ${mediaTypeQuery}
-
+            ${peopleQuery}
     
         }`
 
+/*
+        mediaDetailFilename.textContent = fi.Name;
+        mediaDetailTitle.value = fi.Title
+        mediaDetailTaken.value = fi.TakenDateTime
+        mediaDetailCategoryTags.value = fi.CategoryTags
+        mediaDetailMenuTags.value = fi.MenuTags
+        mediaDetailAlbumTags.value = fi.AlbumTags
+        mediaDetailPeopleList.value = fi.People
+        mediaDetailDescription.value = fi.Description
+        searchStr ??????
+*/
     //console.log("gql = "+gql)
 
     const apiQuery = {
@@ -429,25 +460,6 @@ type Malbum @model {
 					}
 				}
 
-                /*
-                if (category.Menu != null) {
-                    category.Menu.forEach((menu) => {
-                        menu.MenuItem
-                    });
-                }
-
-		$sql = "SELECT PeopleName FROM People ";
-		$sql = $sql . "ORDER BY PeopleName; ";
-		$stmt = $conn->prepare($sql)  or die($mysqli->error);
-		$stmt->execute();
-		$result = $stmt->get_result();
-		if ($result->num_rows > 0) {
-			while($row = $result->fetch_assoc()) {
-				array_push($mediaInfo->peopleList,$row["PeopleName"]);
-			}
-		}
-                */
-
                 let menuObject = 
                 {
                     category: category.CategoryName,
@@ -460,9 +472,14 @@ type Malbum @model {
             // Save the menu lists
             setMenuList(mediaInfo.menuList)
             setAlbumList(result.data.malbums.items)
+            
+            if (result.data.mpeoples != null) {
+                result.data.mpeoples.items.forEach((peep) => {
+                    peopleList.push(peep.PeopleName)
+                })
+            }
 
             //menuFilter = mediaInfo.menuFilter
-            //peopleList = mediaInfo.peopleList
         }
 
         // Save the parameters from the laste query

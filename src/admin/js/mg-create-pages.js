@@ -181,6 +181,7 @@ thumbnailContainer.addEventListener("click", function (event) {
             buildAlbumMenuElements(mediaType)
         }
         buildFilterElements(mediaType)
+        mediaPageContainer.appendChild(filterContainer);
 
             // Create Row and columns
             editRow1.classList.add('row')
@@ -535,11 +536,12 @@ thumbnailContainer.addEventListener("click", function (event) {
             editRow1Col3.appendChild(mediaAdminMessage)
             editRow1.appendChild(editRow1Col3)
 
+
+
             mediaPageContainer.appendChild(editRow1);
 
         
         /*
-        mediaPageContainer.appendChild(filterContainer);
         mediaPageContainer.appendChild(thumbnailContainer);
         */
 

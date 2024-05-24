@@ -73,7 +73,7 @@ document.querySelectorAll("a.nav-link").forEach(el => el.addEventListener("click
 // Respond to click on a link-tile-tab button by finding the correct TAB and switching/showing it
 // (These link-tile-tab's also have media-page for creating the Menu, but these handled from the listener on that class)
 document.querySelectorAll(".link-tile-tab-solar").forEach(el => el.addEventListener("click", function (event) {
-    console.log("link-tile-tab-solar click ")
+    //console.log("link-tile-tab-solar click ")
 
     // Get the target tab based on the the MediaType specified, and use the new Bootstrap v5.2 js for showing the tab
     // the link ('a') with the correct MediaType, within the ".navbar-nav" list

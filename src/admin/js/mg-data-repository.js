@@ -17,6 +17,7 @@ Modification History
                 do GraphQL queries with "gte" on TakenFileTime integer,
                 contains on strings, orderBy on Taken, and first maxRows
 2024-04-26 JJK  Moved a copy to /admin for administration updates
+2024-04-28 JJK  Added people list and update functions
 ================================================================================*/
 
 import {createMediaPage,displayCurrFileList,updateAdminMessage} from './mg-create-pages.js';
@@ -34,7 +35,6 @@ export let mediaType = 1
 export let mediaTypeDesc = "Photos"
 export let contentDesc = ""
 export var getMenu = false
-export var getPeople = false
 
 export var queryCategory = ""
 export var querySearchStr = ""
@@ -149,7 +149,6 @@ export async function queryMediaInfo(paramData) {
     //console.log("$$$$$ in the ADMIN QueryMediaInfo, mediaType = "+mediaType)
 
     getMenu = paramData.getMenu
-    getPeople = paramData.getPeople
 
     // Set a default start date of 60 days back from current date
     mediaInfo.menuOrAlbumName = ""
@@ -190,32 +189,14 @@ export async function queryMediaInfo(paramData) {
                 AlbumName
             }
         }
-
-        `
-    }
-
-    let peopleQuery = ""
-    if (getPeople) {
-        peopleQuery = `
         mpeoples 
         {
             items {
                 PeopleName
             }
         }
-
         `
     }
-
-/*
-type Malbum @model {
-  id: ID
-  MediaAlbumId: Int
-  AlbumKey: String
-  AlbumName: String
-  AlbumDesc: String
-}
-*/
 
     let categoryQuery = ""
     if (paramData.MediaFilterCategory != null && paramData.MediaFilterCategory != '' &&
@@ -285,7 +266,7 @@ type Malbum @model {
   MediaTypeId: Int
   Name: String
   TakenDateTime: String
-  TakenFileTime: Float
+  TakenFileTime: Float <<<<<<<<<<<<<<<<<<<< set from TakenDateTime string (on update)
   CategoryTags: String
   MenuTags: String
   AlbumTags: String
@@ -293,7 +274,7 @@ type Malbum @model {
   Description: String
   People: String
   ToBeProcessed: Boolean
-  SearchStr: String
+  SearchStr: String <<<<<<<<<<<<<<<<<<<<<<<< dynamically from entity values (on update)
 */
     let gql = `query {
             books(
@@ -311,6 +292,7 @@ type Malbum @model {
                 first: ${maxRows}
             ) {
                 items {
+                    id
                     Name
                     TakenDateTime
                     CategoryTags
@@ -323,7 +305,6 @@ type Malbum @model {
                 }
             }
             ${mediaTypeQuery}
-            ${peopleQuery}
     
         }`
 
@@ -511,7 +492,7 @@ type Malbum @model {
 //------------------------------------------------------------------------------------------------------------
 // Update the media info in the database table (Batch)
 //------------------------------------------------------------------------------------------------------------
-export function updateMediaInfo(inIndex) {
+export async function updateMediaInfo(inIndex) {
     let index = -1
     if (inIndex != null && inIndex >= 0) {
         index = inIndex
@@ -519,13 +500,13 @@ export function updateMediaInfo(inIndex) {
 
     // Assume current values and selected files in the mediaInfo.fileList are what we want updated
     // unless the index is set, which indicates an individual update
-    /*
     let paramData = {
         MediaFilterMediaType: mediaType,
         mediaInfoFileList: mediaInfo.fileList,
         index: index
     }
 
+    /*
     let url = jjkgalleryRoot + "updateMediaInfo.php"
     fetch(url, {
         method: 'POST',
@@ -549,14 +530,107 @@ export function updateMediaInfo(inIndex) {
         displayCurrFileList()
     }); // End of Fetch
     */
+
+/*
+  id: ID
+  MediaTypeId: Int
+  Name: String
+  TakenDateTime: String
+  TakenFileTime: Float <<<<<<<<<<<<<<<<<<<< set from TakenDateTime string (on update)
+  CategoryTags: String
+  MenuTags: String
+  AlbumTags: String
+  Title: String
+  Description: String
+  People: String
+  ToBeProcessed: Boolean
+  SearchStr: String <<<<<<<<<<<<<<<<<<<<<<<< dynamically from entity values (on update)
+
+  mutation {
+  updatebook(id: 2000, item: {
+    year: 2011,
+    pages: 577    
+  }) {
+    id
+    title
+    year
+    pages
+  }
+}
+
+*/
+    let gql = `query {
+            books(
+                filter: { 
+                    and: [ 
+                        { MediaTypeId: { eq: ${mediaType} } }
+                        ${categoryQuery}
+                        ${menuQuery}
+                        ${albumQuery}
+                        ${searchQuery}
+                        ${startDateQuery}
+                    ] 
+                },
+                orderBy: { TakenDateTime: ASC },
+                first: ${maxRows}
+            ) {
+                items {
+                    id
+                    Name
+                    TakenDateTime
+                    CategoryTags
+                    MenuTags
+                    AlbumTags
+                    Title
+                    Description
+                    People
+                    ToBeProcessed
+                }
+            }
+            ${mediaTypeQuery}
+    
+        }`
+
+/*
+        mediaDetailFilename.textContent = fi.Name;
+        mediaDetailTitle.value = fi.Title
+        mediaDetailTaken.value = fi.TakenDateTime
+        mediaDetailCategoryTags.value = fi.CategoryTags
+        mediaDetailMenuTags.value = fi.MenuTags
+        mediaDetailAlbumTags.value = fi.AlbumTags
+        mediaDetailPeopleList.value = fi.People
+        mediaDetailDescription.value = fi.Description
+        searchStr ??????
+*/
+    //console.log("gql = "+gql)
+
+    const apiQuery = {
+        query: gql,
+        variables: {
+        }
+    }
+
+    const endpoint = "/data-api/graphql";
+    const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(apiQuery)
+    });
+    const result = await response.json();
+    if (result.errors != null) {
+        console.log("Error: "+result.errors[0].message);
+        console.table(result.errors);
+    } else {
+        //console.log("result.data = "+result.data)
+        //console.table(result.data.mtypes.items);
+
+    }
 }
 
 //------------------------------------------------------------------------------------------------------------
 // Add new media info records in the database for new videos
 //------------------------------------------------------------------------------------------------------------
 export function newVideosMediaInfo(paramData) {
-
-    /*
     let index = -1
     if (inIndex != null && inIndex >= 0) {
         index = inIndex
@@ -569,7 +643,6 @@ export function newVideosMediaInfo(paramData) {
         mediaInfoFileList: mediaInfo.fileList,
         index: index
     }
-    */
 
     /*
     let url = jjkgalleryRoot + "updateMediaInfo.php"

@@ -41,3 +41,28 @@ type Mpeople @model {
   MediaPeopleId: Int
   PeopleName: String
 }
+
+type Point @model {
+  id: ID
+  PointDay: Int
+  PointDateTime: String
+  PointYearMonth: Int
+  PointDayTime: Int
+  pvVolts: String
+  pvAmps: String
+  pvWatts: String
+}
+
+type Total @model {
+  id: ID
+  TotalBucket: Int
+  LastUpdateDateTime: String
+  TotalValue: String
+}
+
+type YearTotal @model {
+  id: ID
+  TotalBucket: Int
+  LastUpdateDateTime: String
+  TotalValue: String
+}

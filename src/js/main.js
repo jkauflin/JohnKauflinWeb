@@ -38,8 +38,10 @@
  * 2023-07-23 JJK   Modified to conform to ES6 module standard
  * ---------------------------------------------------------------------------
  * 2024-03-10 JJK   Migrating to an Azure static web app (SWA)
- *    swa start ./src --data-api-location swa-db-connections
+ * 2024-05-02 JJK   Adding function to support solar metrics and charts
  *============================================================================*/
+
+ import {querySolarMetrics} from './solarMetrics.js';
 
 // Keep track of the state of the navbar collapse (shown or hidden)
 var navbarCollapseShown = false;
@@ -57,4 +59,31 @@ document.querySelectorAll("a.nav-link").forEach(el => el.addEventListener("click
     if (navbarCollapseShown) {
         new bootstrap.Collapse(document.getElementsByClassName("navbar-collapse")[0]).hide()
     }
+
+    /*
+    let eventTargetStr = event.target.toString()
+    if (eventTargetStr.indexOf("SolarPage") >= 0) {
+        console.log("a.nav-link click, event.target = "+event.target)
+        querySolarMetrics()
+    }
+    */
+
 }))
+
+// Respond to click on a link-tile-tab button by finding the correct TAB and switching/showing it
+// (These link-tile-tab's also have media-page for creating the Menu, but these handled from the listener on that class)
+document.querySelectorAll(".link-tile-tab-solar").forEach(el => el.addEventListener("click", function (event) {
+    console.log("link-tile-tab-solar click ")
+
+    // Get the target tab based on the the MediaType specified, and use the new Bootstrap v5.2 js for showing the tab
+    // the link ('a') with the correct MediaType, within the ".navbar-nav" list
+    let targetTabElement = document.querySelector(`.navbar-nav a[href="#SolarPage"]`);
+
+    // If the target tab element is found, create a Tab object and call the show() method
+    if (typeof targetTabElement !== "undefined" && targetTabElement !== null) {
+        bootstrap.Tab.getOrCreateInstance(targetTabElement).show();
+    }
+
+    querySolarMetrics()
+}))
+

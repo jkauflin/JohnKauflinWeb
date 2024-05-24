@@ -390,6 +390,15 @@ thumbnailContainer.addEventListener("click", function (event) {
                 thumbnailRow2Col1.appendChild(thumb)
 
             } else if (mediaType == 2) {
+                let videoLabel = document.createElement("label")
+                videoLabel.classList.add('mx-1')
+                if (fi.Title.length > titleMax) {
+                    videoLabel.textContent = fi.Title.substring(0,titleMax)
+                } else {
+                    videoLabel.textContent = fi.Title
+                }
+                thumb.appendChild(videoLabel)
+
                 let iframe = document.createElement("iframe")
                 iframe.classList.add('m-1')
                 // Use the embed link for iframe (without https so it can be run locally for testing)

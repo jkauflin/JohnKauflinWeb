@@ -536,15 +536,9 @@ thumbnailContainer.addEventListener("click", function (event) {
             editRow1Col3.appendChild(mediaAdminMessage)
             editRow1.appendChild(editRow1Col3)
 
-
-
             mediaPageContainer.appendChild(editRow1);
 
-        
-        /*
-        mediaPageContainer.appendChild(thumbnailContainer);
-        */
-
+            
         displayCurrFileList()
     }
 

@@ -259,6 +259,13 @@ type Malbum @model {
         //console.log(">>> searchQuery = "+searchQuery)
 	}
 
+    let orderBy = "orderBy: { TakenDateTime: ASC }"
+    /*
+    if (mediaType == 2) {
+        orderBy = "orderBy: { Name: ASC }"
+    }
+    */
+
 /*
   id: ID
   MediaTypeId: Int
@@ -286,7 +293,7 @@ type Malbum @model {
                         ${startDateQuery}
                     ] 
                 },
-                orderBy: { TakenDateTime: ASC },
+                ${orderBy},
                 first: ${maxRows}
             ) {
                 items {

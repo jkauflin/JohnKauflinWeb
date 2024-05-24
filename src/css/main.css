@@ -8,6 +8,9 @@
 .link-tile-tab {
     width: 150px;
 }
+.link-tile-tab-solar {
+    width: 150px;
+}
 
 /* Turn off the outline on clicks to brand anchors */
 li {

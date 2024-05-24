@@ -69,6 +69,39 @@
           "role": "anonymous"
         }
       ]
+    },
+    "Point": {
+      "source": "MetricPoint",
+      "rest": false,
+      "graphql": true,
+      "permissions": [
+        {
+          "actions": ["read"],
+          "role": "anonymous"
+        }
+      ]
+    },
+    "Total": {
+      "source": "MetricTotal",
+      "rest": false,
+      "graphql": true,
+      "permissions": [
+        {
+          "actions": ["read"],
+          "role": "anonymous"
+        }
+      ]
+    },
+    "YearTotal": {
+      "source": "MetricYearTotal",
+      "rest": false,
+      "graphql": true,
+      "permissions": [
+        {
+          "actions": ["read"],
+          "role": "anonymous"
+        }
+      ]
     }
   }
 }

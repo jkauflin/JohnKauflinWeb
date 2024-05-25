@@ -211,7 +211,7 @@ export async function querySolarMetrics(paramData) {
         //console.log("lifetimeTotal = "+lifetimeTotal)
 
         //"2024-05-10T11:51:34.6353964-04:00"
-        let PointDateTime
+        let PointDateTime = ""
         let pvVoltsFloat = 0.0
         let pvAmpsFloat = 0.0
         let pvWattsFloat = 0.0
@@ -254,8 +254,12 @@ export async function querySolarMetrics(paramData) {
         */
 
         displayGauges(PointDateTime,pvVoltsFloat,pvAmpsFloat,pvWattsFloat)
-        displayCharts(pointData,dayTotalData)
-        displayTotals(totalsData,lifetimeTotal)
+        if (pointData.length > 0) {
+            displayCharts(pointData,dayTotalData)
+        }
+        if (totalsData.length > 0) {
+            displayTotals(totalsData,lifetimeTotal)
+        }
     }
 }
 

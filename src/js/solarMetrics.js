@@ -291,7 +291,7 @@ function displayGauges(PointDateTime,pvVoltsFloat,pvAmpsFloat,pvWattsFloat) {
         gaugeWatts.animationSpeed = 32
     }
   
-    pointDateTimeDiv.innerHTML = "Date Time: " + PointDateTime.substring(0,10) + " " + PointDateTime.substring(11,19)
+    pointDateTimeDiv.innerHTML = PointDateTime.substring(0,10) + " " + PointDateTime.substring(11,19)
     gaugeVolts.set(pvVoltsFloat);
     gaugeAmps.set(pvAmpsFloat.toFixed(2));
     gaugeWatts.set(pvWattsFloat);

@@ -103,12 +103,14 @@ export async function querySolarMetrics(paramData) {
     let pointDate = addDays(currDate, -1)
     let pointDateStartBucket = getDateInt(pointDate)
     // Starting at 7:00am on the current day
-    let pointDayTime = parseInt(currDate.toISOString().substring(2,4) + "083000")
+    //let pointDayTime = parseInt(currDate.toISOString().substring(2,4) + "083000")
+    let pointDayTime = parseInt(currDate.toISOString().substring(2,4) + "093000")
     let pointMaxRows = 3000
 
-    let dayTotalStartDate = addDays(new Date(), -40)
+    //let dayTotalStartDate = addDays(new Date(), -40)
+    let dayTotalStartDate = addDays(new Date(), -30)
     let dayTotalStartBucket = getDateInt(dayTotalStartDate)
-    let dayTotalMaxRows = 40
+    let dayTotalMaxRows = 30
 
     let gql = `query {
         points(

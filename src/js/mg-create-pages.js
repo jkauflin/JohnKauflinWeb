@@ -413,7 +413,8 @@ data-title="video_title" title="video_title" frameborder="0"></iframe>
                 let iframe = document.createElement("iframe")
                 iframe.classList.add('m-1')
                 // Use the embed link for iframe (without https so it can be run locally for testing)
-                iframe.setAttribute('src', "//www.youtube.com/embed/" + fi.Name + "&origin=https://lemon-desert-09fce780f.5.azurestaticapps.net")
+                //iframe.setAttribute('src', "//www.youtube.com/embed/" + fi.Name + "&origin=https://lemon-desert-09fce780f.5.azurestaticapps.net")
+                iframe.setAttribute('src', "//www.youtube.com/embed/" + fi.Name)
                 //iframe.setAttribute('src', "https://youtube.be/" + fi.Name)
                 //youtu.be/
                 iframe.setAttribute('allowfullscreen', true)

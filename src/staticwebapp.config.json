@@ -17,5 +17,8 @@
     },
     "mimeTypes": {
       ".json": "text/json"
+    },
+    "globalHeaders": {
+      "Referrer-Policy": "strict-origin-when-cross-origin"
     }
 }

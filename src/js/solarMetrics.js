@@ -39,7 +39,8 @@ function empty(node) {
 }
 
 function addDays(inDate, days) {
-    let td = new Date(inDate)
+    //let td = new Date(inDate)
+    let td = inDate
     td.setDate(td.getDate() + (parseInt(days)+1))
     /*
     let tempMonth = td.getMonth() + 1
@@ -61,7 +62,14 @@ function addDays(inDate, days) {
     //return td.toLocaleDateString()
     return td.toISOString().substring(0,10)  //2024-01-31T19:37:12.291Z
 }
- 
+
+function addHours(inDate, hours) {
+  //let td = new Date(inDate)
+  let td = inDate
+  td.setHours(td.getHours() + (parseInt(hours)-4))  // Adjust for GMT time
+  return td.toISOString().substring(0,19)
+}
+
 function paddy(num, padlen, padchar) {
     var pad_char = typeof padchar !== 'undefined' ? padchar : '0'
     var pad = new Array(1 + padlen).join(pad_char)
@@ -94,6 +102,14 @@ function getDateInt(inDateStr) {
     return(parseInt(formattedDate))
 }
 
+function getHoursInt(inDateStr) {
+  let formattedDate = "1800-01-01 00:00:00"
+  if (inDateStr != null) {
+    formattedDate = inDateStr.substring(2,4) + inDateStr.substring(11,13) + inDateStr.substring(14,16) + inDateStr.substring(17,19)
+  }
+  return(parseInt(formattedDate))
+}
+
 
 //------------------------------------------------------------------------------------------------------------
 // Query the database for menu and file information and store in js variables
@@ -102,12 +118,15 @@ export async function querySolarMetrics(paramData) {
     let currDate = new Date()
     let pointDate = addDays(currDate, -1)
     let pointDateStartBucket = getDateInt(pointDate)
-    // Starting at 7:00am on the current day
-    //let pointDayTime = parseInt(currDate.toISOString().substring(2,4) + "083000")
-    let pointDayTime = parseInt(currDate.toISOString().substring(2,4) + "093000")
-    let pointMaxRows = 3000
 
-    //let dayTotalStartDate = addDays(new Date(), -40)
+    // Start Points query at current date minus 3 hours
+    let pointHours = addHours(currDate, -3)
+    //let pointDayTime = parseInt(currDate.toISOString().substring(2,4) + "093000")
+    //2024-01-31T19:37:12.291Z
+    let pointDayTime = getHoursInt(pointHours)
+    let pointMaxRows = 1000
+
+    // Get Day totals starting 30 days back
     let dayTotalStartDate = addDays(new Date(), -30)
     let dayTotalStartBucket = getDateInt(dayTotalStartDate)
     let dayTotalMaxRows = 30
@@ -380,7 +399,7 @@ function displayTotals(totalsData,lifetimeTotal) {
         ytdWattsVal = tot.TotalValue
     })
 
-    ytdWatts.innerHTML = "YTD Watts: " + ytdWattsVal
+    ytdWatts.innerHTML = "YTD Watts: " + ytdWattsVal + " kWh"
 
     tr = document.createElement("tr");
     td = document.createElement("td");
@@ -388,19 +407,9 @@ function displayTotals(totalsData,lifetimeTotal) {
     tr.appendChild(td);
 
     td = document.createElement("td");
-    td.innerHTML = lifetimeTotal
+    td.innerHTML = lifetimeTotal + " kWh"
     tr.appendChild(td);
     totalsTbody.appendChild(tr)
-
-    /*
-                      <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                      </tr>
-
-    */
 }
 
 

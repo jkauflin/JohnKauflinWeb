@@ -153,8 +153,7 @@ export async function queryMediaInfo(paramData) {
 
     let maxRows = 200
     if (mediaType == 2) {
-		//maxRows = 18
-		maxRows = 1
+		maxRows = 18
     }
 
     // When getMenu specified, query the MediaType container for menu values (first page load)

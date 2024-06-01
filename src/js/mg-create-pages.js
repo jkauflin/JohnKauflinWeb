@@ -399,10 +399,21 @@ thumbnailContainer.addEventListener("click", function (event) {
                 }
                 thumb.appendChild(videoLabel)
 
+/*
+<iframe class="lazy" allowfullscreen="1" allow="accelerometer; autoplay; clipboard-write; 
+encrypted-media; gyroscope; picture-in-picture" 
+src="https://www.youtube.com/embed/youtube_video_id?origin=https://yourdomain.com&showinfo=0&video-id=youtube_video_id&enablejsapi=1&widgetid=1&color=white&modestbranding=1&rel=0" 
+data-title="video_title" title="video_title" frameborder="0"></iframe>
+
+
+"&origin=https://lemon-desert-09fce780f.5.azurestaticapps.net"
+
+*/
+
                 let iframe = document.createElement("iframe")
                 iframe.classList.add('m-1')
                 // Use the embed link for iframe (without https so it can be run locally for testing)
-                iframe.setAttribute('src', "//www.youtube.com/embed/" + fi.Name)
+                iframe.setAttribute('src', "//www.youtube.com/embed/" + fi.Name + "&origin=https://lemon-desert-09fce780f.5.azurestaticapps.net")
                 //iframe.setAttribute('src', "https://youtube.be/" + fi.Name)
                 //youtu.be/
                 iframe.setAttribute('allowfullscreen', true)

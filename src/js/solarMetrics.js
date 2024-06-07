@@ -240,11 +240,15 @@ export async function querySolarMetrics(paramData) {
         let pointData = []
         let tempWatts = 0.0
         if (result.data.points.items.length > 0) {
+            let dateTimeStr = ""
             result.data.points.items.forEach((point) => {
                 tempWatts = parseFloat(point.pvWatts)
                 if (tempWatts > 0.0) {
+                    
+                    dateTimeStr = point.PointDateTime.substring(11,16)
+
                     pointData.push({ 
-                        time: point.PointDateTime.substring(11,16), 
+                        time: dateTimeStr, 
                         watts: parseFloat(point.pvWatts) })
 
                         // Save to get the values for the last record
@@ -255,6 +259,10 @@ export async function querySolarMetrics(paramData) {
                 }
             })
         }
+
+        let tempDT = new Date(Date.parse(PointDateTime))
+        console.log("point.PointDateTime = "+PointDateTime)
+        console.log("tempDT.toISOString = "+tempDT.toISOString())
 
         /*
         (index)

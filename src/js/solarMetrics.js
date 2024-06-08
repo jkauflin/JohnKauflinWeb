@@ -120,11 +120,12 @@ export async function querySolarMetrics(paramData) {
     let pointDateStartBucket = getDateInt(pointDate)
 
     // Start Points query at current date minus 3 hours
-    let pointHours = addHours(currDate, -3)
+    //let pointHours = addHours(currDate, -3)
+    let pointHours = addHours(currDate, -2)
     //let pointDayTime = parseInt(currDate.toISOString().substring(2,4) + "093000")
     //2024-01-31T19:37:12.291Z
     let pointDayTime = getHoursInt(pointHours)
-    let pointMaxRows = 1000
+    let pointMaxRows = 1500
 
     // Get Day totals starting 30 days back
     let dayTotalStartDate = addDays(new Date(), -30)
@@ -232,6 +233,7 @@ export async function querySolarMetrics(paramData) {
         //console.log("lifetimeTotal = "+lifetimeTotal)
 
         //"2024-05-10T11:51:34.6353964-04:00"
+        let pointLocalDateTime = null
         let PointDateTime = ""
         let pvVoltsFloat = 0.0
         let pvAmpsFloat = 0.0
@@ -240,29 +242,22 @@ export async function querySolarMetrics(paramData) {
         let pointData = []
         let tempWatts = 0.0
         if (result.data.points.items.length > 0) {
-            let dateTimeStr = ""
             result.data.points.items.forEach((point) => {
                 tempWatts = parseFloat(point.pvWatts)
                 if (tempWatts > 0.0) {
-                    
-                    dateTimeStr = point.PointDateTime.substring(11,16)
-
+                    pointLocalDateTime = convertUTCDateToLocalDate(new Date(point.PointDateTime));
+                    PointDateTime = pointLocalDateTime.toISOString()
                     pointData.push({ 
-                        time: dateTimeStr, 
+                        time: PointDateTime.substring(11,16), 
                         watts: parseFloat(point.pvWatts) })
 
-                        // Save to get the values for the last record
-                        PointDateTime = point.PointDateTime
-                        pvVoltsFloat = parseFloat(point.pvVolts)
-                        pvAmpsFloat = parseFloat(point.pvAmps)
-                        pvWattsFloat = parseFloat(point.pvWatts)
+                    // Save to get the values for the last record
+                    pvVoltsFloat = parseFloat(point.pvVolts)
+                    pvAmpsFloat = parseFloat(point.pvAmps)
+                    pvWattsFloat = parseFloat(point.pvWatts)
                 }
             })
         }
-
-        let tempDT = new Date(Date.parse(PointDateTime))
-        console.log("point.PointDateTime = "+PointDateTime)
-        console.log("tempDT.toISOString = "+tempDT.toISOString())
 
         /*
         (index)
@@ -290,6 +285,17 @@ export async function querySolarMetrics(paramData) {
             displayTotals(totalsData,lifetimeTotal)
         }
     }
+}
+
+function convertUTCDateToLocalDate(date) {
+    var newDate = new Date(date.getTime()+date.getTimezoneOffset()*60*1000);
+
+    var offset = date.getTimezoneOffset() / 60;
+    var hours = date.getHours();
+
+    newDate.setHours(hours - offset);
+
+    return newDate;   
 }
 
 function displayGauges(PointDateTime,pvVoltsFloat,pvAmpsFloat,pvWattsFloat) {

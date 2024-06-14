@@ -7,6 +7,7 @@ DESCRIPTION:  Main module to handle interactions with database and update
 --------------------------------------------------------------------------------
 Modification History
 2024-05-17 JJK  Initial version - moved metrics components to this module
+2024-06-14 JJK  Test deploy
 ================================================================================*/
 
 //var solarTileButton = document.getElementById("SolarTile");

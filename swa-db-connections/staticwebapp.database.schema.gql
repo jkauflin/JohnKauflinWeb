@@ -66,3 +66,4 @@ type YearTotal @model {
   LastUpdateDateTime: String
   TotalValue: String
 }
+

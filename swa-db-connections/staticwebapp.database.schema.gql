@@ -67,3 +67,4 @@ type YearTotal @model {
   TotalValue: String
 }
 
+

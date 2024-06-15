@@ -20,10 +20,12 @@ type Mtype @model {
   MediaTypeDesc: String
   Category: [CategoryType]
 }
+
 type CategoryType {
   CategoryName: String
   Menu: [MenuType]
 }
+
 type MenuType {
   MenuItem: String
 }

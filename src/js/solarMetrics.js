@@ -133,7 +133,7 @@ export async function querySolarMetrics(paramData) {
     let dayTotalStartBucket = getDateInt(dayTotalStartDate)
     let dayTotalMaxRows = 30
 
-    let gql = `query {
+    let gql2 = `query {
         points(
             filter: { 
                 and: [ 
@@ -185,10 +185,10 @@ export async function querySolarMetrics(paramData) {
 
     //{ TotalBucket: { gte: 2024 } }
 
-    //console.log("gql = "+gql)
+    console.log("gql2 = "+gql2)
 
-    const apiQuery = {
-        query: gql,
+    const apiQuery2 = {
+        query: gql2,
         variables: {
         }
     }
@@ -197,7 +197,7 @@ export async function querySolarMetrics(paramData) {
     const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(apiQuery)
+        body: JSON.stringify(apiQuery2)
     })
     const result = await response.json()
     if (result.errors != null) {

@@ -26,7 +26,6 @@
     }
   },
   "entities": {
-
     "Point": {
       "source": "MetricPoint",
       "rest": false,
@@ -60,7 +59,6 @@
         }
       ]
     },
-
     "Book": {
         "source": "MediaInfo",
         "rest": false,
@@ -71,8 +69,8 @@
             "role": "anonymous"
           }
         ]
-      },
-      "Mtype": {
+    },
+    "Mtype": {
         "source": "MediaType",
         "rest": false,
         "graphql": true,
@@ -82,8 +80,8 @@
             "role": "anonymous"
           }
         ]
-      },
-      "Malbum": {
+    },
+    "Malbum": {
         "source": "MediaAlbum",
         "rest": false,
         "graphql": true,
@@ -93,8 +91,8 @@
             "role": "anonymous"
           }
         ]
-      },
-      "Mpeople": {
+    },
+    "Mpeople": {
         "source": "MediaPeople",
         "rest": false,
         "graphql": true,
@@ -104,9 +102,7 @@
             "role": "anonymous"
           }
         ]
-      }
-  
-
+    }
   }
 }
 

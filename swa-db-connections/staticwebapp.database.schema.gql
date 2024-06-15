@@ -22,3 +22,51 @@ type YearTotal @model {
   LastUpdateDateTime: String
   TotalValue: String
 }
+
+
+type Book @model {
+  id: ID
+  MediaTypeId: Int
+  Name: String
+  TakenDateTime: String
+  TakenFileTime: Int
+  CategoryTags: String
+  MenuTags: String
+  AlbumTags: String
+  Title: String
+  Description: String
+  People: String
+  ToBeProcessed: Boolean
+  SearchStr: String
+}
+
+type Mtype @model {
+  id: ID
+  MediaTypeId: Int
+  MediaTypeDesc: String
+  Category: [CategoryType]
+}
+
+type CategoryType {
+  CategoryName: String
+  Menu: [MenuType]
+}
+
+type MenuType {
+  MenuItem: String
+}
+
+type Malbum @model {
+  id: ID
+  MediaAlbumId: Int
+  AlbumKey: String
+  AlbumName: String
+  AlbumDesc: String
+}
+
+type Mpeople @model {
+  id: ID
+  MediaPeopleId: Int
+  PeopleName: String
+}
+

@@ -8,22 +8,18 @@ type Point @model {
   pvAmps: String
   pvWatts: String
 }
-
 type Total @model {
   id: ID
   TotalBucket: Int
   LastUpdateDateTime: String
   TotalValue: String
 }
-
 type YearTotal @model {
   id: ID
   TotalBucket: Int
   LastUpdateDateTime: String
   TotalValue: String
 }
-
-
 type Book @model {
   id: ID
   MediaTypeId: Int
@@ -39,23 +35,21 @@ type Book @model {
   ToBeProcessed: Boolean
   SearchStr: String
 }
-
+"""
 type Mtype @model {
   id: ID
   MediaTypeId: Int
   MediaTypeDesc: String
   Category: [CategoryType]
 }
-
 type CategoryType {
   CategoryName: String
   Menu: [MenuType]
 }
-
 type MenuType {
   MenuItem: String
 }
-
+"""
 type Malbum @model {
   id: ID
   MediaAlbumId: Int
@@ -63,7 +57,6 @@ type Malbum @model {
   AlbumName: String
   AlbumDesc: String
 }
-
 type Mpeople @model {
   id: ID
   MediaPeopleId: Int

@@ -140,7 +140,8 @@ export async function queryMediaInfo(paramData) {
     //console.log("--------------------------------------------------------------------")
     //console.log("$$$$$ in the QueryMediaInfo, mediaType = "+mediaType)
 
-    getMenu = paramData.getMenu
+    //getMenu = paramData.getMenu
+    getMenu = false
 
     // Set a default start date of 60 days back from current date
     mediaInfo.menuOrAlbumName = ""

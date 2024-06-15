@@ -26,50 +26,7 @@
     }
   },
   "entities": {
-    "Book": {
-      "source": "MediaInfo",
-      "rest": false,
-      "graphql": true,
-      "permissions": [
-        {
-          "actions": ["read"],
-          "role": "anonymous"
-        }
-      ]
-    },
-    "Mtype": {
-      "source": "MediaType",
-      "rest": false,
-      "graphql": true,
-      "permissions": [
-        {
-          "actions": ["read"],
-          "role": "anonymous"
-        }
-      ]
-    },
-    "Malbum": {
-      "source": "MediaAlbum",
-      "rest": false,
-      "graphql": true,
-      "permissions": [
-        {
-          "actions": ["read"],
-          "role": "anonymous"
-        }
-      ]
-    },
-    "Mpeople": {
-      "source": "MediaPeople",
-      "rest": false,
-      "graphql": true,
-      "permissions": [
-        {
-          "actions": ["read"],
-          "role": "anonymous"
-        }
-      ]
-    },
+
     "Point": {
       "source": "MetricPoint",
       "rest": false,
@@ -103,6 +60,7 @@
         }
       ]
     }
+
   }
 }
 

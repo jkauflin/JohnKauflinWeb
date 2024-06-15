@@ -185,7 +185,7 @@ export async function querySolarMetrics(paramData) {
 
     //{ TotalBucket: { gte: 2024 } }
 
-    console.log("gql2 = "+gql2)
+    //console.log("gql2 = "+gql2)
 
     const apiQuery2 = {
         query: gql2,
@@ -193,8 +193,8 @@ export async function querySolarMetrics(paramData) {
         }
     }
 
-    const endpoint = "/data-api/graphql";
-    const response = await fetch(endpoint, {
+    const endpoint2 = "/data-api/graphql";
+    const response = await fetch(endpoint2, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(apiQuery2)

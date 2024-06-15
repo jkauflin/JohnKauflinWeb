@@ -140,8 +140,8 @@ export async function queryMediaInfo(paramData) {
     //console.log("--------------------------------------------------------------------")
     //console.log("$$$$$ in the QueryMediaInfo, mediaType = "+mediaType)
 
-    //getMenu = paramData.getMenu
-    getMenu = false
+    getMenu = paramData.getMenu
+    //getMenu = false
 
     // Set a default start date of 60 days back from current date
     mediaInfo.menuOrAlbumName = ""
@@ -161,10 +161,10 @@ export async function queryMediaInfo(paramData) {
     // When getMenu specified, query the MediaType container for menu values (first page load)
     let mediaTypeQuery = ""
     if (getMenu) {
-
         // loading...
         //setThumbnailMessage("Loading...")
-
+        /*
+        */
         mediaTypeQuery = `
         mtype_by_pk(id: ${mediaType.toString()}) {
             id
@@ -188,7 +188,6 @@ export async function queryMediaInfo(paramData) {
     }
 
 /*
-
 type Malbum @model {
   id: ID
   MediaAlbumId: Int

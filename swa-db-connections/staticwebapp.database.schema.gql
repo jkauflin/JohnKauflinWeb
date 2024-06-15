@@ -36,6 +36,7 @@ type Book @model {
   SearchStr: String
 }
 """
+"""
 type Mtype @model {
   id: ID
   MediaTypeId: Int
@@ -49,7 +50,7 @@ type CategoryType {
 type MenuType {
   MenuItem: String
 }
-"""
+
 type Malbum @model {
   id: ID
   MediaAlbumId: Int

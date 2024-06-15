@@ -37,18 +37,18 @@ type Book @model {
 }
 """
 """
-type Mtype @model {
-  id: ID
-  MediaTypeId: Int
-  MediaTypeDesc: String
-  Category: [CategoryType]
+type MenuType {
+  MenuItem: String
 }
 type CategoryType {
   CategoryName: String
   Menu: [MenuType]
 }
-type MenuType {
-  MenuItem: String
+type Mtype @model {
+  id: ID
+  MediaTypeId: Int
+  MediaTypeDesc: String
+  Category: [CategoryType]
 }
 
 type Malbum @model {

@@ -164,7 +164,15 @@ export async function queryMediaInfo(paramData) {
         // loading...
         //setThumbnailMessage("Loading...")
         /*
+        mtype_by_pk(id: ${mediaType.toString()}) {
+            id
+            MediaTypeDesc
             Category {
+                CategoryName
+            }
+        }
+
+        Category {
                 CategoryName
                 Menu {
                     MenuItem
@@ -172,11 +180,16 @@ export async function queryMediaInfo(paramData) {
             }
         */
         mediaTypeQuery = `
-        mtype_by_pk(id: ${mediaType.toString()}) {
-            id
-            MediaTypeDesc
-            Category {
-                CategoryName
+        mtypes {
+            items {
+                id
+                MediaTypeDesc
+                Category {
+                    CategoryName
+                    Menu {
+                        MenuItem
+                    }
+                }
             }
         }
         malbums 

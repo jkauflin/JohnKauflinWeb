@@ -47,15 +47,16 @@ type Mtype @model {
   id: ID
   MediaTypeId: Int
   MediaTypeDesc: String
-  Category: [CategoryType!]
-}
+  
+              Category {
+                CategoryName
+                Menu {
+                    MenuItem
+                }
+            }
 """
-type Menu {
-  MenuItem: String
-}
 type Category {
   CategoryName: String
-  Menu: [Menu]
 }
 type Mtype @model {
   id: ID

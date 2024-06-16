@@ -164,6 +164,12 @@ export async function queryMediaInfo(paramData) {
         // loading...
         //setThumbnailMessage("Loading...")
         /*
+            Category {
+                CategoryName
+                Menu {
+                    MenuItem
+                }
+            }
         */
         mediaTypeQuery = `
         mtype_by_pk(id: ${mediaType.toString()}) {
@@ -171,9 +177,6 @@ export async function queryMediaInfo(paramData) {
             MediaTypeDesc
             Category {
                 CategoryName
-                Menu {
-                    MenuItem
-                }
             }
         }
         malbums 
@@ -304,11 +307,9 @@ type Malbum @model {
                 }
             }
             ${mediaTypeQuery}
-
-    
         }`
 
-    //console.log("gql = "+gql)
+    console.log("gql = "+gql)
 
     const apiQuery = {
         query: gql,
@@ -338,9 +339,9 @@ type Malbum @model {
         //console.table(result.data.book_by_pk);
         //console.log("Title = "+result.data.book_by_pk.Title)
         //console.table(result.data.mtype_by_pk);
-        /*
         console.log("data.mtype_by_pk.MediaTypeDesc = "+result.data.mtype_by_pk.MediaTypeDesc);
         console.log("data.mtype_by_pk.Category[0].CategoryName = "+result.data.mtype_by_pk.Category[0].CategoryName);
+        /*
         if (result.data.mtype_by_pk.Category[0].Menu != null) {
             console.log("data.mtype_by_pk.Category[0].Menu[0].MenuItem = "+result.data.mtype_by_pk.Category[0].Menu[0].MenuItem);
         }
@@ -417,46 +418,49 @@ type Malbum @model {
             categoryList.length = 0
 
             let cnt = 0;
-            result.data.mtype_by_pk.Category.forEach((category) => {
-                categoryList.push(category.CategoryName)
-
-                if (mediaType == 1) {
-					if (cnt == 2) {
-						defaultCategory = category.CategoryName
-					}
-				} else {
-					if (cnt == 1) {
-						defaultCategory = category.CategoryName
-					}
-				}
-
-                /*
-                if (category.Menu != null) {
-                    category.Menu.forEach((menu) => {
-                        menu.MenuItem
-                    });
+            if (result.data.mtype_by_pk.Category != null) {
+                result.data.mtype_by_pk.Category.forEach((category) => {
+                    categoryList.push(category.CategoryName)
+    
+                    if (mediaType == 1) {
+                        if (cnt == 2) {
+                            defaultCategory = category.CategoryName
+                        }
+                    } else {
+                        if (cnt == 1) {
+                            defaultCategory = category.CategoryName
+                        }
+                    }
+    
+                    /*
+                    if (category.Menu != null) {
+                        category.Menu.forEach((menu) => {
+                            menu.MenuItem
+                        });
+                    }
+    
+            $sql = "SELECT PeopleName FROM People ";
+            $sql = $sql . "ORDER BY PeopleName; ";
+            $stmt = $conn->prepare($sql)  or die($mysqli->error);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($result->num_rows > 0) {
+                while($row = $result->fetch_assoc()) {
+                    array_push($mediaInfo->peopleList,$row["PeopleName"]);
                 }
-
-		$sql = "SELECT PeopleName FROM People ";
-		$sql = $sql . "ORDER BY PeopleName; ";
-		$stmt = $conn->prepare($sql)  or die($mysqli->error);
-		$stmt->execute();
-		$result = $stmt->get_result();
-		if ($result->num_rows > 0) {
-			while($row = $result->fetch_assoc()) {
-				array_push($mediaInfo->peopleList,$row["PeopleName"]);
-			}
-		}
-                */
-
-                let menuObject = 
-                {
-                    category: category.CategoryName,
-                    subMenuList: category.Menu
-                }
-
-                mediaInfo.menuList.push(menuObject)
-            });
+            }
+                    */
+    
+                    let menuObject = 
+                    {
+                        category: category.CategoryName,
+                        subMenuList: category.Menu
+                    }
+    
+                    mediaInfo.menuList.push(menuObject)
+                })
+    
+            }
 
             // Save the menu lists
             setMenuList(mediaInfo.menuList)

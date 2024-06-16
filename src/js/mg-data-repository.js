@@ -164,13 +164,6 @@ export async function queryMediaInfo(paramData) {
         // loading...
         //setThumbnailMessage("Loading...")
         /*
-        mtype_by_pk(id: ${mediaType.toString()}) {
-            id
-            MediaTypeDesc
-            Category {
-                CategoryName
-            }
-        }
 
         Category {
                 CategoryName
@@ -180,15 +173,13 @@ export async function queryMediaInfo(paramData) {
             }
         */
         mediaTypeQuery = `
-        mtypes {
-            items {
-                id
-                MediaTypeDesc
-                Category {
-                    CategoryName
-                    Menu {
-                        MenuItem
-                    }
+        mtype_by_pk(id: ${mediaType.toString()}) {
+            id
+            MediaTypeDesc
+            Category {
+                CategoryName
+                Menu {
+                    MenuItem
                 }
             }
         }

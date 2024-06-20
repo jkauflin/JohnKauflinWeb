@@ -313,7 +313,7 @@ type Malbum @model {
             ${mediaTypeQuery}
         }`
 
-    console.log("gql = "+gql)
+    //console.log("gql = "+gql)
 
     const apiQuery = {
         query: gql,
@@ -343,9 +343,9 @@ type Malbum @model {
         //console.table(result.data.book_by_pk);
         //console.log("Title = "+result.data.book_by_pk.Title)
         //console.table(result.data.mtype_by_pk);
+        /*
         console.log("data.mtype_by_pk.MediaTypeDesc = "+result.data.mtype_by_pk.MediaTypeDesc);
         console.log("data.mtype_by_pk.Category[0].CategoryName = "+result.data.mtype_by_pk.Category[0].CategoryName);
-        /*
         if (result.data.mtype_by_pk.Category[0].Menu != null) {
             console.log("data.mtype_by_pk.Category[0].Menu[0].MenuItem = "+result.data.mtype_by_pk.Category[0].Menu[0].MenuItem);
         }

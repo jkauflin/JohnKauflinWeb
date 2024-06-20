@@ -54,7 +54,7 @@ type Mtype @model {
                     MenuItem
                 }
             }
-"""
+
 type MenuType {
   MenuItem: String
 }
@@ -67,6 +67,13 @@ type Mtype @model {
   MediaTypeId: Int
   MediaTypeDesc: String
   Category: [CategoryType!]
+}
+"""
+type Mtype @model {
+  id: ID
+  MediaTypeId: Int
+  MediaTypeDesc: String
+  Category: [String]  # test
 }
 
 type Malbum @model {

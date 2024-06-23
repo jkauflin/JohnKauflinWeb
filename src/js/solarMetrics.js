@@ -444,7 +444,8 @@ function displayTotals(totalsData,lifetimeTotal) {
     tr.appendChild(td);
 
     td = document.createElement("td");
-    td.innerHTML = lifetimeTotal + " kWh"
+    //td.innerHTML = lifetimeTotal + " kWh"
+    td.innerHTML = lifetimeTotal
     tr.appendChild(td);
     totalsTbody.appendChild(tr)
 }

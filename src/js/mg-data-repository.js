@@ -17,7 +17,7 @@ Modification History
                 do GraphQL queries with "gte" on TakenFileTime integer,
                 contains on strings, orderBy on Taken, and first maxRows
 2024-06-20 JJK  Getting an error from Azure on the MediaType query, so I've
-                hard-coded the categories and menu item for now
+                hard-coded the categories and menu items for now
 ================================================================================*/
 
 import {createMediaPage,displayCurrFileList,updateAdminMessage} from './mg-create-pages.js';
@@ -176,13 +176,6 @@ export async function queryMediaInfo(paramData) {
                 }
             }
         }
-
-        Category {
-                CategoryName
-                Menu {
-                    MenuItem
-                }
-            }
         */
         mediaTypeQuery = `
         malbums 
@@ -426,13 +419,10 @@ type Malbum @model {
 
             let cnt = 0;
             if (mediaTypeData[mti].Category != null) {
-
                 let category = null
                 for (let i = 0; i < mediaTypeData[mti].Category.length; i++) {
                     category = mediaTypeData[mti].Category[i]
-
                     categoryList.push(category.CategoryName)
-    
                     cnt++
                     if (mediaType == 1) {
                         if (cnt == 2) {
@@ -454,7 +444,6 @@ type Malbum @model {
                 }
 
                 //mediaTypeData[mti].Category.length
-
                 /*
                 mediaTypeData[mti].Category.forEach((category) => {
                     categoryList.push(category.CategoryName)
@@ -469,7 +458,6 @@ type Malbum @model {
                 })
                 */
             }
-
 
             // Save the menu lists
             setMenuList(mediaInfo.menuList)

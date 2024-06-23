@@ -13,6 +13,8 @@ type Total @model {
   TotalBucket: Int
   LastUpdateDateTime: String
   TotalValue: String
+  AmpMaxValue: String
+  WattMaxValue: String
 }
 type YearTotal @model {
   id: ID

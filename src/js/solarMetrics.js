@@ -8,6 +8,8 @@ DESCRIPTION:  Main module to handle interactions with database and update
 Modification History
 2024-05-17 JJK  Initial version - moved metrics components to this module
 2024-06-14 JJK  Test deploy
+2024-06-23 JJK  Added AmpMaxValue and WattMaxValue to the Totals query and 
+                display of last 10 values in a table
 ================================================================================*/
 
 //var solarTileButton = document.getElementById("SolarTile");
@@ -20,6 +22,7 @@ const currWattsGuage = document.getElementById('CurrWattsGuage');
 const pointDateTimeDiv = document.getElementById('PointDateTime'); 
 const ytdWatts = document.getElementById('YtdWatts'); 
 const totalsTbody = document.getElementById('TotalsTbody'); 
+const totalsMaxTbody = document.getElementById('TotalsMaxTbody'); 
 
 var gaugeVolts = null
 var gaugeAmps = null
@@ -165,6 +168,8 @@ export async function querySolarMetrics(paramData) {
                 TotalBucket
                 LastUpdateDateTime
                 TotalValue
+                AmpMaxValue
+                WattMaxValue
               }
           }
           yearTotals(
@@ -211,11 +216,25 @@ export async function querySolarMetrics(paramData) {
         //console.table(result.data.yearTotals.items);
 
         let dayTotalData = []
+        let dayTotalMaxData = []
         if (result.data.totals.items.length > 0) {
+            let maxValStart = result.data.totals.items.length - 10
+            let totCnt = 0
             result.data.totals.items.forEach((dayTotal) => {
+                totCnt++
                 dayTotalData.push({ 
                     date: dayTotal.LastUpdateDateTime.substring(5,10), 
-                    total: parseFloat(dayTotal.TotalValue) })
+                    total: parseFloat(dayTotal.TotalValue) 
+                })
+
+                // Save the last X number of max totals
+                if (totCnt > maxValStart) {
+                    dayTotalMaxData.push({ 
+                        date: dayTotal.LastUpdateDateTime.substring(5,10), 
+                        ampMaxValue: parseFloat(dayTotal.AmpMaxValue), 
+                        wattMaxValue: parseFloat(dayTotal.WattMaxValue) 
+                    })
+                }
             })
         }
 
@@ -284,6 +303,9 @@ export async function querySolarMetrics(paramData) {
         }
         if (totalsData.length > 0) {
             displayTotals(totalsData,lifetimeTotal)
+        }
+        if (dayTotalMaxData.length > 0) {
+            displayTotalsMax(dayTotalMaxData)
         }
     }
 }
@@ -425,6 +447,28 @@ function displayTotals(totalsData,lifetimeTotal) {
     td.innerHTML = lifetimeTotal + " kWh"
     tr.appendChild(td);
     totalsTbody.appendChild(tr)
+}
+
+function displayTotalsMax(dayTotalMaxData) {
+    empty(totalsMaxTbody)
+    let tr = null
+    let td = null
+    dayTotalMaxData.forEach((max) => {
+        tr = document.createElement("tr");
+        td = document.createElement("td");
+        td.innerHTML = max.date
+        tr.appendChild(td);
+
+        td = document.createElement("td");
+        td.innerHTML = max.ampMaxValue
+        tr.appendChild(td);
+
+        td = document.createElement("td");
+        td.innerHTML = max.wattMaxValue
+        tr.appendChild(td);
+
+        totalsMaxTbody.appendChild(tr)
+    })
 }
 
 

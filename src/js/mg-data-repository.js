@@ -410,7 +410,7 @@ type Malbum @model {
         if (getMenu) {
             //mediaTypeDesc = result.data.mtype_by_pk.MediaTypeDesc
             let mti = mediaType - 1
-            mediaTypeData[mti].MediaTypeDesc
+            mediaTypeDesc = mediaTypeData[mti].MediaTypeDesc
             contentDesc = mediaTypeDesc
 
             // Clear array before setting with values
@@ -490,13 +490,6 @@ type Malbum @model {
     }
 }
 
-/*
-let paramData = {
-    MediaFilterMediaType: mediaType, 
-    getMenu: true,
-    MediaFilterAlbumKey: albumKey
-}
-*/
 
 var mediaTypeData = [
 {

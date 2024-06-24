@@ -136,6 +136,8 @@ export async function querySolarMetrics(paramData) {
     let dayTotalStartBucket = getDateInt(dayTotalStartDate)
     let dayTotalMaxRows = 30
 
+    //orderBy: { LastUpdateDateTime: ASC },
+
     let gql2 = `query {
         points(
             filter: { 
@@ -161,7 +163,7 @@ export async function querySolarMetrics(paramData) {
                     { TotalBucket: { gte: ${dayTotalStartBucket} } }
                 ] 
             },
-            orderBy: { LastUpdateDateTime: ASC },
+            orderBy: { TotalBucket: ASC },
             first: ${dayTotalMaxRows}
           ) {
               items {
@@ -178,7 +180,7 @@ export async function querySolarMetrics(paramData) {
                     { id: { eq: "YEAR" } }
                 ] 
             },
-            orderBy: { LastUpdateDateTime: ASC }
+            orderBy: { TotalBucket: ASC }
           ) {
               items {
                 TotalBucket
@@ -187,8 +189,6 @@ export async function querySolarMetrics(paramData) {
               }
           }
     }`
-
-    //{ TotalBucket: { gte: 2024 } }
 
     //console.log("gql2 = "+gql2)
 

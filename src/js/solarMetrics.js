@@ -220,6 +220,7 @@ export async function querySolarMetrics(paramData) {
         if (result.data.totals.items.length > 0) {
             let maxValStart = result.data.totals.items.length - 10
             let totCnt = 0
+            let tempDateStr = ""
             result.data.totals.items.forEach((dayTotal) => {
                 totCnt++
                 dayTotalData.push({ 
@@ -228,9 +229,13 @@ export async function querySolarMetrics(paramData) {
                 })
 
                 // Save the last X number of max totals
+                // 20240624
+                tempDateStr = dayTotal.TotalBucket.toString()
+                
+                //date: dayTotal.LastUpdateDateTime.substring(5,10), 
                 if (totCnt > maxValStart) {
                     dayTotalMaxData.push({ 
-                        date: dayTotal.LastUpdateDateTime.substring(5,10), 
+                        date: tempDateStr.substring(4,6) + "-" + tempDateStr.substring(6,8), 
                         ampMaxValue: parseFloat(dayTotal.AmpMaxValue), 
                         wattMaxValue: parseFloat(dayTotal.WattMaxValue) 
                     })

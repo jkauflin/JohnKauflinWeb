@@ -18,7 +18,8 @@ import {mediaInfo,mediaType,getMenu,
     queryMediaInfo,
     getFilePath,getFileName,
     updateMediaInfo,
-    newVideosMediaInfo
+    newVideosMediaInfo,
+    setMenuFilter
 } from './mg-data-repository.js'
 import {mediaMenuCanvasId,buildMenuElements} from './mg-menu.js'
 import {mediaAlbumMenuCanvasId,buildAlbumMenuElements} from './mg-album.js'
@@ -333,13 +334,22 @@ thumbnailContainer.addEventListener("click", function (event) {
                     mediaCategorySelect.options[mediaCategorySelect.options.length] = new Option(categoryList[index], categoryList[index])
                 }
             }
+            // When the Category changes, set the menuFilter menu items for that Category
+            mediaCategorySelect.addEventListener("change", function () {
+                // set menuFilter array based on selected CategoryName
+                setMenuFilter(mediaCategorySelect.value)
+                // Clear the menu options and re-load from current menuFilter
+                mediaMenuSelect.options.length = 0
+                for (let index in menuFilter) {
+                    mediaMenuSelect.options[mediaMenuSelect.options.length] = new Option(menuFilter[index], menuFilter[index])
+                }
+            })
             editRow1Col3.appendChild(mediaCategorySelect);
 
             mediaMenuSelect = document.createElement("select")
             mediaMenuSelect.classList.add('form-select','float-start','shadow-none','mt-2','py-1')
             for (let index in menuFilter) {
-                let tempPos = menuFilter[index].indexOf(' - ')
-                mediaMenuSelect.options[mediaMenuSelect.options.length] = new Option(menuFilter[index], menuFilter[index].substring(tempPos+3))
+                mediaMenuSelect.options[mediaMenuSelect.options.length] = new Option(menuFilter[index], menuFilter[index])
             }
             editRow1Col3.appendChild(mediaMenuSelect);
 
@@ -351,6 +361,8 @@ thumbnailContainer.addEventListener("click", function (event) {
             for (let index in peopleList) {
                 mediaPeopleSelect.options[mediaPeopleSelect.options.length] = new Option(peopleList[index], index)
             }
+
+            // https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_js_dropdown_filter
 
             mediaPeopleInput = document.createElement("input")
             mediaPeopleInput.classList.add('form-control','shadow-none','mt-2','py-1')

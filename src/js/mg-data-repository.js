@@ -122,7 +122,7 @@ export function getDateInt(inDateStr) {
     let formattedDate = td.getFullYear() + paddy(tempMonth,2) + paddy(tempDay,2) + paddy(td.getHours(),2)
     */
 
-    let formattedDate = "1888-01-01 00:00:00"
+    let formattedDate = "1800-01-01 00:00:00"
     if (inDateStr != null) {
         if (inDateStr.length >= 13) {
             formattedDate = inDateStr.substring(0,4) + inDateStr.substring(5,7) + inDateStr.substring(8,10) + inDateStr.substring(11,13)
@@ -228,7 +228,7 @@ type Malbum @model {
 		}
         //console.log("      int MediaFilterStartDate = "+getDateInt(paramData.MediaFilterStartDate))
 		//if (paramData.MediaFilterStartDate != "0001-01-01 00:00:00") {
-        if (paramData.MediaFilterStartDate != "1888-01-01") {
+        if (paramData.MediaFilterStartDate != "1800-01-01") {
             //startDateQuery = `{ TakenFileTime: { gte: 2023010108 } }`
             startDateQuery = `{ TakenFileTime: { gte: ${getDateInt(paramData.MediaFilterStartDate)} } }`
         }

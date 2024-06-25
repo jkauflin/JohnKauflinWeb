@@ -20,6 +20,8 @@ Modification History
 2024-04-28 JJK  Added people list and update functions
 2024-06-20 JJK  Getting an error from Azure on the MediaType query, so I've
                 hard-coded the categories and menu items for now
+2024-06-25 JJK  Added setMenuFilter to set the menuFilter array based on a
+                CategoryName (and MediaType)
 ================================================================================*/
 
 import {createMediaPage,displayCurrFileList,updateAdminMessage} from './mg-create-pages.js';
@@ -130,7 +132,7 @@ export function getDateInt(inDateStr) {
     let formattedDate = td.getFullYear() + paddy(tempMonth,2) + paddy(tempDay,2) + paddy(td.getHours(),2)
     */
 
-    let formattedDate = "1888-01-01 00:00:00"
+    let formattedDate = "1800-01-01 00:00:00"
     if (inDateStr != null) {
         if (inDateStr.length >= 13) {
             formattedDate = inDateStr.substring(0,4) + inDateStr.substring(5,7) + inDateStr.substring(8,10) + inDateStr.substring(11,13)
@@ -231,7 +233,7 @@ export async function queryMediaInfo(paramData) {
 		}
         //console.log("      int MediaFilterStartDate = "+getDateInt(paramData.MediaFilterStartDate))
 		//if (paramData.MediaFilterStartDate != "0001-01-01 00:00:00") {
-        if (paramData.MediaFilterStartDate != "1888-01-01") {
+        if (paramData.MediaFilterStartDate != "1800-01-01") {
             //startDateQuery = `{ TakenFileTime: { gte: 2023010108 } }`
             startDateQuery = `{ TakenFileTime: { gte: ${getDateInt(paramData.MediaFilterStartDate)} } }`
         }
@@ -442,10 +444,20 @@ export async function queryMediaInfo(paramData) {
                     if (mediaType == 1) {
                         if (cnt == 2) {
                             defaultCategory = category.CategoryName
+                            // Set the menuFilter array strings with the menu items for the default category
+                            for (let j = 0; j < category.Menu.length; j++) {
+                                //menuFilter[menuFilter.length] = category.CategoryName + " - " + category.Menu[j].MenuItem;
+                                menuFilter[menuFilter.length] = category.Menu[j].MenuItem;
+                            }
                         }
                     } else {
                         if (cnt == 1) {
                             defaultCategory = category.CategoryName
+                            // Set the menuFilter array strings with the menu items for the default category
+                            for (let j = 0; j < category.Menu.length; j++) {
+                                //menuFilter[menuFilter.length] = category.CategoryName + " - " + category.Menu[j].MenuItem;
+                                menuFilter[menuFilter.length] = category.Menu[j].MenuItem;
+                            }
                         }
                     }
     
@@ -468,8 +480,6 @@ export async function queryMediaInfo(paramData) {
                     peopleList.push(peep.PeopleName)
                 })
             }
-
-            //menuFilter = mediaInfo.menuFilter
         }
 
         // Save the parameters from the laste query
@@ -675,7 +685,29 @@ function checkSelected(fileInfo) {
     return !fileInfo.Selected
 }
 
-var mediaTypeData = [
+export function setMenuFilter(categoryName) {
+    // Clear the array
+    menuFilter = []
+    menuFilter.length = 0
+    let mti = mediaType - 1
+    if (categoryName == "ALL") {
+        for (let index in mediaTypeData[mti].Category) {
+            for (let index2 in mediaTypeData[mti].Category[index].Menu) {
+                menuFilter[menuFilter.length] = mediaTypeData[mti].Category[index].Menu[index2].MenuItem
+            }
+        }
+    } else {
+        for (let index in mediaTypeData[mti].Category) {
+            if (mediaTypeData[mti].Category[index].CategoryName == categoryName) {
+                for (let index2 in mediaTypeData[mti].Category[index].Menu) {
+                    menuFilter[menuFilter.length] = mediaTypeData[mti].Category[index].Menu[index2].MenuItem
+                }
+            }
+        }
+    }
+}
+
+export var mediaTypeData = [
     {
         id: "1",
         MediaTypeId: 1,

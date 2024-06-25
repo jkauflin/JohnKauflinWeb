@@ -40,6 +40,9 @@
  * 2024-03-10 JJK   Migrating to an Azure static web app (SWA)
  * 2024-04-26 JJK   moved the mediagallery code here for admin version
  *    swa start ./src --data-api-location swa-db-connections
+ * 2024-06-25 JJK   Trying to get back into Admin development to update
+ *                  metadata on pictures.  Now using this to start SWA:
+ *    npx swa start
  *============================================================================*/
  import {mediaType,setMediaType,queryMediaInfo} from './mg-data-repository.js'
 
@@ -63,18 +66,6 @@ document.querySelectorAll("a.nav-link").forEach(el => el.addEventListener("click
     }
 }))
 
-/*
-async function getUserInfo() {
-    const response = await fetch('/.auth/me');
-    const payload = await response.json();
-    const { clientPrincipal } = payload;
-    return clientPrincipal;
-  }
-  
-  (async () => {
-  console.log(await getUserInfo());
-  })();
-*/
 
 //=================================================================================================================
 // Bind events

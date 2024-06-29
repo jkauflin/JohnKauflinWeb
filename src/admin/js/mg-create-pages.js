@@ -1,5 +1,5 @@
 /*==============================================================================
-(C) Copyright 2023 John J Kauflin, All rights reserved.
+(C) Copyright 2023,2024 John J Kauflin, All rights reserved.
 --------------------------------------------------------------------------------
 DESCRIPTION:
 --------------------------------------------------------------------------------
@@ -10,6 +10,8 @@ Modification History
                 for queries.  Also, removing Admin functions to make this just
                 the presentation functions with no edit0
 2024-04-27 JJK  Adding editMode stuff from the old version for Admin
+2024-06-28 JJK  Fixed menuFilter to only show menu items for selected Category,
+                and fixed people filter to ignore case
 ================================================================================*/
 import {mediaInfo,mediaType,getMenu,
     queryCategory,querySearchStr,queryMenuItem,queryAlbumKey,
@@ -375,7 +377,7 @@ thumbnailContainer.addEventListener("click", function (event) {
                 //console.log("mediaPeopleInput.value = "+mediaPeopleInput.value);
                 let peopleInputVal = ""
                 if (mediaPeopleInput.value != null) {
-                    peopleInputVal = mediaPeopleInput.value
+                    peopleInputVal = mediaPeopleInput.value.toUpperCase()
                 }
 
                 // Remove all options
@@ -396,7 +398,8 @@ thumbnailContainer.addEventListener("click", function (event) {
                     //if (peopleList[index].search(/adam/i) >= 0) {
                     //if (peopleList[index].search(re) >= 0) {
                     if (peopleInputVal != "") {
-                        if (peopleList[index].indexOf(peopleInputVal) >= 0) {
+                        //if (peopleList[index].indexOf(peopleInputVal) >= 0) {
+                        if (peopleList[index].toUpperCase().indexOf(peopleInputVal) > -1) {
                             mediaPeopleSelect.options[mediaPeopleSelect.options.length] = new Option(peopleList[index], index)
                         }
                     } else {

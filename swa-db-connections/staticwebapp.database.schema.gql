@@ -36,6 +36,7 @@ type Book @model {
   People: String
   ToBeProcessed: Boolean
   SearchStr: String
+  Selected: Boolean
 }
 """
 type MenuType {

@@ -767,7 +767,7 @@ update<entity>(<pk_colum>:<pk_value>, [<pk_colum>:<pk_value> ... <pk_colum>:<pk_
         
     }
     */
-    const endpoint = "/api/HttpTrigger1";
+    const endpoint = "/api/UpdateMediaInfo";
     const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

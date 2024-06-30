@@ -10,6 +10,8 @@ Modification History
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.Net.Http;
+using System.Web.Http;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -29,17 +31,23 @@ namespace JohnKauflinWeb.Function
             ClaimsPrincipal claimsPrincipal)
         {
             log.LogInformation("UpdateMediaInfo, C# HTTP trigger function processed a request.");
-
-            bool claimAdmin = false;
-            bool jjkAdmin = claimsPrincipal.IsInRole("jjkadmin");
-            foreach (Claim claim in claimsPrincipal.Claims)
-            {
-                log.LogInformation("CLAIM TYPE: " + claim.Type + "; CLAIM VALUE: " + claim.Value + "</br>");
-                if (claim.Value.Equals("Admin")) {
-                    claimAdmin = true;
+            
+            bool userAuthorized = false;
+            if (req.Host.ToString().Equals("localhost:4280")) {
+                foreach (Claim claim in claimsPrincipal.Claims)
+                {
+                    //log.LogInformation("CLAIM TYPE: " + claim.Type + "; CLAIM VALUE: " + claim.Value + "</br>");
+                    if (claim.Value.Equals("Admin")) {
+                        userAuthorized = true;
+                    }
                 }
+            } else {
+                userAuthorized = claimsPrincipal.IsInRole("jjkadmin");
             }
-            // CLAIM TYPE: http://schemas.microsoft.com/2017/07/functions/claims/authlevel; CLAIM VALUE: Admin</br>    
+
+            if (!userAuthorized) {
+                return new BadRequestObjectResult("Unauthorized call - User does not have the correct Admin role");
+            }
 
 
             string name = req.Query["name"];
@@ -49,7 +57,7 @@ namespace JohnKauflinWeb.Function
             name = name ?? data?.name;
 
             string responseMessage = string.IsNullOrEmpty(name)
-                ? $"*** JJK test jjkAdmin = {jjkAdmin}, claimAdmin = {claimAdmin} This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
+                ? $"*** This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
                 : $"Hello, {name}. This HTTP triggered function executed successfully.";
 
             return new OkObjectResult(responseMessage);

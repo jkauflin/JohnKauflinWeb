@@ -520,13 +520,11 @@ export async function updateMediaInfo(inIndex) {
 
     // Assume current values and selected files in the mediaInfo.fileList are what we want updated
     // unless the index is set, which indicates an individual update
-    /*
     let paramData = {
         MediaFilterMediaType: mediaType,
         mediaInfoFileList: mediaInfo.fileList,
         index: index
     }
-    */
 
     /*
     let url = jjkgalleryRoot + "updateMediaInfo.php"
@@ -718,11 +716,13 @@ update<entity>(<pk_colum>:<pk_value>, [<pk_colum>:<pk_value> ... <pk_colum>:<pk_
             SearchStr
         }
 
-*/
     console.log(">>> mediaInfo.fileList[0].Selected = "+mediaInfo.fileList[0].Selected)
+*/
     
     //Error: The argument `_partitionKeyValue` is required.
+    // TakenFileTime and SearchStr are derived
 
+    /*
     let tempSearchStr = "test SearchStr jjk"
     let gql = `mutation update($id: ID!, $_partitionKeyValue: String!) {
         updateBook(id: $id, _partitionKeyValue: $_partitionKeyValue,
@@ -735,9 +735,7 @@ update<entity>(<pk_colum>:<pk_value>, [<pk_colum>:<pk_value> ... <pk_colum>:<pk_
         }
     }`
 
-    // TakenFileTime and SearchStr are derived
-
-    console.log("gql = "+gql)
+    //console.log("gql = "+gql)
     const id = mediaInfo.fileList[0].id
     const apiQuery = {
         query: gql,
@@ -746,6 +744,7 @@ update<entity>(<pk_colum>:<pk_value>, [<pk_colum>:<pk_value> ... <pk_colum>:<pk_
             _partitionKeyValue: '1',
         }
     }
+    */
 
     /*
     const endpoint = "/data-api/graphql";
@@ -771,7 +770,7 @@ update<entity>(<pk_colum>:<pk_value>, [<pk_colum>:<pk_value> ... <pk_colum>:<pk_
     const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(apiQuery)
+        body: JSON.stringify(paramData)
     })
     const result = await response.text()
     console.log("result = "+result)

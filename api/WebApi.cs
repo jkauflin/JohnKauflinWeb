@@ -1,18 +1,9 @@
-/*==============================================================================
-(C) Copyright 2024 John J Kauflin, All rights reserved.
---------------------------------------------------------------------------------
-DESCRIPTION:  Azure Function for SWA 
---------------------------------------------------------------------------------
-Modification History
-2024-06-30 JJK  Initial version (moving logic from PHP to here to update data
-                in MediaInfo entities in Cosmos DB NoSQL
-================================================================================*/
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using System.Net.Http;
-using System.Web.Http;
+
 using System.Security.Claims;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -20,9 +11,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
+using JohnKauflinWeb.Function.Model;
+
+
 namespace JohnKauflinWeb.Function
 {
-    public static class UpdateMediaInfo
+    public static class WebApi
     {
         [FunctionName("UpdateMediaInfo")]
         public static async Task<IActionResult> Run(
@@ -31,9 +25,10 @@ namespace JohnKauflinWeb.Function
             ClaimsPrincipal claimsPrincipal)
         {
             log.LogInformation("UpdateMediaInfo, C# HTTP trigger function processed a request.");
-            
             bool userAuthorized = false;
             if (req.Host.ToString().Equals("localhost:4280")) {
+                // If local DEV look for Admin
+                /*
                 foreach (Claim claim in claimsPrincipal.Claims)
                 {
                     //log.LogInformation("CLAIM TYPE: " + claim.Type + "; CLAIM VALUE: " + claim.Value + "</br>");
@@ -41,7 +36,10 @@ namespace JohnKauflinWeb.Function
                         userAuthorized = true;
                     }
                 }
+                */
+                userAuthorized = true;
             } else {
+                // In PROD, make sure user is in correct role to make updates
                 userAuthorized = claimsPrincipal.IsInRole("jjkadmin");
             }
 
@@ -57,7 +55,7 @@ namespace JohnKauflinWeb.Function
             name = name ?? data?.name;
 
             string responseMessage = string.IsNullOrEmpty(name)
-                ? $"*** This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
+                ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
                 : $"Hello, {name}. This HTTP triggered function executed successfully.";
 
             return new OkObjectResult(responseMessage);

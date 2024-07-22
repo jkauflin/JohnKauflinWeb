@@ -1,3 +1,12 @@
+/*==============================================================================
+(C) Copyright 2024 John J Kauflin, All rights reserved.
+--------------------------------------------------------------------------------
+DESCRIPTION:  Azure Function for SWA 
+--------------------------------------------------------------------------------
+Modification History
+2024-06-30 JJK  Initial version (moving logic from PHP to here to update data
+                in MediaInfo entities in Cosmos DB NoSQL
+================================================================================*/
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -28,7 +37,6 @@ namespace JohnKauflinWeb.Function
             bool userAuthorized = false;
             if (req.Host.ToString().Equals("localhost:4280")) {
                 // If local DEV look for Admin
-                /*
                 foreach (Claim claim in claimsPrincipal.Claims)
                 {
                     //log.LogInformation("CLAIM TYPE: " + claim.Type + "; CLAIM VALUE: " + claim.Value + "</br>");
@@ -36,8 +44,6 @@ namespace JohnKauflinWeb.Function
                         userAuthorized = true;
                     }
                 }
-                */
-                userAuthorized = true;
             } else {
                 // In PROD, make sure user is in correct role to make updates
                 userAuthorized = claimsPrincipal.IsInRole("jjkadmin");
@@ -47,13 +53,22 @@ namespace JohnKauflinWeb.Function
                 return new BadRequestObjectResult("Unauthorized call - User does not have the correct Admin role");
             }
 
+            //log.LogInformation(">>> User is authorized ");
 
-            string name = req.Query["name"];
 
+            var content = await new StreamReader(req.Body).ReadToEndAsync();
+
+            var updParamData = JsonConvert.DeserializeObject<UpdateParamData>(content);
+
+            string name = updParamData.MediaInfoFileList[0].Name;
+            //string name = req.Query["name"];
+
+            /*
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
             name = name ?? data?.name;
-
+            */
+            
             string responseMessage = string.IsNullOrEmpty(name)
                 ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
                 : $"Hello, {name}. This HTTP triggered function executed successfully.";

@@ -364,6 +364,11 @@ export async function queryMediaInfo(paramData) {
         */
         mediaInfo.fileList.length = 0
         mediaInfo.fileList = result.data.books.items
+        if (mediaInfo.fileList.length > 0) {
+            for (let j = 0; j < mediaInfo.fileList.length; j++) {
+                mediaInfo.fileList[j].Selected = false;
+            }
+        }
         mediaInfo.filterList = []
 
         if (mediaInfo.fileList.length > 0) {
@@ -522,8 +527,8 @@ export async function updateMediaInfo(inIndex) {
     // unless the index is set, which indicates an individual update
     let paramData = {
         MediaFilterMediaType: mediaType,
-        mediaInfoFileList: mediaInfo.fileList,
-        index: index
+        MediaInfoFileList: mediaInfo.fileList,
+        FileListIndex: index
     }
 
     /*

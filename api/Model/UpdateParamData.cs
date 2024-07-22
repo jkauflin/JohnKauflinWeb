@@ -8,9 +8,9 @@ namespace JohnKauflinWeb.Function.Model
     {
         public int MediaFilterMediaType { get; set; }              
 
-        public Item[] fileList { get; set; } 
+        public Item[] MediaInfoFileList { get; set; } 
 
-        public int index { get; set; }   
+        public int FileListIndex { get; set; }   
 
         public override string ToString()
         {
@@ -30,6 +30,12 @@ namespace JohnKauflinWeb.Function.Model
         public string Description { get; set; }
         public string People { get; set; }              
         public bool ToBeProcessed { get; set; }
-        public bool selected { get; set; }
+        public bool Selected { get; set; }
+
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
+
     }
 }

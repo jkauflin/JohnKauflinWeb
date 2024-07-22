@@ -39,6 +39,7 @@ type Book @model {
   Selected: Boolean
 }
 """
+  Selected(defVal: SelectedDefVal = false): Boolean
 type MenuType {
   MenuItem: String
 }

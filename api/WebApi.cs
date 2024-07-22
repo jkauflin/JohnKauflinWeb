@@ -18,6 +18,9 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+
+using Microsoft.Azure.Cosmos;
+
 using Newtonsoft.Json;
 
 using JohnKauflinWeb.Function.Model;
@@ -63,16 +66,33 @@ namespace JohnKauflinWeb.Function
             string name = updParamData.MediaInfoFileList[0].Name;
             //string name = req.Query["name"];
 
-            /*
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
-            */
-            
-            string responseMessage = string.IsNullOrEmpty(name)
-                ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
-                : $"Hello, {name}. This HTTP triggered function executed successfully.";
+            //updParamData.MediaFilterMediaType
+            //updParamData.FileListIndex
 
+            //string dbConnStr = Environment.GetEnvironmentVariable("DATABASE_CONNECTION_STRING");
+            string dbConnStr = Environment.GetEnvironmentVariable("API_DB_CONN_STR");
+            /*
+            string databaseId = "MediaGalleryDB";
+            string containerId = "MediaInfo";
+
+            CosmosClient cosmosClient = new CosmosClient(dbConnStr);
+            Database db = cosmosClient.GetDatabase(databaseId);
+            Container container = db.GetContainer(containerId);
+
+            var queryText = $"SELECT * FROM c WHERE c.id = \"{updParamData.MediaInfoFileList[0].id}\" ";
+            var feed = container.GetItemQueryIterator<MediaInfo>(queryText);
+            while (feed.HasMoreResults)
+            {
+                var response = await feed.ReadNextAsync();
+                foreach (var item in response)
+                {
+                    Console.WriteLine($"Found item: {item.Name}");
+                        //idStr = item.id;
+                }
+            }
+            */
+
+            string responseMessage = $"Update successful - test dbConnStr = {dbConnStr}";
             return new OkObjectResult(responseMessage);
         }
     }

@@ -20,11 +20,16 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 using Microsoft.Azure.Cosmos;
+//using Microsoft.Azure.Functions.Worker.Extensions.CosmosDB;
 
 using Newtonsoft.Json;
 
 using JohnKauflinWeb.Function.Model;
 
+/*
+                databaseName: "JJKWebDB",
+                containerName: "MediaInfo",
+*/
 
 namespace JohnKauflinWeb.Function
 {
@@ -33,6 +38,7 @@ namespace JohnKauflinWeb.Function
         [FunctionName("UpdateMediaInfo")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
+            [CosmosDB(Connection = "API_COSMOS_DB_CONN_STR")] CosmosClient cosmosClient,
             ILogger log,
             ClaimsPrincipal claimsPrincipal)
         {
@@ -64,35 +70,127 @@ namespace JohnKauflinWeb.Function
             var updParamData = JsonConvert.DeserializeObject<UpdateParamData>(content);
 
             string name = updParamData.MediaInfoFileList[0].Name;
+
             //string name = req.Query["name"];
 
             //updParamData.MediaFilterMediaType
             //updParamData.FileListIndex
 
-            //string dbConnStr = Environment.GetEnvironmentVariable("DATABASE_CONNECTION_STRING");
-            string dbConnStr = Environment.GetEnvironmentVariable("API_DB_CONN_STR");
-            /*
-            string databaseId = "MediaGalleryDB";
+            string databaseId = "JJKWebDB";
             string containerId = "MediaInfo";
-
-            CosmosClient cosmosClient = new CosmosClient(dbConnStr);
             Database db = cosmosClient.GetDatabase(databaseId);
             Container container = db.GetContainer(containerId);
 
-            var queryText = $"SELECT * FROM c WHERE c.id = \"{updParamData.MediaInfoFileList[0].id}\" ";
-            var feed = container.GetItemQueryIterator<MediaInfo>(queryText);
-            while (feed.HasMoreResults)
-            {
-                var response = await feed.ReadNextAsync();
-                foreach (var item in response)
-                {
-                    Console.WriteLine($"Found item: {item.Name}");
-                        //idStr = item.id;
-                }
-            }
-            */
+	        int updCnt = 0;
+	        int tempIndex = -1;
 
-            string responseMessage = $"Update successful - test dbConnStr = {dbConnStr}";
+            foreach (Item item in updParamData.MediaInfoFileList) 
+            {
+                tempIndex++;
+			    if (updParamData.FileListIndex >= 0) {
+				    if (tempIndex != updParamData.FileListIndex) {
+					    continue;
+				    }
+			    } else {
+				    if (!item.Selected) {
+					    continue;
+				    }
+			    }
+
+                // Get the existing document from Cosmos DB
+                var queryText = $"SELECT * FROM c WHERE c.id = \"{item.id}\" ";
+                var feed = container.GetItemQueryIterator<MediaInfo>(queryText);
+                while (feed.HasMoreResults)
+                {
+                    var response = await feed.ReadNextAsync();
+                    foreach (var mediaInfo in response)
+                    {
+                        log.LogInformation($"Found item: {mediaInfo.Name}");
+                        //idStr = item.id;
+                    }
+                }
+
+                // Update the fields in the document
+
+            }
+
+/*
+		$sql = "UPDATE FileInfo SET CategoryTags=?,MenuTags=?,AlbumTags=?,TakenDateTime=?,Title=?,Description=?,People=?,ToBeProcessed=0 WHERE Name=? ";
+		$stmt = $conn->prepare($sql);
+		foreach ($param->mediaInfoFileList as $fi) {
+			$tempIndex++;
+			if ($param->index >= 0) {
+				if ($tempIndex != $param->index) {
+					continue;
+				}
+			} else {
+				if (!$fi->Selected) {
+					continue;
+				}
+			}
+	
+			$stmt->bind_param("ssssssss",$fi->CategoryTags,$fi->MenuTags,$fi->AlbumTags,$fi->TakenDateTime,$fi->Title,$fi->Description,$fi->People,$fi->Name);
+			$stmt->execute();
+			$updCnt++;
+		}
+		$stmt->close();
+	}
+
+	$conn->close();
+	$returnMsg = "Number of records saved = " . $updCnt;
+
+*/
+
+/*
+    // TakenFileTime and SearchStr are derived
+
+                MediaInfo mediaInfo = new MediaInfo
+                {
+                    id = idStr,
+                    MediaTypeId = mediaTypeId,
+                    Name = storageFilename,
+                    TakenDateTime = takenDT,
+                    //TakenFileTime = takenDT.ToFileTime(),
+                    TakenFileTime = int.Parse(takenDT.ToString("yyyyMMddHH")),
+                    CategoryTags = band,
+                    MenuTags = album,
+                    AlbumTags = "",
+                    Title = fi.Name,
+                    Description = "",
+                    People = "",
+                    ToBeProcessed = false,
+                    SearchStr = storageFilename
+                };
+*/
+
+
+/*
+		$sql = "UPDATE FileInfo SET CategoryTags=?,MenuTags=?,AlbumTags=?,TakenDateTime=?,Title=?,Description=?,People=?,ToBeProcessed=0 WHERE Name=? ";
+		$stmt = $conn->prepare($sql);
+		foreach ($param->mediaInfoFileList as $fi) {
+			$tempIndex++;
+			if ($param->index >= 0) {
+				if ($tempIndex != $param->index) {
+					continue;
+				}
+			} else {
+				if (!$fi->Selected) {
+					continue;
+				}
+			}
+	
+			$stmt->bind_param("ssssssss",$fi->CategoryTags,$fi->MenuTags,$fi->AlbumTags,$fi->TakenDateTime,$fi->Title,$fi->Description,$fi->People,$fi->Name);
+			$stmt->execute();
+			$updCnt++;
+		}
+		$stmt->close();
+	}
+
+	$conn->close();
+	$returnMsg = "Number of records saved = " . $updCnt;
+
+*/
+            string responseMessage = $"Update successful";
             return new OkObjectResult(responseMessage);
         }
     }

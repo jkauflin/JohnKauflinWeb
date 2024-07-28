@@ -531,254 +531,27 @@ export async function updateMediaInfo(inIndex) {
         FileListIndex: index
     }
 
-    /*
-    let url = jjkgalleryRoot + "updateMediaInfo.php"
-    fetch(url, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(paramData)
-    })
-    .then(response => response.text())
-    .then(returnMsg => {
-        //console.log("returnMsg = "+returnMsg)
-
-        if (index >= 0) {
-            updateMessage(returnMsg)
-            // If individual index-based update, just de-Select but leave it in the file list
-            mediaInfo.fileList[index].Selected = false
-        } else {
-            // Filter out the Selected files (that were updated)
-            updateAdminMessage(returnMsg)
-            mediaInfo.fileList = mediaInfo.fileList.filter(checkSelected);
-        }
-
-        displayCurrFileList()
-    }); // End of Fetch
-    */
-
-/*
-type Book @model {
-  id: ID
-  MediaTypeId: Int
-  Name: String
-  TakenDateTime: String
-  TakenFileTime: Int
-  CategoryTags: String
-  MenuTags: String
-  AlbumTags: String
-  Title: String
-  Description: String
-  People: String
-  ToBeProcessed: Boolean
-  SearchStr: String
-}
-
-
-    "id": "f512b36c-4d08-4702-a2e1-3b92bd83fbab",
-    "MediaTypeId": 1,
-    "Name": "1932 Martha Jane Foose 18yrs Julienne HS senior.jpg",
-    "TakenDateTime": "1932-01-01T00:00:00",
-    "TakenFileTime": 1932010100,
-    "CategoryTags": "3 Baker Family",
-    "MenuTags": "1915-to-1959",
-    "AlbumTags": "",
-    "Title": "1932 Martha Jane Baker senior picture",
-    "Description": "Martha's 1932 Julienne HS senior picture",
-    "People": "Grandma Martha J Baker",
-    "ToBeProcessed": false,
-    "SearchStr": "1932 martha jane foose 18yrs julienne hs senior.jpg 1932 martha jane baker senior picture grandma martha j baker martha's 1932 julienne hs senior picture",
-    "_rid": "qOVLANbG2boBAAAAAAAAAA==",
-
-
-                MediaInfo mediaInfo = new MediaInfo
-                {
-                    id = idStr,
-                    MediaTypeId = mediaTypeId,
-                    Name = storageFilename,
-                    TakenDateTime = takenDT,
-                    //TakenFileTime = takenDT.ToFileTime(),
-                    TakenFileTime = int.Parse(takenDT.ToString("yyyyMMddHH")),
-                    CategoryTags = band,
-                    MenuTags = album,
-                    AlbumTags = "",
-                    Title = fi.Name,
-                    Description = "",
-                    People = "",
-                    ToBeProcessed = false,
-                    SearchStr = storageFilename
-                };
-
-                if (mediaInfo.CategoryTags.Length == 0 && mediaInfo.MenuTags.Length == 0)
-                {
-                    mediaInfo.ToBeProcessed = true;
-                }
-
-                //Console.WriteLine(mediaInfo);
-                try
-                {
-                    //await container.CreateItemAsync<MediaInfo>(mediaInfo, new Microsoft.Azure.Cosmos.PartitionKey(mediaInfo.MediaTypeId));
-                    await container.UpsertItemAsync<MediaInfo>(mediaInfo, new Microsoft.Azure.Cosmos.PartitionKey(mediaInfo.MediaTypeId));
-
-
-id: ID
-  MediaTypeId: Int
-  Name: String
-  TakenDateTime: String
-  TakenFileTime: Float <<<<<<<<<<<<<<<<<<<< set from TakenDateTime string (on update)
-  CategoryTags: String
-  MenuTags: String
-  AlbumTags: String
-  Title: String
-  Description: String
-  People: String
-  ToBeProcessed: Boolean
-  SearchStr: String <<<<<<<<<<<<<<<<<<<<<<<< dynamically from entity values (on update)
-
-  mutation {
-  updatebook(id: 2000, item: {
-        year: 2011,
-        pages: 577    
-    }
-)
-    
-  {
-    id
-    title
-    year
-    pages
-  }
-
-}
-
-        Selected is not defined <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-                id: ${mediaInfo.fileList[0].id},
-                MediaTypeId: ${mediaInfo.fileList[0].MediaTypeId},
-
-                Name: ${mediaInfo.fileList[0].Name},
-                TakenDateTime: ${mediaInfo.fileList[0].TakenDateTime},
-                TakenFileTime: ${mediaInfo.fileList[0].TakenFileTime},
-                CategoryTags: ${mediaInfo.fileList[0].CategoryTags},
-                MenuTags: ${mediaInfo.fileList[0].MenuTags},
-                AlbumTags: ${mediaInfo.fileList[0].AlbumTags},
-                Title: ${mediaInfo.fileList[0].Title},
-                Description: ${mediaInfo.fileList[0].Description},
-                People: ${mediaInfo.fileList[0].People},
-                ToBeProcessed: ${mediaInfo.fileList[0].ToBeProcessed},
-                SearchStr: ${tempSearchStr}
-
-                gql = mutation {
-        updateBook(id: "1c0fc14f-4479-4a90-a03e-b2a271e53114", _partitionKeyValue: "1",
-            item: {
-                Description: "",
-                SearchStr: "test SearchStr jjk"
-            }
-        )
-
-        {
-            id
-            MediaTypeId
-            Name
-            TakenDateTime
-            TakenFileTime
-            CategoryTags
-            MenuTags
-            AlbumTags
-            Title
-            Description
-            People
-            ToBeProcessed
-            SearchStr
-        }
-    }
-mg-data-repository.js:717 Error: The current user is not authorized to access this resource.
-
-          {
-            "actions": ["*"],
-            "role": "jjkadmin"
-          }
-
-WHERE c.id = "1c0fc14f-4479-4a90-a03e-b2a271e53114"
-
-update<entity>(<pk_colum>:<pk_value>, [<pk_colum>:<pk_value> ... <pk_colum>:<pk_value>,] item: <entity_fields>)
-{
-    <fields>
-}
-
-        {
-            id
-            MediaTypeId
-            Name
-            TakenDateTime
-            TakenFileTime
-            CategoryTags
-            MenuTags
-            AlbumTags
-            Title
-            Description
-            People
-            ToBeProcessed
-            SearchStr
-        }
-
-    console.log(">>> mediaInfo.fileList[0].Selected = "+mediaInfo.fileList[0].Selected)
-*/
-    
-    //Error: The argument `_partitionKeyValue` is required.
-    // TakenFileTime and SearchStr are derived
-
-    /*
-    let tempSearchStr = "test SearchStr jjk"
-    let gql = `mutation update($id: ID!, $_partitionKeyValue: String!) {
-        updateBook(id: $id, _partitionKeyValue: $_partitionKeyValue,
-            item: {
-                SearchStr: "${tempSearchStr}"
-            }
-        )
-        {
-            id
-        }
-    }`
-
-    //console.log("gql = "+gql)
-    const id = mediaInfo.fileList[0].id
-    const apiQuery = {
-        query: gql,
-        variables: {
-            id: id,
-            _partitionKeyValue: '1',
-        }
-    }
-    */
-
-    /*
-    const endpoint = "/data-api/graphql";
-    const response = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(apiQuery)
-    })
-    const result = await response.json()
-    if (result.errors != null) {
-        console.log("Error: "+result.errors[0].message);
-        console.table(result.errors);
-    } else {
-        console.log("result = "+result)
-        //console.log("result.data = "+result.data)
-        //console.table(result.data.mtypes.items);
-
-        //         if (mediaInfo.fileList.length > 0) {
-        
-    }
-    */
     const endpoint = "/api/UpdateMediaInfo";
     const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(paramData)
     })
-    const result = await response.text()
-    console.log("result = "+result)
+    const returnMsg = await response.text()
+    //console.log("result = "+returnMsg)
+
+    if (index >= 0) {
+        updateMessage(returnMsg)
+        // If individual index-based update, just de-Select but leave it in the file list
+        mediaInfo.fileList[index].Selected = false
+    } else {
+        // Filter out the Selected files (that were updated)
+        updateAdminMessage(returnMsg)
+        mediaInfo.fileList = mediaInfo.fileList.filter(checkSelected);
+    }
+
+    displayCurrFileList()
+
 }
 
 //------------------------------------------------------------------------------------------------------------

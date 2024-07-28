@@ -483,8 +483,6 @@ function displayModalDetail(index) {
         mediaModalBody.appendChild(topRow)
 }
 
-
-
 export function updateMessage(displayMessage) {
     if (updateMessageDisplay != null) {
         updateMessageDisplay.textContent = displayMessage

@@ -12,6 +12,7 @@ Modification History
 2024-04-27 JJK  Adding editMode stuff from the old version for Admin
 2024-06-28 JJK  Fixed menuFilter to only show menu items for selected Category,
                 and fixed people filter to ignore case
+2024-08-11 JJK  Added mg-people to get people list
 ================================================================================*/
 import {mediaInfo,mediaType,getMenu,
     queryCategory,querySearchStr,queryMenuItem,queryAlbumKey,
@@ -29,6 +30,8 @@ import {setContextMenuListeners} from './mg-contextmenu.js'
 import {displayElementInLightbox} from './mg-lightbox.js'
 import {playlistSongClass,audioPrevClass,audioNextClass,audioPlayer,setAudioListeners,
         emptyPlaylist,incrementPlaylistIndex,addSongToPlaylist,initSong} from './mg-audio-playlist.js'
+import {setPeopleListeners} from './mg-people.js'
+        
 
 const MediaFilterRequestClass = "MediaFilterRequest";
 const imgThumbnailClass = "img-thumbnail-jjk"  // Want my own thumbnail formatting instead of bootstrap border
@@ -39,12 +42,9 @@ var filterContainer = document.createElement("div")
 var thumbnailContainer = document.createElement("div")
 var editRow1 = document.createElement("div")
 
-
 var mediaAdminMessage
 var mediaCategorySelect
 var mediaMenuSelect
-var mediaPeopleInput
-var mediaPeopleSelect
 var mediaPeopleList
 
 var mediaFilterCategory
@@ -358,101 +358,17 @@ thumbnailContainer.addEventListener("click", function (event) {
             //-------------------------------------------------------------------------------------------------------------
             // *** People list ***
             //-------------------------------------------------------------------------------------------------------------
-            mediaPeopleSelect = document.createElement("select")
-            mediaPeopleSelect.classList.add('form-select','float-start','shadow-none','py-1')
-            for (let index in peopleList) {
-                mediaPeopleSelect.options[mediaPeopleSelect.options.length] = new Option(peopleList[index], index)
-            }
-
-            // https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_js_dropdown_filter
-
-            mediaPeopleInput = document.createElement("input")
-            mediaPeopleInput.classList.add('form-control','shadow-none','mt-2','py-1')
-            mediaPeopleInput.setAttribute('type',"text")
-            mediaPeopleInput.setAttribute('placeholder',"People filter")
-            editRow1Col3.appendChild(mediaPeopleInput);
-            // Filter the people list from entered value (checked after every key is typed)
-
-            mediaPeopleInput.addEventListener("keyup", function(event) {
-                //console.log("mediaPeopleInput.value = "+mediaPeopleInput.value);
-                let peopleInputVal = ""
-                if (mediaPeopleInput.value != null) {
-                    peopleInputVal = mediaPeopleInput.value.toUpperCase()
-                }
-
-                // Remove all options
-                for (let i = (mediaPeopleSelect.options.length-1); i > -1; i--) {
-                    mediaPeopleSelect.options.remove(i)
-                }
-
-                //let searchEx = new RegExp(`//${mediaPeopleInput.value}//i`);
-                //string pattern = @"\b[M]\w+";
-
-                //let searchStr = '/'+mediaPeopleInput.value+'/i'
-                //let re = new RegExp(`\b${mediaPeopleInput.value}\b`, 'i');
-                //let re = new RegExp(`\badam\b`, 'i');
-
-                // Add the ones that match the input value
-                for (let index in peopleList) {
-                    //if (peopleList[index].search(searchEx) >= 0) {
-                    //if (peopleList[index].search(/adam/i) >= 0) {
-                    //if (peopleList[index].search(re) >= 0) {
-                    if (peopleInputVal != "") {
-                        //if (peopleList[index].indexOf(peopleInputVal) >= 0) {
-                        if (peopleList[index].toUpperCase().indexOf(peopleInputVal) > -1) {
-                            mediaPeopleSelect.options[mediaPeopleSelect.options.length] = new Option(peopleList[index], index)
-                        }
-                    } else {
-                        mediaPeopleSelect.options[mediaPeopleSelect.options.length] = new Option(peopleList[index], index)
-                    }
-                }
-            });
-
-            editRow1Col3.appendChild(mediaPeopleSelect);
-
-            /*
-            >>>>> original code
             mediaPeopleList = document.createElement("input")
             mediaPeopleList.classList.add('form-control','shadow-none','py-1')
             mediaPeopleList.setAttribute('type',"text")
             mediaPeopleList.setAttribute('placeholder',"People list")
-            */
-            mediaPeopleList = document.createElement("input")
-            mediaPeopleList.classList.add('form-control','shadow-none','py-1')
-            mediaPeopleList.setAttribute('type',"text")
-            mediaPeopleList.setAttribute('placeholder',"People list")
-
-/*
-<div class="input-group mb-3">
-  <input type="text" class="form-control" placeholder="Recipient's username">
-  <button class="btn btn-outline-secondary" type="button" id="button-addon2">Button</button>
-</div>
-*/
-
-            let replacePeopleButton = document.createElement("button")
-            replacePeopleButton.classList.add('btn','btn-primary','btn-sm','float-start','shadow-none','me-2','my-1')
-            replacePeopleButton.setAttribute('type',"button")
-            replacePeopleButton.setAttribute('role',"button")
-            replacePeopleButton.textContent = "Replace"
-            editRow1Col3.appendChild(replacePeopleButton)
-            replacePeopleButton.addEventListener("click", function () {
-                mediaPeopleList.value = peopleList[mediaPeopleSelect.value]
-            });
-
-            let appendPeopleButton = document.createElement("button")
-            appendPeopleButton.classList.add('btn','btn-warning','btn-sm','float-start','shadow-none','me-2','my-1')
-            appendPeopleButton.setAttribute('type',"button")
-            appendPeopleButton.setAttribute('role',"button")
-            appendPeopleButton.textContent = "Append"
-            editRow1Col3.appendChild(appendPeopleButton)
-            appendPeopleButton.addEventListener("click", function () {
-                if (mediaPeopleList.value) {
-                    mediaPeopleList.value = mediaPeopleList.value + ',' + peopleList[mediaPeopleSelect.value]
-                } else {
-                    mediaPeopleList.value = peopleList[mediaPeopleSelect.value]
-                }
-            });
-
+            let peopleButton = document.createElement("button")
+            peopleButton.classList.add('btn','btn-danger','btn-sm','float-start','shadow-none','me-2','my-1')
+            peopleButton.setAttribute('type',"button")
+            peopleButton.setAttribute('role',"button")
+            peopleButton.textContent = "People"
+            editRow1Col3.appendChild(peopleButton)
+            setPeopleListeners(peopleButton,mediaPeopleList)
             editRow1Col3.appendChild(mediaPeopleList);
 
             // Update
@@ -1044,6 +960,7 @@ thumbnailContainer.addEventListener("click", function (event) {
         mediaDetailMenuTags.value = fi.MenuTags
         mediaDetailAlbumTags.value = fi.AlbumTags
         mediaDetailPeopleList.value = fi.People
+        mediaPeopleList.value = fi.People
         mediaDetailDescription.value = fi.Description
 
         // Set only the selected file in the thumbnail list

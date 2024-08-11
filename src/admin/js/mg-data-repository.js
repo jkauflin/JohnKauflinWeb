@@ -22,6 +22,7 @@ Modification History
                 hard-coded the categories and menu items for now
 2024-06-25 JJK  Added setMenuFilter to set the menuFilter array based on a
                 CategoryName (and MediaType)
+2024-08-08 JJK  Added an API call to get people list
 ================================================================================*/
 
 import {createMediaPage,displayCurrFileList,updateAdminMessage} from './mg-create-pages.js';
@@ -185,6 +186,13 @@ export async function queryMediaInfo(paramData) {
                 }
             }
         }
+
+        mpeoples 
+        {
+            items {
+                PeopleName
+            }
+        }
         */
         mediaTypeQuery = `
         malbums 
@@ -192,12 +200,6 @@ export async function queryMediaInfo(paramData) {
             items {
                 AlbumKey
                 AlbumName
-            }
-        }
-        mpeoples 
-        {
-            items {
-                PeopleName
             }
         }
         `
@@ -481,11 +483,13 @@ export async function queryMediaInfo(paramData) {
             setMenuList(mediaInfo.menuList)
             setAlbumList(result.data.malbums.items)
             
+            /*
             if (result.data.mpeoples != null) {
                 result.data.mpeoples.items.forEach((peep) => {
                     peopleList.push(peep.PeopleName)
                 })
             }
+            */
         }
 
         // Save the parameters from the laste query
@@ -513,6 +517,52 @@ export async function queryMediaInfo(paramData) {
         createMediaPage()
     }
 }
+
+
+//------------------------------------------------------------------------------------------------------------
+// Query the database for people data and store in js variables
+//------------------------------------------------------------------------------------------------------------
+export async function queryPeopleInfo() {
+    if (peopleList.length > 0) {
+        return
+    }
+
+    let gql = `query {
+            mpeoples 
+            {
+                items {
+                    PeopleName
+                }
+            }
+        }`
+
+    const apiQuery = {
+        query: gql,
+        variables: {
+        }
+    }
+
+    const endpoint = "/data-api/graphql";
+    const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(apiQuery)
+    });
+    const result = await response.json();
+    if (result.errors != null) {
+        console.log("Error: "+result.errors[0].message);
+        console.table(result.errors);
+    } else {
+
+        if (result.data.mpeoples != null) {
+            result.data.mpeoples.items.forEach((peep) => {
+                peopleList.push(peep.PeopleName)
+            })
+        }
+
+    }
+}
+
 
 //------------------------------------------------------------------------------------------------------------
 // Update the media info in the database table (Batch)

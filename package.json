@@ -7,5 +7,8 @@
   "devDependencies": {
     "@azure/static-web-apps-cli": "^2.0.1",
     "azure-functions-core-tools": "^4.0.5907"
+  },
+  "dependencies": {
+    "johnkauflinweb": "file:"
   }
 }

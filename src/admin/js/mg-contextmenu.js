@@ -10,6 +10,8 @@ import {mediaInfo,mediaType,mediaTypeDesc,setMediaType,
     peopleList,getFilePath,getFileName,updateMediaInfo
 } from './mg-data-repository.js'
 import {empty} from './mg-create-pages.js'
+import {setPeopleListenersDetail} from './mg-people.js'
+
 
 const mediaModal = new bootstrap.Modal(document.getElementById('MediaModal'))
 var mediaDetailTitle
@@ -20,9 +22,6 @@ var mediaDetailAlbumTags
 var mediaPeopleList
 var mediaDetailDescription
 var updateMessageDisplay
-
-var mediaPeopleInput
-var mediaPeopleSelect
 
 var listenClass = ""
 export function setContextMenuListeners(listenContainer, inClass) {
@@ -295,96 +294,23 @@ function displayModalDetail(index) {
         rowCol2 = document.createElement("div");
         rowCol2.classList.add('col-sm')
 
-            //-------------------------------------------------------------------------------------------------------------
-            // *** People list ***
-            //-------------------------------------------------------------------------------------------------------------
-            mediaPeopleSelect = document.createElement("select")
-            mediaPeopleSelect.classList.add('form-select','float-start','shadow-none','py-1')
-            for (let index in peopleList) {
-                mediaPeopleSelect.options[mediaPeopleSelect.options.length] = new Option(peopleList[index], index)
-            }
+        //-------------------------------------------------------------------------------------------------------------
+        // *** People list ***
+        //-------------------------------------------------------------------------------------------------------------
+        mediaPeopleList = document.createElement("input")
+        mediaPeopleList.classList.add('form-control','shadow-none','py-1')
+        mediaPeopleList.setAttribute('type',"text")
+        mediaPeopleList.setAttribute('placeholder',"People list")
+        mediaPeopleList.value = fi.People
+        let peopleButton = document.createElement("button")
+        peopleButton.classList.add('btn','btn-danger','btn-sm','float-start','shadow-none','me-2','my-1')
+        peopleButton.setAttribute('type',"button")
+        peopleButton.setAttribute('role',"button")
+        peopleButton.textContent = "People"
 
-            mediaPeopleInput = document.createElement("input")
-            mediaPeopleInput.classList.add('form-control','shadow-none','mt-2','py-1')
-            mediaPeopleInput.setAttribute('type',"text")
-            mediaPeopleInput.setAttribute('placeholder',"People filter")
-            rowCol2.appendChild(mediaPeopleInput);
-            // Filter the people list from entered value (checked after every key is typed)
-
-            mediaPeopleInput.addEventListener("keyup", function(event) {
-                //console.log("mediaPeopleInput.value = "+mediaPeopleInput.value);
-                let peopleInputVal = ""
-                if (mediaPeopleInput.value != null) {
-                    peopleInputVal = mediaPeopleInput.value
-                }
-
-                // Remove all options
-                for (let i = (mediaPeopleSelect.options.length-1); i > -1; i--) {
-                    mediaPeopleSelect.options.remove(i)
-                }
-
-                //let searchEx = new RegExp(`//${mediaPeopleInput.value}//i`);
-                //string pattern = @"\b[M]\w+";
-
-                //let searchStr = '/'+mediaPeopleInput.value+'/i'
-                //let re = new RegExp(`\b${mediaPeopleInput.value}\b`, 'i');
-                //let re = new RegExp(`\badam\b`, 'i');
-
-                // Add the ones that match the input value
-                for (let index in peopleList) {
-                    //if (peopleList[index].search(searchEx) >= 0) {
-                    //if (peopleList[index].search(/adam/i) >= 0) {
-                    //if (peopleList[index].search(re) >= 0) {
-                    if (peopleInputVal != "") {
-                        if (peopleList[index].indexOf(peopleInputVal) >= 0) {
-                            mediaPeopleSelect.options[mediaPeopleSelect.options.length] = new Option(peopleList[index], index)
-                        }
-                    } else {
-                        mediaPeopleSelect.options[mediaPeopleSelect.options.length] = new Option(peopleList[index], index)
-                    }
-                }
-            });
-
-            rowCol2.appendChild(mediaPeopleSelect);
-
-            // People List
-            mediaPeopleList = document.createElement("input")
-            //mediaPeopleList.id = "mediaPeopleList"
-            mediaPeopleList.classList.add('form-control','py-1','mb-1','shadow-none')
-            mediaPeopleList.setAttribute('type', "text")
-            mediaPeopleList.setAttribute('placeholder', "People list")
-            if (editMode) {
-                mediaPeopleList.disabled = false
-            } else {
-                mediaPeopleList.disabled = true
-            }
-            mediaPeopleList.value = fi.People
-
-            let replacePeopleButton = document.createElement("button")
-            replacePeopleButton.classList.add('btn','btn-primary','btn-sm','float-start','shadow-none','me-2','my-1')
-            replacePeopleButton.setAttribute('type',"button")
-            replacePeopleButton.setAttribute('role',"button")
-            replacePeopleButton.textContent = "Replace"
-            rowCol2.appendChild(replacePeopleButton)
-            replacePeopleButton.addEventListener("click", function () {
-                mediaPeopleList.value = peopleList[mediaPeopleSelect.value]
-            });
-
-            let appendPeopleButton = document.createElement("button")
-            appendPeopleButton.classList.add('btn','btn-warning','btn-sm','float-start','shadow-none','me-2','my-1')
-            appendPeopleButton.setAttribute('type',"button")
-            appendPeopleButton.setAttribute('role',"button")
-            appendPeopleButton.textContent = "Append"
-            rowCol2.appendChild(appendPeopleButton)
-            appendPeopleButton.addEventListener("click", function () {
-                if (mediaPeopleList.value) {
-                    mediaPeopleList.value = mediaPeopleList.value + ',' + peopleList[mediaPeopleSelect.value]
-                } else {
-                    mediaPeopleList.value = peopleList[mediaPeopleSelect.value]
-                }
-            });
-
-        rowCol2.appendChild(mediaPeopleList)
+        rowCol2.appendChild(peopleButton)
+        setPeopleListenersDetail(peopleButton,mediaPeopleList)
+        rowCol2.appendChild(mediaPeopleList);
 
 
         row.appendChild(rowCol1)
@@ -448,7 +374,7 @@ function displayModalDetail(index) {
             // Description
             let mediaDetailDescription = document.createElement("textarea")
             //mediaDetailDescription.id = "MediaDetailDescription"
-            mediaDetailDescription.classList.add('form-control','py-1','mb-1','shadow-none')
+            mediaDetailDescription.classList.add('form-control','py-1','my-1','shadow-none')
             mediaDetailDescription.setAttribute('rows', "6")
             mediaDetailDescription.setAttribute('placeholder', "Description")
             if (editMode) {

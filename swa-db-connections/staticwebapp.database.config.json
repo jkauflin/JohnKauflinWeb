@@ -65,7 +65,7 @@
         "graphql": true,
         "permissions": [
           {
-            "actions": ["*"],
+            "actions": ["read"],
             "role": "anonymous"
           }
         ]

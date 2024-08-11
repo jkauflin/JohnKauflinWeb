@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace MediaGalleryConsole.Model
+namespace JohnKauflinWeb.Function.Model
 {
     public class MediaAlbum
     {

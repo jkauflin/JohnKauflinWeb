@@ -115,6 +115,35 @@
     </div>
 </div>
 
+<div class="modal" tabindex="-1" id="PeopleModal">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">People List</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div id="PeopleModalBody" class="modal-body">
+            <input id="PeopleInput" type="text" class="form-control shadow-none py-1" placeholder="People filter"></input>
+            <select id="PeopleSelect" class="form-select float-start shadow-none mt-2 py-1"></select>
+
+            <button id="PeopleReplaceButton" type="button" role="button" class="btn btn-primary btn-sm float-start shadow-none m-2 my-2">
+                Replace
+            </button>
+            <button id="PeopleAppendButton" type="button" role="button" class="btn btn-warning btn-sm float-start shadow-none me-2 my-2">
+                Append
+            </button>
+
+            <input id="PeopleInputList" type="text" class="form-control shadow-none mt-2 py-1" placeholder="People list"></input>
+
+            <button id="PeopleSaveButton" type="button" role="button" class="btn btn-success btn-sm float-start shadow-none me-2 my-2">
+                Save
+            </button>
+
+        </div>
+      </div>
+    </div>
+</div>
+
 <div class="modal" tabindex="-1" id="MediaLightbox"  data-bs-theme="dark">
     <div class="modal-dialog modal-fullscreen">
       <div class="modal-content">

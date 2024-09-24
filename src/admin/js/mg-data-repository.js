@@ -261,7 +261,7 @@ export async function queryMediaInfo(paramData) {
 
     let searchQuery = ""
     if (paramData.MediaFilterSearchStr != null && paramData.MediaFilterSearchStr != '') {
-        searchQuery = `{ SearchStr: {contains: "${paramData.MediaFilterSearchStr.toLowerCase()}"} }`
+        searchQuery = `{ LOWER(SearchStr): {contains: "${paramData.MediaFilterSearchStr.toLowerCase()}"} }`
         // If search is specified, clear out the category and start date queries
         categoryQuery = ""
         startDateQuery = ""

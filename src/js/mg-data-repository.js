@@ -582,6 +582,9 @@ var mediaTypeData = [
                 },
                 {
                     MenuItem: "2017-to-present"
+                },
+                {
+                    MenuItem: "2024-to-present"
                 }
             ]
         },

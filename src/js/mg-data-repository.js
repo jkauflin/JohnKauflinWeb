@@ -154,7 +154,8 @@ export async function queryMediaInfo(paramData) {
         mediaInfo.startDate = "1800-01-01"
     }
 
-    let maxRows = 200
+    //let maxRows = 200
+    let maxRows = 100
     if (mediaType == 2) {
 		//maxRows = 18
 		maxRows = 12
@@ -307,7 +308,7 @@ type Malbum @model {
             ${mediaTypeQuery}
         }`
 
-    //console.log("gql = "+gql)
+    //console.log(">>> query gql = "+gql)
 
     const apiQuery = {
         query: gql,
@@ -367,6 +368,7 @@ type Malbum @model {
                 startDate: lastTakenDateTime
             }
             mediaInfo.filterList.push(filterRec)
+            console.log("Next, startDate: lastTakenDateTime = "+lastTakenDateTime)
 
             //if ($param->MediaFilterMediaType == 1 && !$albumKeyExists && $cnt > 50) {
             if (mediaType == 1 && albumQuery == "" && mediaInfo.fileList.length > 50) {

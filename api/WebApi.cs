@@ -76,16 +76,18 @@ namespace JohnKauflinWeb.Function
                 {
                     tempIndex++;
                     if (updParamData.FileListIndex >= 0) {
+                        // Check for update of a particular specified file
                         if (tempIndex != updParamData.FileListIndex) {
                             continue;
                         }
                     } else {
+                        // If not a particular file, check for "selected" files to update
                         if (!item.Selected) {
                             continue;
                         }
                     }
 
-                    // Get the existing document from Cosmos DB
+                    // Get the existing document from Cosmos DB (by the main unique "id")
                     var queryText = $"SELECT * FROM c WHERE c.id = \"{item.id}\" ";
                     var feed = container.GetItemQueryIterator<MediaInfo>(queryText);
                     while (feed.HasMoreResults)

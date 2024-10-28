@@ -601,7 +601,6 @@ export async function updateMediaInfo(inIndex) {
     }
 
     displayCurrFileList()
-
 }
 
 //------------------------------------------------------------------------------------------------------------

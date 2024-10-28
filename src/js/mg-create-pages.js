@@ -8,7 +8,7 @@ Modification History
 --------------------------------------------------------------------------------
 2024-03-29 JJK  Migrating to Azure SWA, blob storage, Cosmos DB with GraphQL
                 for queries.  Also, removing Admin functions to make this just
-                the presentation functions with no edit0
+                the presentation functions with no edit
 ================================================================================*/
 import {mediaInfo,mediaType,getMenu,
     queryCategory,querySearchStr,queryMenuItem,queryAlbumKey,
@@ -83,30 +83,30 @@ thumbnailContainer.addEventListener("click", function (event) {
 
     // Check for specific classes
     if (event.target && event.target.classList.contains(MediaFilterRequestClass)) {
-            // If click on a Filter Request (like Next or Prev), query the data and build the thumbnail display
-            //console.log(">>> FilterRequest data-category = "+event.target.getAttribute('data-category'))
-            //console.log(">>> FilterRequest data-startDate = "+event.target.getAttribute('data-startDate'))
-            //console.log(">>> FilterRequest data-searchStr = "+event.target.getAttribute('data-searchStr'))
-            //console.log(">>> FilterRequest data-menuItem = "+event.target.getAttribute('data-menuItem'))
+        // If click on a Filter Request (like Next or Prev), query the data and build the thumbnail display
+        //console.log(">>> FilterRequest data-category = "+event.target.getAttribute('data-category'))
+        //console.log(">>> FilterRequest data-startDate = "+event.target.getAttribute('data-startDate'))
+        //console.log(">>> FilterRequest data-searchStr = "+event.target.getAttribute('data-searchStr'))
+        //console.log(">>> FilterRequest data-menuItem = "+event.target.getAttribute('data-menuItem'))
 
-            let paramData = {
-                MediaFilterMediaType: mediaType, 
-                getMenu: false,
-                MediaFilterCategory:  event.target.getAttribute('data-category'),
-                MediaFilterStartDate: event.target.getAttribute('data-startDate'),
-                MediaFilterMenuItem: event.target.getAttribute('data-menuItem'),
-                MediaFilterAlbumKey: event.target.getAttribute('data-albumKey'),
-                MediaFilterSearchStr: event.target.getAttribute('data-searchStr')}
+        let paramData = {
+            MediaFilterMediaType: mediaType, 
+            getMenu: false,
+            MediaFilterCategory:  event.target.getAttribute('data-category'),
+            MediaFilterStartDate: event.target.getAttribute('data-startDate'),
+            MediaFilterMenuItem: event.target.getAttribute('data-menuItem'),
+            MediaFilterAlbumKey: event.target.getAttribute('data-albumKey'),
+            MediaFilterSearchStr: event.target.getAttribute('data-searchStr')}
 
-            queryMediaInfo(paramData);
+        queryMediaInfo(paramData);
 
     } else if (event.target && event.target.classList.contains(imgThumbnailClass)) {
-            event.preventDefault();
-            // If clicking on a Thumbnail, bring up in Lightbox or FileDetail (for Edit mode)
-            let index = parseInt(event.target.getAttribute('data-index'))
-            if (typeof index !== "undefined" && index !== null) {
-                displayElementInLightbox(index)
-            }
+        event.preventDefault();
+        // If clicking on a Thumbnail, bring up in Lightbox or FileDetail (for Edit mode)
+        let index = parseInt(event.target.getAttribute('data-index'))
+        if (typeof index !== "undefined" && index !== null) {
+            displayElementInLightbox(index)
+        }
 
     } 
 })
@@ -385,8 +385,15 @@ thumbnailContainer.addEventListener("click", function (event) {
                     var imgCache = document.createElement('img')
                     imgCache.src = getFilePath(index,"Smaller")
                 }
-
                 thumb = img
+
+                // *** For Testing ***
+                //let videoLabel = document.createElement("label")
+                //videoLabel.classList.add('mx-1')
+                //videoLabel.textContent = fi.Name.substring(0,20) + " " + fi.TakenDateTime
+                //thumb.appendChild(videoLabel)
+                //thumb.appendChild(img)
+
                 thumbnailRow2Col1.appendChild(thumb)
 
             } else if (mediaType == 2) {

@@ -388,8 +388,12 @@ thumbnailContainer.addEventListener("click", function (event) {
                 for (let index in mediaInfo.fileList) {
                     let fi = mediaInfo.fileList[index]
                     if (fi.Selected) {
-                        fi.Title = mediaDetailTitle.value
-                        fi.TakenDateTime = mediaDetailTaken.value
+                        if (mediaDetailTitle.value != "") {
+                            fi.Title = mediaDetailTitle.value
+                        }
+                        if (mediaDetailTaken.value != "") {
+                            fi.TakenDateTime = mediaDetailTaken.value
+                        }
                         fi.CategoryTags = mediaCategorySelect.value
                         mediaDetailCategoryTags.value = mediaCategorySelect.value
                         fi.MenuTags = mediaMenuSelect.value

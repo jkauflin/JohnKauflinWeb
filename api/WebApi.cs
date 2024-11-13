@@ -54,7 +54,6 @@ namespace JohnKauflinWeb.Function
             }
 
             log.LogInformation($">>> User is authorized - userName: {userName}");
-            log.LogWarning(">>> JJK test WARNING");
 
             //------------------------------------------------------------------------------------------------------------------
             // Parse the JSON payload content from the Request BODY into a C# object, and process the MediaInfo array to

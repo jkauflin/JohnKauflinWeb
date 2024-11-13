@@ -8,17 +8,16 @@ Modification History
                 in MediaInfo entities in Cosmos DB NoSQL
 2024-07-28 JJK  Resolved JSON parse and DEBUG issues and got the update working
 2024-08-10 JJK  Added function for getting People list
+2024-11-13 JJK  Converted functions to run as dotnet-isolated in .net8.0, 
+                logger (connected to App Insights), and added configuration 
+                to get environment variables for the Cosmos DB connection str
+                Modified to check user role from function context for auth
 ================================================================================*/
-using System;
-using System.IO;
-using System.Threading.Tasks;
-using System.Security.Claims;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Mvc;     // for IActionResult
 using Microsoft.Azure.Cosmos;
 using Newtonsoft.Json;
 
@@ -26,36 +25,36 @@ using JohnKauflinWeb.Function.Model;
 
 namespace JohnKauflinWeb.Function
 {
-    public static class WebApi
+    public class WebApi
     {
-        [FunctionName("UpdateMediaInfo")]
-        public static async Task<IActionResult> UpdateMediaInfo(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
-            [CosmosDB(Connection = "API_COSMOS_DB_CONN_STR")] CosmosClient cosmosClient,
-            ILogger log,
-            ClaimsPrincipal claimsPrincipal)
-        {
-            //log.LogInformation("UpdateMediaInfo, C# HTTP trigger function processed a request.");
-            bool userAuthorized = false;
-            if (req.Host.ToString().Equals("localhost:4280")) {
-                // If local DEV look for Admin
-                foreach (Claim claim in claimsPrincipal.Claims)
-                {
-                    //log.LogInformation("CLAIM TYPE: " + claim.Type + "; CLAIM VALUE: " + claim.Value + "</br>");
-                    if (claim.Value.Equals("Admin")) {
-                        userAuthorized = true;
-                    }
-                }
-            } else {
-                // In PROD, make sure user is in correct role to make updates
-                userAuthorized = claimsPrincipal.IsInRole("jjkadmin");
-            }
+        private readonly ILogger<WebApi> log;
+        private readonly IConfiguration config;
+        private readonly string? apiCosmosDbConnStr;
 
-            if (!userAuthorized) {
+        private readonly AuthorizationCheck authCheck;
+        private readonly string userAdminRole;
+
+        public WebApi(ILogger<WebApi> logger, IConfiguration configuration)
+        {
+            log = logger;
+            config = configuration;
+            apiCosmosDbConnStr = config["API_COSMOS_DB_CONN_STR"];
+
+            authCheck = new AuthorizationCheck(log);
+            userAdminRole = "jjkadmin";   // add to config ???
+        }
+
+        [Function("UpdateMediaInfo")]
+        public async Task<IActionResult> UpdateMediaInfo(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequestData req)
+        {
+            string userName = "";
+            if (!authCheck.UserAuthorizedForRole(req,userAdminRole,out userName)) {
                 return new BadRequestObjectResult("Unauthorized call - User does not have the correct Admin role");
             }
 
-            //log.LogInformation(">>> User is authorized ");
+            log.LogInformation($">>> User is authorized - userName: {userName}");
+            log.LogWarning(">>> JJK test WARNING");
 
             //------------------------------------------------------------------------------------------------------------------
             // Parse the JSON payload content from the Request BODY into a C# object, and process the MediaInfo array to
@@ -64,10 +63,31 @@ namespace JohnKauflinWeb.Function
             string responseMessage = "";
 
             try {
+
+                /*
+                // Get the content string from the HTTP request body
+                string content = await new StreamReader(req.Body).ReadToEndAsync();
+                // Deserialize the JSON string into a generic JSON object
+                JObject jObject = JObject.Parse(content);
+
+                if (jObject.TryGetValue("searchStr", out JToken jToken)) {
+                    string searchStr = (string)jToken;
+                    searchStr = searchStr.Trim().ToUpper();
+                    
+                    sql = $"SELECT * FROM c WHERE "
+                            +$"CONTAINS(UPPER(c.Parcel_ID),'{searchStr}') "
+                            +$"OR CONTAINS(UPPER(c.LotNo),'{searchStr}') "
+                            +$"OR CONTAINS(UPPER(c.Parcel_Location),'{searchStr}') "
+                            +$"OR CONTAINS(UPPER(CONCAT(c.Owner_Name1,' ',c.Owner_Name2,' ',c.Mailing_Name)),'{searchStr}') "
+                            +$"ORDER BY c.id";
+                }
+                */
+
                 var content = await new StreamReader(req.Body).ReadToEndAsync();
                 var updParamData = JsonConvert.DeserializeObject<UpdateParamData>(content);
                 string databaseId = "JJKWebDB";
                 string containerId = "MediaInfo";
+                CosmosClient cosmosClient = new CosmosClient(apiCosmosDbConnStr); 
                 Database db = cosmosClient.GetDatabase(databaseId);
                 Container container = db.GetContainer(containerId);
                 int updCnt = 0;
@@ -126,34 +146,16 @@ namespace JohnKauflinWeb.Function
         }
 
 
-        [FunctionName("GetPeopleList")]
-        public static async Task<IActionResult> GetPeopleList(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
-            [CosmosDB(Connection = "API_COSMOS_DB_CONN_STR")] CosmosClient cosmosClient,
-            ILogger log,
-            ClaimsPrincipal claimsPrincipal)
+        [Function("GetPeopleList")]
+        public async Task<IActionResult> GetPeopleList(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequestData req)
         {
-            //log.LogInformation("UpdateMediaInfo, C# HTTP trigger function processed a request.");
-            bool userAuthorized = false;
-            if (req.Host.ToString().Equals("localhost:4280")) {
-                // If local DEV look for Admin
-                foreach (Claim claim in claimsPrincipal.Claims)
-                {
-                    //log.LogInformation("CLAIM TYPE: " + claim.Type + "; CLAIM VALUE: " + claim.Value + "</br>");
-                    if (claim.Value.Equals("Admin")) {
-                        userAuthorized = true;
-                    }
-                }
-            } else {
-                // In PROD, make sure user is in correct role to make updates
-                userAuthorized = claimsPrincipal.IsInRole("jjkadmin");
-            }
-
-            if (!userAuthorized) {
+            string userName = "";
+            if (!authCheck.UserAuthorizedForRole(req,userAdminRole,out userName)) {
                 return new BadRequestObjectResult("Unauthorized call - User does not have the correct Admin role");
             }
 
-            //log.LogInformation(">>> User is authorized ");
+            //log.LogInformation($">>> User is authorized - userName: {userName}");
 
             //------------------------------------------------------------------------------------------------------------------
             // Query the NoSQL container to get values
@@ -163,6 +165,7 @@ namespace JohnKauflinWeb.Function
             List<string> peopleList = new List<string>();
 
             try {
+                CosmosClient cosmosClient = new CosmosClient(apiCosmosDbConnStr); 
                 Database db = cosmosClient.GetDatabase(databaseId);
                 Container container = db.GetContainer(containerId);
 
@@ -187,6 +190,8 @@ namespace JohnKauflinWeb.Function
 
             return new OkObjectResult(peopleList);
         }
-    }
-}
+    } // public class WebApi
+
+} // namespace JohnKauflinWeb.Function
+
 

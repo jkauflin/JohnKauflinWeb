@@ -85,7 +85,7 @@ namespace JohnKauflinWeb.Function
 
                 var content = await new StreamReader(req.Body).ReadToEndAsync();
                 var updParamData = JsonConvert.DeserializeObject<UpdateParamData>(content);
-                string databaseId = "JJKWebDB";
+                string databaseId = "jjkdb1";
                 string containerId = "MediaInfo";
                 CosmosClient cosmosClient = new CosmosClient(apiCosmosDbConnStr); 
                 Database db = cosmosClient.GetDatabase(databaseId);
@@ -160,7 +160,7 @@ namespace JohnKauflinWeb.Function
             //------------------------------------------------------------------------------------------------------------------
             // Query the NoSQL container to get values
             //------------------------------------------------------------------------------------------------------------------
-            string databaseId = "JJKWebDB";
+            string databaseId = "jjkdb1";
             string containerId = "MediaPeople";
             List<string> peopleList = new List<string>();
 

@@ -18,8 +18,10 @@ Modification History
                 contains on strings, orderBy on Taken, and first maxRows
 2024-06-20 JJK  Getting an error from Azure on the MediaType query, so I've
                 hard-coded the categories and menu items for now
+2024-12-02 JJK  Added util module and spinner for loading... mediaPageMessage
 ================================================================================*/
 
+import {empty,showLoadingSpinner,addDays,addHours,getDateInt,getHoursInt} from './util.js';
 import {createMediaPage,displayCurrFileList,updateAdminMessage} from './mg-create-pages.js';
 import {setMenuList} from './mg-menu.js';
 import {setAlbumList,getAlbumName} from './mg-album.js';
@@ -47,6 +49,7 @@ let photosUri = "https://jjkwebstorage.blob.core.windows.net/photos/"
 let thumbsUri = "https://jjkwebstorage.blob.core.windows.net/thumbs/"
 let musicUri = "https://jjkwebstorage.blob.core.windows.net/music/"
 
+var mediaPageMessage = document.getElementById("MediaPageMessage");
 
 export function setMediaType(inMediaType) {
     mediaType = parseInt(inMediaType)
@@ -78,60 +81,6 @@ export function getFileName(index) {
         fileNameNoExt = fileNameNoExt.substr(0,periodPos);
     }
     return fileNameNoExt
-}
-
-function addDays(inDate, days) {
-    let td = new Date(inDate)
-    td.setDate(td.getDate() + (parseInt(days)+1))
-    /*
-    let tempMonth = td.getMonth() + 1
-    let tempDay = td.getDate()
-    let outDate = td.getFullYear() + '-' + paddy(tempMonth,2) + '-' + paddy(tempDay,2)
-    */
-    /*
-    const dateTimeFormatOptions = {
-        //timeZone: "Africa/Accra",
-        //hour12: true,
-        //hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit"
-    };
-    */
-    //return tempDate.toLocaleTimeString("en-US", dateTimeFormatOptions)
-    //return outDate;
-    //return tempDate.toLocaleDateString("en-US", dateTimeFormatOptions)
-    //return td.toLocaleDateString()
-    return td.toISOString().substring(0,10)  //2024-01-31T19:37:12.291Z
-}
- 
-function paddy(num, padlen, padchar) {
-    var pad_char = typeof padchar !== 'undefined' ? padchar : '0'
-    var pad = new Array(1 + padlen).join(pad_char)
-    return (pad + num).slice(-pad.length)
-}
-
-// Return an integer of the date + hours (2024123101)
-export function getDateInt(inDateStr) {
-    /*
-    let td = new Date()
-    if (inDate != null) {
-        td = inDate
-    }
-    let tempMonth = td.getMonth() + 1
-    let tempDay = td.getDate()
-    let formattedDate = td.getFullYear() + paddy(tempMonth,2) + paddy(tempDay,2) + paddy(td.getHours(),2)
-    */
-
-    let formattedDate = "1800-01-01 00:00:00"
-    if (inDateStr != null) {
-        if (inDateStr.length >= 13) {
-            formattedDate = inDateStr.substring(0,4) + inDateStr.substring(5,7) + inDateStr.substring(8,10) + inDateStr.substring(11,13)
-        } else {
-            formattedDate = inDateStr.substring(0,4) + inDateStr.substring(5,7) + inDateStr.substring(8,10) + "00"
-        }
-    }
-
-    return(parseInt(formattedDate))
 }
 
 //------------------------------------------------------------------------------------------------------------
@@ -316,6 +265,7 @@ type Malbum @model {
         }
     }
 
+    showLoadingSpinner(mediaPageMessage)
     const endpoint = "/data-api/graphql";
     const response = await fetch(endpoint, {
         method: "POST",
@@ -323,6 +273,7 @@ type Malbum @model {
         body: JSON.stringify(apiQuery)
     });
     const result = await response.json();
+    empty(mediaPageMessage)
     if (result.errors != null) {
         console.log("Error: "+result.errors[0].message);
         console.table(result.errors);
@@ -368,7 +319,7 @@ type Malbum @model {
                 startDate: lastTakenDateTime
             }
             mediaInfo.filterList.push(filterRec)
-            console.log("Next, startDate: lastTakenDateTime = "+lastTakenDateTime)
+            //console.log("Next, startDate: lastTakenDateTime = "+lastTakenDateTime)
 
             //if ($param->MediaFilterMediaType == 1 && !$albumKeyExists && $cnt > 50) {
             if (mediaType == 1 && albumQuery == "" && mediaInfo.fileList.length > 50) {

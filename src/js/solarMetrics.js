@@ -12,6 +12,8 @@ Modification History
                 display of last 10 values in a table
 ================================================================================*/
 
+import {empty,showLoadingSpinner,addDays,addHours,getDateInt,getHoursInt} from './util.js';
+
 //var solarTileButton = document.getElementById("SolarTile");
 //solarTileButton.addEventListener("click", querySolarMetrics);
 const dailyWattsCanvas = document.getElementById('DailyWattsCanvas')
@@ -32,88 +34,6 @@ var dailyTotalsChart = null
 
 var getDataButton = document.getElementById("GetDataButton")
 getDataButton.addEventListener("click", querySolarMetrics);
-
-function empty(node) {
-    // Could just set the innerHTML to null, but they say removing the children is faster
-    // and better for removing any associated events
-    //node.innerHTML = "";
-    while (node.firstChild) {
-        node.removeChild(node.firstChild)
-    }
-}
-
-function addDays(inDate, days) {
-    //let td = new Date(inDate)
-    let td = inDate
-    td.setDate(td.getDate() + (parseInt(days)+1))
-    /*
-    let tempMonth = td.getMonth() + 1
-    let tempDay = td.getDate()
-    let outDate = td.getFullYear() + '-' + paddy(tempMonth,2) + '-' + paddy(tempDay,2)
-    */
-    /*
-    const dateTimeFormatOptions = {
-        //timeZone: "Africa/Accra",
-        //hour12: true,
-        //hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit"
-    };
-    */
-    //return tempDate.toLocaleTimeString("en-US", dateTimeFormatOptions)
-    //return outDate;
-    //return tempDate.toLocaleDateString("en-US", dateTimeFormatOptions)
-    //return td.toLocaleDateString()
-    return td.toISOString().substring(0,10)  //2024-01-31T19:37:12.291Z
-}
-
-function addHours(inDate, hours) {
-  //let td = new Date(inDate)
-  let td = inDate
-  td.setHours(td.getHours() + (parseInt(hours)-4))  // Adjust for GMT time
-  return td.toISOString().substring(0,19)
-}
-
-function paddy(num, padlen, padchar) {
-    var pad_char = typeof padchar !== 'undefined' ? padchar : '0'
-    var pad = new Array(1 + padlen).join(pad_char)
-    return (pad + num).slice(-pad.length)
-}
-
-// Return an integer of the date + hours (2024123101)
-function getDateInt(inDateStr) {
-    /*
-    let td = new Date()
-    if (inDate != null) {
-        td = inDate
-    }
-    let tempMonth = td.getMonth() + 1
-    let tempDay = td.getDate()
-    let formattedDate = td.getFullYear() + paddy(tempMonth,2) + paddy(tempDay,2) + paddy(td.getHours(),2)
-    */
-
-    let formattedDate = "1800-01-01 00:00:00"
-    if (inDateStr != null) {
-        if (inDateStr.length >= 13) {
-            //formattedDate = inDateStr.substring(0,4) + inDateStr.substring(5,7) + inDateStr.substring(8,10) + inDateStr.substring(11,13)
-            formattedDate = inDateStr.substring(0,4) + inDateStr.substring(5,7) + inDateStr.substring(8,10)
-        } else {
-            //formattedDate = inDateStr.substring(0,4) + inDateStr.substring(5,7) + inDateStr.substring(8,10) + "00"
-            formattedDate = inDateStr.substring(0,4) + inDateStr.substring(5,7) + inDateStr.substring(8,10)
-        }
-    }
-
-    return(parseInt(formattedDate))
-}
-
-function getHoursInt(inDateStr) {
-  let formattedDate = "1800-01-01 00:00:00"
-  if (inDateStr != null) {
-    formattedDate = inDateStr.substring(2,4) + inDateStr.substring(11,13) + inDateStr.substring(14,16) + inDateStr.substring(17,19)
-  }
-  return(parseInt(formattedDate))
-}
-
 
 //------------------------------------------------------------------------------------------------------------
 // Query the database for menu and file information and store in js variables
@@ -198,6 +118,7 @@ export async function querySolarMetrics(paramData) {
         }
     }
 
+    showLoadingSpinner(pointDateTimeDiv)
     const endpoint2 = "/data-api/graphql";
     const response = await fetch(endpoint2, {
         method: "POST",
@@ -205,6 +126,7 @@ export async function querySolarMetrics(paramData) {
         body: JSON.stringify(apiQuery2)
     })
     const result = await response.json()
+    empty(pointDateTimeDiv)
     if (result.errors != null) {
         console.log("Error: "+result.errors[0].message);
         console.table(result.errors);

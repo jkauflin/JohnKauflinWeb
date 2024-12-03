@@ -20,10 +20,10 @@ spanSpinnerStatus.textContent = "Loading..."
     
 //=================================================================================================================
 // Module methods
-export function showLoadingSpinner(buttonElement) {
-    empty(buttonElement)
-    buttonElement.appendChild(spanSpinner)            
-    buttonElement.appendChild(spanSpinnerStatus)            
+export function showLoadingSpinner(docElement) {
+    empty(docElement)
+    docElement.appendChild(spanSpinner)            
+    docElement.appendChild(spanSpinnerStatus)            
 }
        
 // Remove all child nodes from an element
@@ -86,11 +86,9 @@ export function getDateInt(inDateStr) {
     let formattedDate = "1800-01-01 00:00:00"
     if (inDateStr != null) {
         if (inDateStr.length >= 13) {
-            //formattedDate = inDateStr.substring(0,4) + inDateStr.substring(5,7) + inDateStr.substring(8,10) + inDateStr.substring(11,13)
-            formattedDate = inDateStr.substring(0,4) + inDateStr.substring(5,7) + inDateStr.substring(8,10)
+            formattedDate = inDateStr.substring(0,4) + inDateStr.substring(5,7) + inDateStr.substring(8,10) + inDateStr.substring(11,13)
         } else {
-            //formattedDate = inDateStr.substring(0,4) + inDateStr.substring(5,7) + inDateStr.substring(8,10) + "00"
-            formattedDate = inDateStr.substring(0,4) + inDateStr.substring(5,7) + inDateStr.substring(8,10)
+            formattedDate = inDateStr.substring(0,4) + inDateStr.substring(5,7) + inDateStr.substring(8,10) + "00"
         }
     }
 

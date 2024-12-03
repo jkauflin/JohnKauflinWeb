@@ -277,7 +277,8 @@ export async function queryMediaInfo(paramData) {
         mediaDetailDescription.value = fi.Description
         searchStr ??????
 */
-    //console.log("gql = "+gql)
+
+    console.log("gql = "+gql)
 
     const apiQuery = {
         query: gql,
@@ -331,6 +332,7 @@ export async function queryMediaInfo(paramData) {
             // Set the filter list elements
             let currYear = mediaInfo.startDate.substring(0,4)
             let lastTakenDateTime = mediaInfo.fileList[result.data.books.items.length-1].TakenDateTime
+            console.log(">>> AFTER query, lastTakenDateTime = "+lastTakenDateTime)
 
             let prevYear = parseInt(mediaInfo.startDate.substring(0,4))-1
             let filterRec = {

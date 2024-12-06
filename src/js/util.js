@@ -95,6 +95,26 @@ export function getDateInt(inDateStr) {
     return(parseInt(formattedDate))
 }
 
+// Return an integer of the date + hours (2024123101)
+export function getDateDayInt(inDateStr) {
+    /*
+    let td = new Date()
+    if (inDate != null) {
+        td = inDate
+    }
+    let tempMonth = td.getMonth() + 1
+    let tempDay = td.getDate()
+    let formattedDate = td.getFullYear() + paddy(tempMonth,2) + paddy(tempDay,2) + paddy(td.getHours(),2)
+    */
+
+    let formattedDate = "1800-01-01 00:00:00"
+    if (inDateStr != null) {
+        formattedDate = inDateStr.substring(0,4) + inDateStr.substring(5,7) + inDateStr.substring(8,10)
+    }
+
+    return(parseInt(formattedDate))
+}
+
 export function getHoursInt(inDateStr) {
   let formattedDate = "1800-01-01 00:00:00"
   if (inDateStr != null) {

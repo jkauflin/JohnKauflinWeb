@@ -10,9 +10,11 @@ Modification History
 2024-06-14 JJK  Test deploy
 2024-06-23 JJK  Added AmpMaxValue and WattMaxValue to the Totals query and 
                 display of last 10 values in a table
+2024-12-06 JJK  Added util module and loading spinner (and corrected 
+                getDateDayInt for the correct day buckets in metrics)
 ================================================================================*/
 
-import {empty,showLoadingSpinner,addDays,addHours,getDateInt,getHoursInt} from './util.js';
+import {empty,showLoadingSpinner,addDays,addHours,getDateInt,getDateDayInt,getHoursInt} from './util.js';
 
 //var solarTileButton = document.getElementById("SolarTile");
 //solarTileButton.addEventListener("click", querySolarMetrics);
@@ -41,7 +43,8 @@ getDataButton.addEventListener("click", querySolarMetrics);
 export async function querySolarMetrics(paramData) {
     let currDate = new Date()
     let pointDate = addDays(currDate, -1)
-    let pointDateStartBucket = getDateInt(pointDate)
+    //let pointDateStartBucket = getDateInt(pointDate)
+    let pointDateStartBucket = getDateDayInt(pointDate)
 
     // Start Points query at current date minus 3 hours
     //let pointHours = addHours(currDate, -3)
@@ -53,8 +56,12 @@ export async function querySolarMetrics(paramData) {
 
     // Get Day totals starting 30 days back
     let dayTotalStartDate = addDays(new Date(), -30)
-    let dayTotalStartBucket = getDateInt(dayTotalStartDate)
+    //let dayTotalStartBucket = getDateInt(dayTotalStartDate)
+    let dayTotalStartBucket = getDateDayInt(dayTotalStartDate)
     let dayTotalMaxRows = 30
+
+    //"PointDayTime": 24060011,
+
 
     //orderBy: { LastUpdateDateTime: ASC },
 

@@ -50,12 +50,13 @@ export function setPeopleListenersDetail(peopleButton, inPeopleList) {
 async function queryPeopleInfo() {
     const endpoint = "/api/GetPeopleList";
     const response = await fetch(endpoint, {
-        method: "GET"
-    });
-    const result = await response.json();
+        method: "POST"
+    })
+    const result = await response.json()
     if (result.errors != null) {
-        console.log("Error: "+result.errors[0].message);
-        console.table(result.errors);
+        console.log("Error: "+result.errors[0].message)
+        console.table(result.errors)
+        // Message display ???
     } else {
         peopleList = result
         for (let index in peopleList) {
@@ -63,6 +64,7 @@ async function queryPeopleInfo() {
         }
         peopleModal.show()
     }
+
 }
 
 // https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_js_dropdown_filter

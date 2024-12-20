@@ -85,6 +85,9 @@ namespace JohnKauflinWeb.Function
 
                 var content = await new StreamReader(req.Body).ReadToEndAsync();
                 var updParamData = JsonConvert.DeserializeObject<UpdateParamData>(content);
+                if (updParamData == null) {
+                    return new OkObjectResult("Parameter content was NULL");
+                }
                 string databaseId = "jjkdb1";
                 string containerId = "MediaInfo";
                 CosmosClient cosmosClient = new CosmosClient(apiCosmosDbConnStr); 

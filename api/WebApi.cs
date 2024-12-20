@@ -38,8 +38,8 @@ namespace JohnKauflinWeb.Function
         {
             log = logger;
             config = configuration;
-            //apiCosmosDbConnStr = config["API_COSMOS_DB_CONN_STR"];
-            apiCosmosDbConnStr = config["JJKDBNEW1_CONN_STR"];
+            apiCosmosDbConnStr = config["API_COSMOS_DB_CONN_STR"];
+            //apiCosmosDbConnStr = config["JJKDBNEW1_CONN_STR"];
 
             authCheck = new AuthorizationCheck(log);
             userAdminRole = "jjkadmin";   // add to config ???

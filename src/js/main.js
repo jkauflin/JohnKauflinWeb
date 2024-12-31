@@ -41,7 +41,7 @@
  * 2024-05-02 JJK   Adding function to support solar metrics and charts
  *============================================================================*/
 
- import {querySolarMetrics} from './solarMetrics.js';
+import {querySolarMetrics} from './solarMetrics.js';
 
 // Keep track of the state of the navbar collapse (shown or hidden)
 var navbarCollapseShown = false;

@@ -1,3 +1,23 @@
+type Joint @model {
+  id: ID
+  PointDay: Int
+  PointDateTime: String
+  PointDayTime: Int
+  targetTemperature: Float
+  currTemperature: String
+  airInterval: Float
+  airDuration: Float
+  heatInterval: Float
+  heatDuration: Float
+  relayName0: String
+  relayMetricValue0: Int
+  relayName1: String
+  relayMetricValue1: Int
+  relayName2: String
+  relayMetricValue2: Int
+  relayName3: String
+  relayMetricValue3: Int
+}
 type Point @model {
   id: ID
   PointDay: Int

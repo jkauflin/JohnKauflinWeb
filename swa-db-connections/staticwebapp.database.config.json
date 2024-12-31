@@ -26,6 +26,17 @@
     }
   },
   "entities": {
+    "Joint": {
+      "source": "GenvMetricPoint",
+      "rest": false,
+      "graphql": true,
+      "permissions": [
+        {
+          "actions": ["read"],
+          "role": "anonymous"
+        }
+      ]
+    },
     "Point": {
       "source": "MetricPoint",
       "rest": false,

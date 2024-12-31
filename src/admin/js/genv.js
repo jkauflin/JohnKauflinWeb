@@ -42,7 +42,8 @@ export async function queryGenvMetrics(paramData) {
     //let pointDayTime = parseInt(currDate.toISOString().substring(2,4) + "093000")
     //2024-01-31T19:37:12.291Z
     let pointDayTime = getHoursInt(pointHours)
-    let pointMaxRows = 1500
+    //let pointMaxRows = 1500
+    let pointMaxRows = 2000
 
     //"PointDayTime": 24060011,
     //orderBy: { LastUpdateDateTime: ASC },
@@ -54,7 +55,7 @@ type Joint @model {
   PointDateTime: String
   PointDayTime: Int
   targetTemperature: 77,
-  currTemperature: "75.88",
+  currTemperature: 75.88,
   airInterval: 1,
   airDuration: 0.1,
   heatInterval: 0.2,
@@ -99,7 +100,7 @@ type Joint @model {
           }
     }`
 
-    console.log("gql2 = "+gql2)
+    //console.log("gql2 = "+gql2)
 
     const apiQuery2 = {
         query: gql2,

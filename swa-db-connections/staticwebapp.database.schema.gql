@@ -4,7 +4,7 @@ type Joint @model {
   PointDateTime: String
   PointDayTime: Int
   targetTemperature: Float
-  currTemperature: String
+  currTemperature: Float
   airInterval: Float
   airDuration: Float
   heatInterval: Float

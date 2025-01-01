@@ -38,7 +38,8 @@ export async function queryGenvMetrics(paramData) {
 
     // Start Points query at current date minus 3 hours
     //let pointHours = addHours(currDate, -3)
-    let pointHours = addHours(currDate, -2)
+    //let pointHours = addHours(currDate, -2)
+    let pointHours = addHours(currDate, -8)
     //let pointDayTime = parseInt(currDate.toISOString().substring(2,4) + "093000")
     //2024-01-31T19:37:12.291Z
     let pointDayTime = getHoursInt(pointHours)
@@ -122,7 +123,7 @@ type Joint @model {
         console.table(result.errors);
     } else {
         //console.log("result.data = "+result.data)
-        //console.log("result.data Points = "+result.data.joints.items.length)
+        console.log("result.data # of joints = "+result.data.joints.items.length)
         //console.table(result.data.joints.items);
         //console.table(result.data.totals.items);
         //console.table(result.data.yearTotals.items);
@@ -162,7 +163,7 @@ function convertUTCDateToLocalDate(date) {
 function displayCharts(pointData) {
 
     if (dailyTempChart == null) {
-        //console.log(">>> create dailyTempChart")
+        console.log(">>> create dailyTempChart")
         dailyTempChart = new Chart(dailyTempCanvas, {
             type: 'line',
             data: {

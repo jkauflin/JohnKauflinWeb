@@ -32,19 +32,13 @@ getDataButton.addEventListener("click", queryGenvMetrics);
 //------------------------------------------------------------------------------------------------------------
 export async function queryGenvMetrics(paramData) {
     let currDate = new Date()
-    let pointDate = addDays(currDate, -1)
-    //let pointDateStartBucket = getDateInt(pointDate)
-    let pointDateStartBucket = getDateDayInt(pointDate)
-
-    // Start Points query at current date minus 3 hours
-    //let pointHours = addHours(currDate, -3)
-    //let pointHours = addHours(currDate, -2)
-    let pointHours = addHours(currDate, -8)
-    //let pointDayTime = parseInt(currDate.toISOString().substring(2,4) + "093000")
-    //2024-01-31T19:37:12.291Z
-    let pointDayTime = getHoursInt(pointHours)
     //let pointMaxRows = 1500
     let pointMaxRows = 2000
+    let hours = -4
+    // or could do Beginning Hour and Ending Hour
+
+    let pointDateStartBucket = getDateDayInt(currDate)
+    let pointDayTime = getHoursInt(currDate,hours)
 
     //"PointDayTime": 24060011,
     //orderBy: { LastUpdateDateTime: ASC },
@@ -101,7 +95,7 @@ type Joint @model {
           }
     }`
 
-    //console.log("gql2 = "+gql2)
+    console.log("gql2 = "+gql2)
 
     const apiQuery2 = {
         query: gql2,

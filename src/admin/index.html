@@ -2,11 +2,21 @@
 <html class="no-js" lang="en">
 
 <head>
+	<title>John J Kauflin</title>
 	<meta charset="utf-8">
 	<meta http-equiv="x-ua-compatible" content="ie=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-	<title>John J Kauflin</title>
+    <!-- Emulate iphone XR
+    <meta name="viewport" content="width=414, height=896">
+    <style>
+        body {
+            margin: 0;
+            width: 414px;
+            height: 896px;
+            overflow: hidden;
+        }
+    </style>
+    -->
 	<meta name="keywords" content="kauflin, jkauflin, jkauflin.com, johnkauflin, johnkauflin.com, john kauflin, john j kauflin, jjk, dayton, oh, ohio, personal, web, admin" />
 	<meta name="description" content="John J Kauflin personal website admin" />
 	<meta name="author" content="John J Kauflin" />
@@ -21,11 +31,10 @@
     <link rel="stylesheet" href="css/main.css">
 </head>
 
-
 <body>
 <nav class="navbar navbar-expand-sm bg-dark navbar-dark" role="navigation">
     <div class="container-fluid">
-        <a class="navbar-brand" href="/">John J Kauflin ADMIN</a>
+        <a class="navbar-brand" href="/">JJK ADMIN</a>
         <button class="navbar-toggler shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -37,11 +46,12 @@
 
                 <li class="nav-item"><a class="nav-link media-page" data-bs-toggle="tab" href="#MediaPage" data-MediaType="1">
                     <i class="fa fa-camera" style="font-size: 1rem;"></i> Photos</a></li>
+                <!--
                 <li class="nav-item"><a class="nav-link media-page" data-bs-toggle="tab" href="#MediaPage" data-MediaType="2" >
                     <i class="fa fa-video-camera" style="font-size: 1rem;"></i> Videos</a></li>
                 <li class="nav-item"><a class="nav-link media-page" data-bs-toggle="tab" href="#MediaPage" data-MediaType="3">
                     <i class="fa fa-music"></i> Music</a></li>
-
+                -->
                 <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#PeopleMaintPage">
                     <i class="fa fa-users"></i> People</a></li>
                 <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#AlbumMaintPage">
@@ -65,7 +75,7 @@
 
             <div class="col-sm-6 col-md-8">
                 <div class="row">
-                    <p class="m-2">John J Kauflin ADMIN website.</p>
+                    <p class="m-2">JJK ADMIN website.</p>
                 </div>
 
                 <div class="row ml-1 mb-1">
@@ -90,26 +100,42 @@
 
     <div class="tab-pane" id="GenvPage">
         <div class="row">
-			<div class="col mt-2">
-                <h6 id="PointDateTime" class="float-start"></h6> 
-            </div>
-			<div class="col mt-2">
-                <h6 id="YtdWatts" class="float-start"></h6> 
+            <div class="col-5 col-sm-4 col-lg-3 col-xl-2 mt-2">
+                <div class="form-floating">
+                    <input type="date" class="form-control shadow-none" id="MetricsStartDate">
+                    <label for="MetricsStartDate">Metrics Start Date</label>
+                </div>
             </div>
             <div class="col">
-                <button id="GetDataButton" type="button" class="btn btn-success shadow-none mt-2 float-end">Get Data</button>
+                <button id="GetDataButton" type="button" class="btn btn-success shadow-none mt-2"><i class="fa fa-area-chart me-1"></i> Get Data</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-3 col-sm-2 col-xl-1 mt-2">
+                <div class="form-floating">
+                    <input id="StartHour" type="number" min="0" max="23" class="form-control shadow-none">
+                    <label for="StartHour">Start Hour</label>
+                </div>
+            </div>
+            <div class="col-3 col-sm-2 col-xl-1 mt-2">
+                <div class="form-floating">
+                    <input id="NumHours" type="number" min="1" class="form-control shadow-none">
+                    <label for="NumHours">Hours</label>
+                </div>
             </div>
         </div>
 
         <div class="row mt-2">
-			<div class="col">
+			<div class="col-xs-12 col-sm-11 col-lg-10 col-xl-7 col-xxl-6">
                 <h6>Daily Temperature</h6>
                 <!--
                 height="70%"
                 class="h-50"
                 -->
-                <canvas id="DailyTempCanvas" height="100%"></canvas>
+                <canvas id="DailyTempCanvas" height="200%"></canvas>
 			</div>
+
+            
 		</div><!-- row -->	                
 
 	</div><!-- end of Genv -->

@@ -14,32 +14,88 @@ Modification History
                 getDateDayInt for the correct day buckets in metrics)
 ================================================================================*/
 
-import {empty,showLoadingSpinner,addDays,addHours,getDateInt,getDateDayInt,getHoursInt} from './util.js';
+import {empty,showLoadingSpinner,formatDate,addDays,addHours,getDateInt,getDateDayInt,getHoursInt} from './util.js';
 
 //var solarTileButton = document.getElementById("SolarTile");
 //solarTileButton.addEventListener("click", querySolarMetrics);
-const dailyTempCanvas = document.getElementById('DailyTempCanvas')
-const pointDateTimeDiv = document.getElementById('PointDateTime'); 
-const ytdWatts = document.getElementById('YtdWatts'); 
-
+const dailyTempCanvas = document.getElementById("DailyTempCanvas")
 var dailyTempChart = null
-
+var metricsStartDate = document.getElementById("MetricsStartDate")
+var startHour = document.getElementById("StartHour")
+var numHours = document.getElementById("NumHours")
 var getDataButton = document.getElementById("GetDataButton")
+var getDataButtonHTML = '<i class="fa fa-area-chart me-1"></i> Get Data'
+getDataButton.innerHTML = getDataButtonHTML
 getDataButton.addEventListener("click", queryGenvMetrics);
+
+metricsStartDate.value = formatDate()
+startHour.value = 7
+numHours.value = 2
+
+//var messageDisplay = document.getElementById("MessageDisplay")
+//<div id="MessageDisplay" class="m-2"></div>
+/*
+var addressInput = document.getElementById("address");
+document.getElementById("InputValues").addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+        // Cancel the default action, if needed
+        event.preventDefault()
+        fetchPropertiesData()
+    }
+})
+*/
 
 //------------------------------------------------------------------------------------------------------------
 // Query the database for menu and file information and store in js variables
 //------------------------------------------------------------------------------------------------------------
 export async function queryGenvMetrics(paramData) {
+
+    //let pointDateStartBucket = getDateDayInt(currDate)
+    let startDate = metricsStartDate.value
+    
+    startDate.substring(0,10)
+
+    let pointDateStartBucket = getDateInt(startDate)
+
     let currDate = new Date()
     //let pointMaxRows = 1500
     let pointMaxRows = 2000
     let hours = -4
     // or could do Beginning Hour and Ending Hour
 
-    let pointDateStartBucket = getDateDayInt(currDate)
-    let pointDayTime = getHoursInt(currDate,hours)
+    //startHour.value = 7
+    //numHours.value = 2
 
+    // create
+
+
+// Return an integer of the date + hours (2024123101)
+//export function getDateInt(inDateStr) {
+//startDateQuery = `{ TakenFileTime: { gte: ${getDateInt(paramData.MediaFilterStartDate)} } }`
+
+
+    //let pointDayTime = getHoursInt(currDate,hours)
+
+    /*
+    startHour.value
+    let formattedDate = td.substring(2,4) + 
+
+    let formattedDate = "1800-01-01 00:00:00"
+    if (inDateStr != null) {
+    }
+
+    return(parseInt(formattedDate))
+    */
+
+    startHour.value = 7
+    numHours.value = 2
+    
+
+    let startDayTime = 25070000
+    let endDayTime = 25080000
+    // "PointDayTime": 24060011,
+
+    //                YYddHHmm
     //"PointDayTime": 24060011,
     //orderBy: { LastUpdateDateTime: ASC },
 
@@ -69,7 +125,8 @@ type Joint @model {
             filter: { 
                 and: [ 
                     { PointDay: { eq: ${pointDateStartBucket} } }
-                    { PointDayTime: { gte: ${pointDayTime} } } 
+                    { PointDayTime: { gte: ${startDayTime} } } 
+                    { PointDayTime: { lt: ${endDayTime} } } 
                 ] 
             },
             orderBy: { PointDateTime: ASC },
@@ -103,7 +160,8 @@ type Joint @model {
         }
     }
 
-    showLoadingSpinner(pointDateTimeDiv)
+
+    showLoadingSpinner(getDataButton)
     const endpoint2 = "/data-api/graphql";
     const response = await fetch(endpoint2, {
         method: "POST",
@@ -111,7 +169,7 @@ type Joint @model {
         body: JSON.stringify(apiQuery2)
     })
     const result = await response.json()
-    empty(pointDateTimeDiv)
+    getDataButton.innerHTML = getDataButtonHTML
     if (result.errors != null) {
         console.log("Error: "+result.errors[0].message);
         console.table(result.errors);

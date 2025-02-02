@@ -17,9 +17,39 @@ spanSpinner.setAttribute("aria-hidden","true")
 var spanSpinnerStatus = document.createElement("span")
 spanSpinnerStatus.setAttribute("role","status")
 spanSpinnerStatus.textContent = "Loading..."
-    
+
 //=================================================================================================================
 // Module methods
+export function getESTTime(date) {
+    // Create a new Date object based on the input date
+    let inputDate = new Date(date);
+
+    // Format the date to EST/EDT using the Intl.DateTimeFormat API
+    let options = {
+        timeZone: 'America/New_York',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+    };
+
+    let formatter = new Intl.DateTimeFormat('en-US', options);
+    let parts = formatter.formatToParts(inputDate);
+
+    // Extract and return the formatted date parts
+    let formattedDate = parts.reduce((acc, part) => {
+        if (part.type !== 'literal') {
+            acc[part.type] = part.value;
+        }
+        return acc;
+    }, {});
+
+    return `${formattedDate.year}-${formattedDate.month}-${formattedDate.day} ${formattedDate.hour}:${formattedDate.minute}:${formattedDate.second}`;
+}
+
 export function showLoadingSpinner(docElement) {
     empty(docElement)
     docElement.appendChild(spanSpinner)            
@@ -99,33 +129,44 @@ export function getDateDayInt(inDate, days=0) {
 export function getDateInt(inDateStr) {
     let formattedDate = "1800-01-01 00:00:00"
     if (inDateStr != null) {
-        if (inDateStr.length >= 13) {
-            formattedDate = inDateStr.substring(0,4) + inDateStr.substring(5,7) + inDateStr.substring(8,10) + inDateStr.substring(11,13)
-        } else {
-            formattedDate = inDateStr.substring(0,4) + inDateStr.substring(5,7) + inDateStr.substring(8,10) + "00"
-        }
+        formattedDate = inDateStr.substring(0,4) + inDateStr.substring(5,7) + inDateStr.substring(8,10) 
     }
 
     return(parseInt(formattedDate))
 }
 
-export function getHoursInt(inDate,hours) {
+export function getHoursInt(inDate,startHour=7,numHours=2) {
     let td = new Date()
     if (inDate != null) {
         td = inDate
     }
 
-    let gmtAdjustment = 5
     td.setHours(td.getHours() + (parseInt(hours)-gmtAdjustment))  // Adjust for GMT time
     let dateStr = td.toISOString()  //2024-01-31T19:37:12.291Z
 
     //"PointDayTime": 24060011,
+
+
+
+    // Example usage
+    //let gmtDate = new Date('2025-01-26T12:00:00Z'); // GMT date
+    //console.log(getESTTime(gmtDate)); // Convert GMT to EST/EDT
+
 
     let formattedDate = "1800-01-01 00:00:00"
     if (dateStr != null) {
         formattedDate = dateStr.substring(2,4) + dateStr.substring(11,13) + dateStr.substring(14,16) + dateStr.substring(17,19)
     }
     return(parseInt(formattedDate))
+}
+
+export function formatDate(inDate) {
+    var td = inDate;
+    if (td == null) {
+        td = new Date();
+    }
+    let dateStr = td.toISOString()  //2024-01-31T19:37:12.291Z
+    return(dateStr.substring(0,10))
 }
 
     function urlParam(name) {
@@ -169,21 +210,6 @@ export function getHoursInt(inDate,hours) {
         return parseFloat(inAmountStr).toFixed(2);
     }
 
-    function formatDate(inDate) {
-        var tempDate = inDate;
-        if (tempDate == null) {
-            tempDate = new Date();
-        }
-        var tempMonth = tempDate.getMonth() + 1;
-        if (tempDate.getMonth() < 9) {
-            tempMonth = '0' + (tempDate.getMonth() + 1);
-        }
-        var tempDay = tempDate.getDate();
-        if (tempDate.getDate() < 10) {
-            tempDay = '0' + tempDate.getDate();
-        }
-        return tempDate.getFullYear() + '-' + tempMonth + '-' + tempDay;
-    }
 
     function formatDate2(inDate) {
         var tempDate = inDate;

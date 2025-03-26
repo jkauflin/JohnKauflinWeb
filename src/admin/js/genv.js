@@ -12,6 +12,7 @@ Modification History
                 display of last 10 values in a table
 2024-12-06 JJK  Added util module and loading spinner (and corrected 
                 getDateDayInt for the correct day buckets in metrics)
+2024-03-26 JJK  Modified to accept start and end hours from screen inputs
 ================================================================================*/
 
 import {empty,showLoadingSpinner,formatDate,addDays,addHours,getDateInt,getDateDayInt,getHoursInt} from './util.js';
@@ -22,7 +23,8 @@ const dailyTempCanvas = document.getElementById("DailyTempCanvas")
 var dailyTempChart = null
 var metricsStartDate = document.getElementById("MetricsStartDate")
 var startHour = document.getElementById("StartHour")
-var numHours = document.getElementById("NumHours")
+var stopHour = document.getElementById("StopHour")
+//var numHours = document.getElementById("NumHours")
 var getDataButton = document.getElementById("GetDataButton")
 var getDataButtonHTML = '<i class="fa fa-area-chart me-1"></i> Get Data'
 getDataButton.innerHTML = getDataButtonHTML
@@ -30,7 +32,8 @@ getDataButton.addEventListener("click", queryGenvMetrics);
 
 metricsStartDate.value = formatDate()
 startHour.value = 7
-numHours.value = 2
+stopHour.value = 8
+//numHours.value = 2
 
 //var messageDisplay = document.getElementById("MessageDisplay")
 //<div id="MessageDisplay" class="m-2"></div>
@@ -52,27 +55,18 @@ export async function queryGenvMetrics(paramData) {
 
     //let pointDateStartBucket = getDateDayInt(currDate)
     let startDate = metricsStartDate.value
-    
     startDate.substring(0,10)
-
     let pointDateStartBucket = getDateInt(startDate)
 
-    let currDate = new Date()
+    //let currDate = new Date()
     //let pointMaxRows = 1500
-    let pointMaxRows = 2000
-    let hours = -4
+    let pointMaxRows = 4000
+    //let hours = -4
     // or could do Beginning Hour and Ending Hour
 
-    //startHour.value = 7
-    //numHours.value = 2
-
-    // create
-
-
-// Return an integer of the date + hours (2024123101)
-//export function getDateInt(inDateStr) {
-//startDateQuery = `{ TakenFileTime: { gte: ${getDateInt(paramData.MediaFilterStartDate)} } }`
-
+    // Return an integer of the date + hours (2024123101)
+    //export function getDateInt(inDateStr) {
+    //startDateQuery = `{ TakenFileTime: { gte: ${getDateInt(paramData.MediaFilterStartDate)} } }`
 
     //let pointDayTime = getHoursInt(currDate,hours)
 
@@ -87,19 +81,36 @@ export async function queryGenvMetrics(paramData) {
     return(parseInt(formattedDate))
     */
 
-    startHour.value = 7
-    numHours.value = 2
+    //startHour.value = 7
+    //stopHour.value = 7
+    //numHours.value = 2
     
-
     let startDayTime = 25070000
     let endDayTime = 25080000
+
+    if (startHour.value < 10) {
+        startDayTime = parseInt("250"+startHour.value+"0000")
+    } else {
+        startDayTime = parseInt("25"+startHour.value+"0000")
+    }
+    if (stopHour.value < 10) {
+        endDayTime = parseInt("250"+stopHour.value+"0000")
+    } else {
+        endDayTime = parseInt("25"+stopHour.value+"0000")
+    }
+
     // "PointDayTime": 24060011,
+//WHERE c.PointDay = 20250324 and c.PointDayTime > 25110600
 
     //                YYddHHmm
     //"PointDayTime": 24060011,
     //orderBy: { LastUpdateDateTime: ASC },
 
 /*
+    "PointDay": 20250324,
+    "PointDateTime": "2025-03-24 10:58:23",
+    "PointDayTime": 25105823,
+
 type Joint @model {
   id: ID
   PointDay: Int
@@ -119,7 +130,11 @@ type Joint @model {
   relayMetricValue2: 70,
   relayName3: "heat",
   relayMetricValue3: 74,
-*/
+
+              orderBy: { PointDateTime: ASC },
+            first: ${pointMaxRows}
+
+  */
   let gql2 = `query {
         joints(
             filter: { 
@@ -175,7 +190,7 @@ type Joint @model {
         console.table(result.errors);
     } else {
         //console.log("result.data = "+result.data)
-        console.log("result.data # of joints = "+result.data.joints.items.length)
+        //console.log("result.data # of joints = "+result.data.joints.items.length)
         //console.table(result.data.joints.items);
         //console.table(result.data.totals.items);
         //console.table(result.data.yearTotals.items);
@@ -186,9 +201,12 @@ type Joint @model {
 
         let pointData = []
         if (result.data.joints.items.length > 0) {
+            let cnt = 0
             result.data.joints.items.forEach((point) => {
+                cnt++
                 pointLocalDateTime = convertUTCDateToLocalDate(new Date(point.PointDateTime));
                 PointDateTime = pointLocalDateTime.toISOString()
+                //console.log(cnt+", PointDateTime: "+PointDateTime+", point.currTemperature: "+point.currTemperature)
                 pointData.push({ 
                     time: PointDateTime.substring(11,16), 
                     currTemp: parseFloat(point.currTemperature) })
@@ -215,7 +233,7 @@ function convertUTCDateToLocalDate(date) {
 function displayCharts(pointData) {
 
     if (dailyTempChart == null) {
-        console.log(">>> create dailyTempChart")
+        //console.log(">>> create dailyTempChart")
         dailyTempChart = new Chart(dailyTempCanvas, {
             type: 'line',
             data: {
@@ -240,6 +258,7 @@ function displayCharts(pointData) {
           })
     } else {
         //console.log(">>> UPDATE dailyTempChart")
+        dailyTempChart.data.labels = pointData.map(row => row.time)
         dailyTempChart.data.datasets[0].data = pointData.map(row => row.currTemp)
         dailyTempChart.update()
     }

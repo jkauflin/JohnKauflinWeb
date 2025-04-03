@@ -12,12 +12,12 @@ Modification History
                 display of last 10 values in a table
 2024-12-06 JJK  Added util module and loading spinner (and corrected 
                 getDateDayInt for the correct day buckets in metrics)
-2024-03-26 JJK  Modified to accept start and end hours from screen inputs
+2025-03-26 JJK  Modified to accept start and end hours from screen inputs
+2025-04-02 JJK  Working on start and stop date and time
 ================================================================================*/
 
 import {empty,showLoadingSpinner,formatDate,addDays,addHours,getDateInt,getDateDayInt,getHoursInt} from './util.js';
 
-//var solarTileButton = document.getElementById("SolarTile");
 //solarTileButton.addEventListener("click", querySolarMetrics);
 const dailyTempCanvas = document.getElementById("DailyTempCanvas")
 var dailyTempChart = null
@@ -25,15 +25,19 @@ var metricsStartDate = document.getElementById("MetricsStartDate")
 var metricsStopDate = document.getElementById("MetricsStopDate")
 //var startHour = document.getElementById("StartHour")
 //var stopHour = document.getElementById("StopHour")
-//var numHours = document.getElementById("NumHours")
+var numHours = document.getElementById("NumHours")
 var getDataButton = document.getElementById("GetDataButton")
 var getDataButtonHTML = '<i class="fa fa-area-chart me-1"></i> Get Data'
 getDataButton.innerHTML = getDataButtonHTML
 getDataButton.addEventListener("click", queryGenvMetrics);
 
-
-metricsStartDate.value = formatDate()
-metricsStopDate.value = formatDate()
+//var currDT = new Date()
+//console.log("currDT = "+currDT+", currDT.toISOString() = "+currDT.toISOString()+", 0,16 = "+currDT.toISOString().substring(0,16))
+//metricsStartDate.value = formatDate()
+//metricsStartDate.value = '2025-04-02T21:27'
+metricsStartDate.value = getLocalISOTime()
+//metricsStopDate.value = formatDate()
+//metricsStopDate.value = getLocalISOTime()
 
 /*
 let dateStr = td.toISOString()  //2024-01-31T19:37:12.291Z
@@ -62,17 +66,37 @@ document.getElementById("InputValues").addEventListener("keypress", function(eve
 })
 */
 
+function getLocalISOTime() {
+    const now = new Date();
+    const localISO = now.getFullYear() +
+      "-" + String(now.getMonth() + 1).padStart(2, '0') +
+      "-" + String(now.getDate()).padStart(2, '0') +
+      "T" + String(now.getHours()).padStart(2, '0') +
+      ":" + String(now.getMinutes()).padStart(2, '0') +
+      ":" + String(now.getSeconds()).padStart(2, '0');
+    
+    return localISO;
+  }
+  //console.log(getLocalISOTime()); // Example output: "2025-04-02T21:45:00"
+
 //------------------------------------------------------------------------------------------------------------
 // Query the database for menu and file information and store in js variables
 //------------------------------------------------------------------------------------------------------------
 export async function queryGenvMetrics(paramData) {
 
     //let pointDateStartBucket = getDateDayInt(currDate)
-    let startDate = metricsStartDate.value
-    let stopDate = metricsStopDate.value
+    let startDate = new Date(metricsStartDate.value)
+    console.log("startDate = "+startDate)
+    //metricsStartDate.value = '2025-04-02T21:27'
+    //let stopDate = metricsStopDate.value
+    numHours.value
+
+    // Add 5 hours
+    //date.setHours(date.getHours() + 5);
 
     startDate.substring(0,10)
     let pointDateStartBucket = getDateInt(startDate)
+
 
     //let currDate = new Date()
     //let pointMaxRows = 1500

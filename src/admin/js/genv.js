@@ -22,18 +22,32 @@ import {empty,showLoadingSpinner,formatDate,addDays,addHours,getDateInt,getDateD
 const dailyTempCanvas = document.getElementById("DailyTempCanvas")
 var dailyTempChart = null
 var metricsStartDate = document.getElementById("MetricsStartDate")
-var startHour = document.getElementById("StartHour")
-var stopHour = document.getElementById("StopHour")
+var metricsStopDate = document.getElementById("MetricsStopDate")
+//var startHour = document.getElementById("StartHour")
+//var stopHour = document.getElementById("StopHour")
 //var numHours = document.getElementById("NumHours")
 var getDataButton = document.getElementById("GetDataButton")
 var getDataButtonHTML = '<i class="fa fa-area-chart me-1"></i> Get Data'
 getDataButton.innerHTML = getDataButtonHTML
 getDataButton.addEventListener("click", queryGenvMetrics);
 
+
 metricsStartDate.value = formatDate()
+metricsStopDate.value = formatDate()
+
+/*
+let dateStr = td.toISOString()  //2024-01-31T19:37:12.291Z
+
+<input
+id="party"
+type="datetime-local"
+name="party-date"
+value="2017-06-01T08:30" />
+
 startHour.value = 7
 stopHour.value = 8
 //numHours.value = 2
+*/
 
 //var messageDisplay = document.getElementById("MessageDisplay")
 //<div id="MessageDisplay" class="m-2"></div>
@@ -55,6 +69,8 @@ export async function queryGenvMetrics(paramData) {
 
     //let pointDateStartBucket = getDateDayInt(currDate)
     let startDate = metricsStartDate.value
+    let stopDate = metricsStopDate.value
+
     startDate.substring(0,10)
     let pointDateStartBucket = getDateInt(startDate)
 
@@ -88,6 +104,7 @@ export async function queryGenvMetrics(paramData) {
     let startDayTime = 25070000
     let endDayTime = 25080000
 
+    /*
     if (startHour.value < 10) {
         startDayTime = parseInt("250"+startHour.value+"0000")
     } else {
@@ -98,6 +115,7 @@ export async function queryGenvMetrics(paramData) {
     } else {
         endDayTime = parseInt("25"+stopHour.value+"0000")
     }
+    */
 
     // "PointDayTime": 24060011,
 //WHERE c.PointDay = 20250324 and c.PointDayTime > 25110600
@@ -190,7 +208,7 @@ type Joint @model {
         console.table(result.errors);
     } else {
         //console.log("result.data = "+result.data)
-        //console.log("result.data # of joints = "+result.data.joints.items.length)
+        console.log("result.data # of joints = "+result.data.joints.items.length)
         //console.table(result.data.joints.items);
         //console.table(result.data.totals.items);
         //console.table(result.data.yearTotals.items);

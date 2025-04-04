@@ -141,12 +141,11 @@ export function getHoursInt(inDate,startHour=7,numHours=2) {
         td = inDate
     }
 
-    td.setHours(td.getHours() + (parseInt(hours)-gmtAdjustment))  // Adjust for GMT time
+    //td.setHours(td.getHours() + (parseInt(hours)-gmtAdjustment))  // Adjust for GMT time
+
     let dateStr = td.toISOString()  //2024-01-31T19:37:12.291Z
 
     //"PointDayTime": 24060011,
-
-
 
     // Example usage
     //let gmtDate = new Date('2025-01-26T12:00:00Z'); // GMT date

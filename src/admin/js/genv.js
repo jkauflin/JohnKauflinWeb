@@ -88,16 +88,17 @@ export async function queryGenvMetrics(paramData) {
     let startDate = new Date(metricsStartDate.value)
     console.log("startDate = "+startDate)
     //metricsStartDate.value = '2025-04-02T21:27'
+
     //let stopDate = metricsStopDate.value
-    numHours.value
+    let stopDate = startDate
+    let tempHours = parseInt(numHours.value)
+    stopDate.setHours(startDate.getHours() + tempHours);
+    console.log("stopDate = "+stopDate)
+    let pointDateStartBucket = getDateInt(startDate.toISOString())
+    let startDayTime = getHoursInt(startDate)
+    let endDayTime = getHoursInt(stopDate)
 
-    // Add 5 hours
-    //date.setHours(date.getHours() + 5);
-
-    startDate.substring(0,10)
-    let pointDateStartBucket = getDateInt(startDate)
-
-
+    //let pointDayTime = getHoursInt(currDate,hours)
     //let currDate = new Date()
     //let pointMaxRows = 1500
     let pointMaxRows = 4000
@@ -108,7 +109,6 @@ export async function queryGenvMetrics(paramData) {
     //export function getDateInt(inDateStr) {
     //startDateQuery = `{ TakenFileTime: { gte: ${getDateInt(paramData.MediaFilterStartDate)} } }`
 
-    //let pointDayTime = getHoursInt(currDate,hours)
 
     /*
     startHour.value
@@ -125,8 +125,8 @@ export async function queryGenvMetrics(paramData) {
     //stopHour.value = 7
     //numHours.value = 2
     
-    let startDayTime = 25070000
-    let endDayTime = 25080000
+    //let startDayTime = 25070000
+    //let endDayTime = 25080000
 
     /*
     if (startHour.value < 10) {

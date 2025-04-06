@@ -69,6 +69,19 @@ export function paddy(num, padlen, padchar) {
     return (pad + num).slice(-pad.length)
 }
 
+function getLocalISOTime() {
+    const now = new Date();
+    const localISO = now.getFullYear() +
+      "-" + String(now.getMonth() + 1).padStart(2, '0') +
+      "-" + String(now.getDate()).padStart(2, '0') +
+      "T" + String(now.getHours()).padStart(2, '0') +
+      ":" + String(now.getMinutes()).padStart(2, '0') +
+      ":" + String(now.getSeconds()).padStart(2, '0');
+    
+    return localISO;
+  }
+  //console.log(getLocalISOTime()); // Example output: "2025-04-02T21:45:00"
+
 export function addDays(inDate, days) {
     //let td = new Date(inDate)
     let td = inDate
@@ -125,7 +138,7 @@ export function getDateDayInt(inDate, days=0) {
     return(parseInt(formattedDate))
 }
 
-// Return an integer of the date + hours (2024123101)
+// Return an integer of the date + hours (2024123101)   NO - just date
 export function getDateInt(inDateStr) {
     let formattedDate = "1800-01-01 00:00:00"
     if (inDateStr != null) {

@@ -102,7 +102,7 @@
         <div class="row">
             <div class="col-5 col-sm-4 col-lg-3 col-xl-2 mt-2">
                 <div class="form-floating">
-                    <input type="datetime-local" class="form-control shadow-none" id="MetricsStartDate">
+                    <input type="date" class="form-control shadow-none" id="MetricsStartDate">
                     <label for="MetricsStartDate">Metrics Start Date</label>
                 </div>
             </div>
@@ -113,27 +113,14 @@
         <div class="row">
             <div class="col-3 col-sm-2 col-xl-1 mt-2">
                 <div class="form-floating">
-                    <input id="NumHours" type="number" min="1" class="form-control shadow-none">
-                    <label for="NumHours">Hours</label>
-                    <!--
-                    <div class="form-floating">
-                        <input type="datetime-local" class="form-control shadow-none" id="MetricsStopDate">
-                        <label for="MetricsStopDate">Metrics Stop Date</label>
-                    </div>
-                    <input id="StartHour" type="number" min="0" max="23" class="form-control shadow-none">
+                    <input id="StartHour" type="number" min="0" max="24" class="form-control shadow-none">
                     <label for="StartHour">Start Hour</label>
-                    -->
                 </div>
             </div>
             <div class="col-3 col-sm-2 col-xl-1 mt-2">
                 <div class="form-floating">
-                    <!--
-                    <input id="StopHour" type="number" min="0" max="23" class="form-control shadow-none">
+                    <input id="StopHour" type="number" min="0" max="24" class="form-control shadow-none">
                     <label for="StopHour">Stop Hour</label>
-                    <input id="NumHours" type="number" min="1" class="form-control shadow-none">
-                    <label for="NumHours">Hours</label>
-                    -->
-
                 </div>
             </div>
         </div>

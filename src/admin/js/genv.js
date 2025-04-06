@@ -85,15 +85,20 @@ function getLocalISOTime() {
 export async function queryGenvMetrics(paramData) {
 
     //let pointDateStartBucket = getDateDayInt(currDate)
+    let startDateISOStr = metricsStartDate.value
+
     let startDate = new Date(metricsStartDate.value)
     console.log("startDate = "+startDate)
     //metricsStartDate.value = '2025-04-02T21:27'
 
     //let stopDate = metricsStopDate.value
-    let stopDate = startDate
+    let stopDate = new Date(metricsStartDate.value)
     let tempHours = parseInt(numHours.value)
-    stopDate.setHours(startDate.getHours() + tempHours);
+    let startHours = startDate.getHours()
+    stopDate.setHours(startHours + tempHours);
     console.log("stopDate = "+stopDate)
+    console.log("startDate = "+startDate)
+
     let pointDateStartBucket = getDateInt(startDate.toISOString())
     let startDayTime = getHoursInt(startDate)
     let endDayTime = getHoursInt(stopDate)

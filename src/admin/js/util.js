@@ -20,6 +20,17 @@ spanSpinnerStatus.textContent = "Loading..."
 
 //=================================================================================================================
 // Module methods
+export function convertUTCDateToLocalDate(date) {
+    var newDate = new Date(date.getTime()+date.getTimezoneOffset()*60*1000);
+
+    var offset = date.getTimezoneOffset() / 60;
+    var hours = date.getHours();
+
+    newDate.setHours(hours - offset);
+
+    return newDate;   
+}
+
 export function getESTTime(date) {
     // Create a new Date object based on the input date
     let inputDate = new Date(date);
@@ -69,7 +80,7 @@ export function paddy(num, padlen, padchar) {
     return (pad + num).slice(-pad.length)
 }
 
-function getLocalISOTime() {
+export function getLocalISOTime() {
     const now = new Date();
     const localISO = now.getFullYear() +
       "-" + String(now.getMonth() + 1).padStart(2, '0') +

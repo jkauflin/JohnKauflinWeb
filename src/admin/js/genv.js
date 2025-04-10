@@ -13,12 +13,13 @@ Modification History
 2024-12-06 JJK  Added util module and loading spinner (and corrected 
                 getDateDayInt for the correct day buckets in metrics)
 2025-03-26 JJK  Modified to accept start and end hours from screen inputs
-2025-04-02 JJK  Working on start and stop date and time
+2025-04-02 JJK  Working on start and stop date and time - realized it was more
+                complicated to convert to datetime and use date match functions
+                Just kept it simple with a start date and start & stop hours
 ================================================================================*/
 
-import {empty,showLoadingSpinner,formatDate,addDays,addHours,getDateInt,getDateDayInt,getHoursInt} from './util.js';
+import {empty,showLoadingSpinner,convertUTCDateToLocalDate,formatDate,addDays,addHours,getDateInt,getDateDayInt,getHoursInt} from './util.js';
 
-//solarTileButton.addEventListener("click", querySolarMetrics);
 const dailyTempCanvas = document.getElementById("DailyTempCanvas")
 var dailyTempChart = null
 var metricsStartDate = document.getElementById("MetricsStartDate")
@@ -31,8 +32,10 @@ getDataButton.addEventListener("click", queryGenvMetrics);
 
 var currDT = new Date()
 metricsStartDate.value = currDT.toISOString().split('T')[0];
-startHour.value = 0
-stopHour.value = 24
+//startHour.value = 0
+startHour.value = 13
+//stopHour.value = 24
+stopHour.value = 14
 
 //------------------------------------------------------------------------------------------------------------
 // Query the database for menu and file information and store in js variables
@@ -106,7 +109,6 @@ type Joint @model {
         }
     }
 
-
     showLoadingSpinner(getDataButton)
     const endpoint2 = "/data-api/graphql";
     const response = await fetch(endpoint2, {
@@ -121,27 +123,55 @@ type Joint @model {
         console.table(result.errors);
     } else {
         //console.log("result.data = "+result.data)
-        //console.log("result.data # of joints = "+result.data.joints.items.length)
+        console.log("result.data # of joints = "+result.data.joints.items.length)
         //console.table(result.data.joints.items);
         //console.table(result.data.totals.items);
         //console.table(result.data.yearTotals.items);
 
         //"2024-05-10T11:51:34.6353964-04:00"
+        let numOfDataPoints = result.data.joints.items.length
+        let avgGrandTotal = 0.0
+        let average = 0.0
         let pointLocalDateTime = null
         let PointDateTime = ""
 
+        // >>>>> calculate a single AVG value for the entire dataset
+
         let pointData = []
-        if (result.data.joints.items.length > 0) {
+        if (numOfDataPoints > 0) {
             let cnt = 0
+            //let numPointsForAvg = 50.0
+            let numPointsForAvg = numOfDataPoints / 20
+            console.log(">>> numPointsForAvg = "+numPointsForAvg)
+            let avgCnt = 0
+            let avgTotal = result.data.joints.items[0].currTemperature
+            let avgValue = result.data.joints.items[0].currTemperature  // Start it out at the 1st value
             result.data.joints.items.forEach((point) => {
                 cnt++
                 pointLocalDateTime = convertUTCDateToLocalDate(new Date(point.PointDateTime));
                 PointDateTime = pointLocalDateTime.toISOString()
-                //console.log(cnt+", PointDateTime: "+PointDateTime+", point.currTemperature: "+point.currTemperature)
+
+                avgCnt++
+                avgTotal += point.currTemperature
+                avgGrandTotal += point.currTemperature
+
+                // every X points
+                if (avgCnt == numPointsForAvg-1) {
+                    avgValue = avgTotal / numPointsForAvg
+                    avgCnt = 0
+                    avgTotal = point.currTemperature
+                }
+
+                //console.log(cnt+", "+PointDateTime+", currTemp: "+point.currTemperature+", avgCnt: "+avgCnt+", avgTotal: "+avgTotal+", avgValue: "+avgValue)
+
                 pointData.push({ 
                     time: PointDateTime.substring(11,16), 
-                    currTemp: parseFloat(point.currTemperature) })
+                    currTemp: parseFloat(point.currTemperature),
+                    avgTemp: parseFloat(avgValue) })
             })
+
+            average = avgGrandTotal / numOfDataPoints
+            console.log("$$$$$ average = "+average)
         }
 
         if (pointData.length > 0) {
@@ -150,18 +180,10 @@ type Joint @model {
     }
 }
 
-function convertUTCDateToLocalDate(date) {
-    var newDate = new Date(date.getTime()+date.getTimezoneOffset()*60*1000);
-
-    var offset = date.getTimezoneOffset() / 60;
-    var hours = date.getHours();
-
-    newDate.setHours(hours - offset);
-
-    return newDate;   
-}
 
 function displayCharts(pointData) {
+
+    // create the 2nd dataset by taking the average of X number of data points (like every 10 or 100?)
 
     if (dailyTempChart == null) {
         //console.log(">>> create dailyTempChart")
@@ -169,15 +191,24 @@ function displayCharts(pointData) {
             type: 'line',
             data: {
               labels: pointData.map(row => row.time),
-              datasets: [{
-                label: 'Tempature over time',
-                data: pointData.map(row => row.currTemp),
-                pointRadius: 0,
-                borderWidth: 1,
-                borderColor: 'rgb(218,165,32)',
-                backgroundColor: 'gold',
-                fill: true
-              }]
+              datasets: [
+                {
+                    label: 'Average Tempature',
+                    data: pointData.map(row => row.avgTemp),
+                    pointRadius: 0,
+                    borderWidth: 1,
+                    borderColor: 'red',
+                },
+                {
+                    label: 'Tempature over time',
+                    data: pointData.map(row => row.currTemp),
+                    pointRadius: 0,
+                    borderWidth: 1,
+                    borderColor: 'rgb(218,165,32)',
+                    backgroundColor: 'gold',
+                    fill: true
+                }
+            ]
             },
             options: {
               scales: {

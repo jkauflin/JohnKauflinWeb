@@ -364,10 +364,10 @@ function displayTotals(totalsData,lifetimeTotal) {
         tr.appendChild(td);
 
         td = document.createElement("td");
-        td.innerHTML = tot.TotalValue
+        td.innerHTML = parseInt(tot.TotalValue)
         tr.appendChild(td);
         totalsTbody.appendChild(tr)
-        ytdWattsVal = tot.TotalValue
+        ytdWattsVal = parseInt(tot.TotalValue)
     })
 
     ytdWatts.innerHTML = "YTD Watts: " + ytdWattsVal + " kWh"

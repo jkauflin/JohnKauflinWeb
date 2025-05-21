@@ -49,19 +49,19 @@
  const MediaPageLinkClass = "media-page";
  
 // Keep track of the state of the navbar collapse (shown or hidden)
-var navbarCollapseShown = false;
+var navbarCollapseShownAdmin = false;
 var collapsibleNavbar = document.getElementsByClassName("navbar-collapse")[0];
 collapsibleNavbar.addEventListener('hidden.bs.collapse', function () {
-    navbarCollapseShown = false;
+    navbarCollapseShownAdmin = false;
 })
 collapsibleNavbar.addEventListener('shown.bs.collapse', function () {
-    navbarCollapseShown = true;
+    navbarCollapseShownAdmin = true;
 })
  
 // Listen for nav-link clicks
 document.querySelectorAll("a.nav-link").forEach(el => el.addEventListener("click", function (event) {
     // Automatically hide the navbar collapse when an item link is clicked (and the collapse is currently shown)
-    if (navbarCollapseShown) {
+    if (navbarCollapseShownAdmin) {
         new bootstrap.Collapse(document.getElementsByClassName("navbar-collapse")[0]).hide()
     }
 }))

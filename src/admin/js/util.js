@@ -20,6 +20,32 @@ spanSpinnerStatus.textContent = "Loading..."
 
 //=================================================================================================================
 // Module methods
+
+export async function checkFetchResponse(response) {
+    if (!response.ok) {
+        let errMessage = "Error unknown"
+        if (response.statusText != "") {
+            errMessage = response.statusText
+        }
+        try {
+            let responseText = await response.text()
+            if (responseText != "") {
+                errMessage = responseText
+            }
+            // Check if there is a JSON structure in the response (which contains errors)
+            const result = JSON.parse(errMessage)
+            if (result.errors != null) {
+                console.log("Error: "+result.errors[0].message)
+                console.table(result.errors)
+                errMessage = result.errors[0].message
+            }
+        } catch (err) {
+            // Ignore JSON parse errors from trying to find structures in the response
+        }
+        throw new Error(errMessage)
+    } 
+}
+
 export function convertUTCDateToLocalDate(date) {
     var newDate = new Date(date.getTime()+date.getTimezoneOffset()*60*1000);
 
@@ -73,6 +99,66 @@ export function empty(node) {
         node.removeChild(node.firstChild)
     }
 }
+
+
+export function setTD(tdType,value,classStr="") {
+    let td = document.createElement("td")
+    if (classStr != "") {
+        // The .split(" ") method converts the string into an array of class names
+        // The spread operator (...) ensures each class is added individually
+        td.classList.add(...classStr.split(" "))
+    }
+    if (tdType == "text") {
+        td.textContent = value
+    } else if (tdType == "date") {
+        td.textContent = standardizeDate(value)
+    } else if (tdType == "money") {
+        td.textContent = formatMoney(value)
+    } else if (tdType == "checkbox") {
+        let checkbox = document.createElement("input");
+        checkbox.type = tdType;
+        checkbox.classList.add('form-check-input','shadow-none')
+        checkbox.checked = (value == 1) ? checkbox.checked = true : false
+        checkbox.disabled = true;
+        td.appendChild(checkbox)
+    }
+    return td
+}
+
+export function setCheckbox(checkVal) {
+    var tempStr = '';
+    if (checkVal == 1) {
+        tempStr = 'checked=true';
+    }
+    return '<input type="checkbox" ' + tempStr + ' disabled="disabled">';
+}
+
+function standardizeDate(dateStr) {
+    let outDateStr = dateStr
+    const containsSlash = dateStr.includes("/")
+    if (containsSlash) {
+        const [month, day, year] = slashDate.split("/")
+        outDateStr = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`
+    }
+    return outDateStr
+}
+
+export function formatDate(inDate) {
+    var tempDate = inDate;
+    if (tempDate == null) {
+        tempDate = new Date();
+    }
+    var tempMonth = tempDate.getMonth() + 1;
+    if (tempDate.getMonth() < 9) {
+        tempMonth = '0' + (tempDate.getMonth() + 1);
+    }
+    var tempDay = tempDate.getDate();
+    if (tempDate.getDate() < 10) {
+        tempDay = '0' + tempDate.getDate();
+    }
+    return tempDate.getFullYear() + '-' + tempMonth + '-' + tempDay;
+}
+
 
 export function paddy(num, padlen, padchar) {
     var pad_char = typeof padchar !== 'undefined' ? padchar : '0'
@@ -183,6 +269,7 @@ export function getHoursInt(inDate,startHour=7,numHours=2) {
     return(parseInt(formattedDate))
 }
 
+/*
 export function formatDate(inDate) {
     var td = inDate;
     if (td == null) {
@@ -191,6 +278,7 @@ export function formatDate(inDate) {
     let dateStr = td.toISOString()  //2024-01-31T19:37:12.291Z
     return(dateStr.substring(0,10))
 }
+*/
 
     function urlParam(name) {
         var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
@@ -234,22 +322,6 @@ export function formatDate(inDate) {
     }
 
 
-    function formatDate2(inDate) {
-        var tempDate = inDate;
-        if (tempDate == null) {
-            tempDate = new Date();
-        }
-        var tempMonth = tempDate.getMonth() + 1;
-        if (tempDate.getMonth() < 9) {
-            tempMonth = '0' + (tempDate.getMonth() + 1);
-        }
-        var tempDay = tempDate.getDate();
-        if (tempDate.getDate() < 10) {
-            tempDay = '0' + tempDate.getDate();
-        }
-        return tempDate.getFullYear() + '-' + tempMonth + '-' + tempDay;
-    }
-
     var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     function formatDateMonth(inDate) {
         var tempDate = inDate;
@@ -267,13 +339,6 @@ export function formatDate(inDate) {
             tempStr = "YES";
         }
         return tempStr;
-    }
-    function setCheckbox(checkVal) {
-        var tempStr = '';
-        if (checkVal == 1) {
-            tempStr = 'checked=true';
-        }
-        return '<input type="checkbox" ' + tempStr + ' disabled="disabled">';
     }
     //function setCheckboxEdit(checkVal, idName) {
     function setCheckboxEdit(idName, checkVal) {

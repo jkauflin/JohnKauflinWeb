@@ -19,7 +19,7 @@ Modification History
 2025-04-12 JJK  Adding average calculations
 ================================================================================*/
 
-import {empty,showLoadingSpinner,convertUTCDateToLocalDate,formatDate,addDays,addHours,getDateInt,getDateDayInt,getHoursInt} from './util.js';
+import {empty,showLoadingSpinner,checkFetchResponse,convertUTCDateToLocalDate,formatDate,addDays,addHours,getDateInt,getDateDayInt,getHoursInt} from './util.js';
 
 const dailyTempCanvas = document.getElementById("DailyTempCanvas")
 var dailyTempChart = null
@@ -115,6 +115,30 @@ type Joint @model {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(apiQuery2)
     })
+
+    /*
+    try {
+        const response = await fetch("/api/GetHoaRec", {
+            method: "POST",
+            //headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "text/plain" },
+            body: parcelId
+        })
+        await checkFetchResponse(response)
+        // Success
+        //hoaRec = await response.json();
+        let hoaRec = await response.json();
+        messageDisplay.textContent = ""
+        displayDetail(hoaRec)
+
+    } catch (err) {
+        console.error(err)
+        messageDisplay.textContent = `Error in Fetch: ${err.message}`
+    }
+    */
+
+
+
     const result = await response.json()
     getDataButton.innerHTML = getDataButtonHTML
     if (result.errors != null) {

@@ -295,7 +295,8 @@ namespace JohnKauflinWeb.Function
                 //var queryText = $"SELECT * FROM c ";
                 var feed = container.GetItemQueryIterator<GenvImage>(queryDefinition);
                 int cnt = 0;
-                while (feed.HasMoreResults)
+                bool done = false;
+                while (feed.HasMoreResults && !done)
                 {
                     var response = await feed.ReadNextAsync();
                     foreach (var item in response)
@@ -311,11 +312,9 @@ namespace JohnKauflinWeb.Function
                         */
                         // Get the string value of base64 image data from the most recent photo
                         base64ImgData = item.ImgData;
+                        done = true;
                     }
                 }
-                
-//       res.send(base64ImgData)
-
             }
             catch (Exception ex)
             {

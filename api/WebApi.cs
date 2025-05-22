@@ -39,7 +39,6 @@ namespace JohnKauflinWeb.Function
             log = logger;
             config = configuration;
             apiCosmosDbConnStr = config["API_COSMOS_DB_CONN_STR"];
-            //apiCosmosDbConnStr = config["JJKDBNEW1_CONN_STR"];
 
             authCheck = new AuthorizationCheck(log);
             userAdminRole = "jjkadmin";   // add to config ???
@@ -50,7 +49,8 @@ namespace JohnKauflinWeb.Function
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequestData req)
         {
             string userName = "";
-            if (!authCheck.UserAuthorizedForRole(req,userAdminRole,out userName)) {
+            if (!authCheck.UserAuthorizedForRole(req, userAdminRole, out userName))
+            {
                 return new BadRequestObjectResult("Unauthorized call - User does not have the correct Admin role");
             }
 
@@ -62,7 +62,8 @@ namespace JohnKauflinWeb.Function
             //------------------------------------------------------------------------------------------------------------------
             string responseMessage = "";
 
-            try {
+            try
+            {
 
                 /*
                 // Get the content string from the HTTP request body
@@ -85,27 +86,33 @@ namespace JohnKauflinWeb.Function
 
                 var content = await new StreamReader(req.Body).ReadToEndAsync();
                 var updParamData = JsonConvert.DeserializeObject<UpdateParamData>(content);
-                if (updParamData == null) {
+                if (updParamData == null)
+                {
                     return new OkObjectResult("Parameter content was NULL");
                 }
                 string databaseId = "jjkdb1";
                 string containerId = "MediaInfo";
-                CosmosClient cosmosClient = new CosmosClient(apiCosmosDbConnStr); 
+                CosmosClient cosmosClient = new CosmosClient(apiCosmosDbConnStr);
                 Database db = cosmosClient.GetDatabase(databaseId);
                 Container container = db.GetContainer(containerId);
                 int updCnt = 0;
                 int tempIndex = -1;
-                foreach (Item item in updParamData.MediaInfoFileList) 
+                foreach (Item item in updParamData.MediaInfoFileList)
                 {
                     tempIndex++;
-                    if (updParamData.FileListIndex >= 0) {
+                    if (updParamData.FileListIndex >= 0)
+                    {
                         // Check for update of a particular specified file
-                        if (tempIndex != updParamData.FileListIndex) {
+                        if (tempIndex != updParamData.FileListIndex)
+                        {
                             continue;
                         }
-                    } else {
+                    }
+                    else
+                    {
                         // If not a particular file, check for "selected" files to update
-                        if (!item.Selected) {
+                        if (!item.Selected)
+                        {
                             continue;
                         }
                     }
@@ -133,7 +140,7 @@ namespace JohnKauflinWeb.Function
                                     mediaInfo.Title.ToLower() + " " +
                                     mediaInfo.Description.ToLower() + " " +
                                     mediaInfo.People.ToLower();
-                            await container.UpsertItemAsync(mediaInfo,new PartitionKey(mediaInfo.MediaTypeId));
+                            await container.UpsertItemAsync(mediaInfo, new PartitionKey(mediaInfo.MediaTypeId));
                             updCnt++;
                         }
                     }
@@ -141,7 +148,8 @@ namespace JohnKauflinWeb.Function
 
                 responseMessage = $"Number of records saved = {updCnt}";
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 responseMessage = $"Exception in update, message = {ex.Message}";
             }
 
@@ -154,7 +162,8 @@ namespace JohnKauflinWeb.Function
         [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequestData req)
         {
             string userName = "";
-            if (!authCheck.UserAuthorizedForRole(req,userAdminRole,out userName)) {
+            if (!authCheck.UserAuthorizedForRole(req, userAdminRole, out userName))
+            {
                 return new BadRequestObjectResult("Unauthorized call - User does not have the correct Admin role");
             }
 
@@ -167,8 +176,9 @@ namespace JohnKauflinWeb.Function
             string containerId = "MediaPeople";
             List<string> peopleList = new List<string>();
 
-            try {
-                CosmosClient cosmosClient = new CosmosClient(apiCosmosDbConnStr); 
+            try
+            {
+                CosmosClient cosmosClient = new CosmosClient(apiCosmosDbConnStr);
                 Database db = cosmosClient.GetDatabase(databaseId);
                 Container container = db.GetContainer(containerId);
 
@@ -187,12 +197,18 @@ namespace JohnKauflinWeb.Function
                     }
                 }
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 return new BadRequestObjectResult($"Exception in DB query to {containerId}, message = {ex.Message}");
             }
 
             return new OkObjectResult(peopleList);
         }
+        
+
+        // Genv functions???
+
+
     } // public class WebApi
 
 } // namespace JohnKauflinWeb.Function

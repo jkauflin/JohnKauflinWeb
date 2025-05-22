@@ -34,7 +34,7 @@
 <body>
 <nav class="navbar navbar-expand-sm bg-dark navbar-dark" role="navigation">
     <div class="container-fluid">
-        <a class="navbar-brand" href="/">JJK ADMIN</a>
+        <a class="navbar-brand" href="/">JJK Admin</a>
         <button class="navbar-toggler shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -99,65 +99,238 @@
     </div><!-- end of Media -->
 
     <div class="tab-pane" id="GenvPage">
-        <div class="row">
-            <div class="col-5 col-sm-4 col-lg-3 col-xl-2 mt-2">
-                <div class="form-floating">
-                    <input type="date" class="form-control shadow-none" id="MetricsStartDate">
-                    <label for="MetricsStartDate">Metrics Start Date</label>
-                </div>
-            </div>
 
-            <div class="col-3 col-sm-2 col-xl-1 mt-2">
-                <div class="form-floating">
-                    <input id="StartHour" type="number" min="0" max="24" class="form-control shadow-none">
-                    <label for="StartHour">Start</label>
-                </div>
-            </div>
-            <div class="col-3 col-sm-2 col-xl-1 mt-2">
-                <div class="form-floating">
-                    <input id="StopHour" type="number" min="0" max="24" class="form-control shadow-none">
-                    <label for="StopHour">Stop</label>
-                </div>
-            </div>
+        <div class="row">			
 
+			<div class="col-sm-3 col-md-3">
+                <!-- Col 1 -->
+                <div class="row m-1">
+                    <div class="col-3 p-0">
+                        <div class="form-floating m-1">
+                            <input id="targetTemperature" type="number" class="form-control shadow-none">
+                            <label for="targetTemperature">Target Temp</label>
+                        </div>
+                        <div class="form-floating m-1">
+                            <input id="currTemperature" type="number" class="form-control shadow-none" disabled>
+                            <label for="currTemperature">Curr Temp</label>
+                        </div>
+                        
+                        <button id="GetDataButton" type="button" class="btn btn-success m-2 float-end">Get</button>
+
+                    </div>
+
+                    <div class="col p-0">
+                        <div class="form-floating m-1">
+                            <input id="lastWaterTs" type="datetime" class="form-control shadow-none" disabled>
+                            <label for="lastWaterTs">Last Water timestamp</label>
+                        </div>
+                        <div class="form-floating m-1">
+                            <input id="lastUpdateTs" type="datetime" class="form-control shadow-none" disabled>
+                            <label for="lastUpdateTs">Last Update timestamp</label>
+                        </div>
+                        <button id="UpdateButton" type="button" class="btn btn-primary m-2">Update</button>
+                    </div>
+
+                    <div class="col-3 p-0">
+                        <div class="form-floating m-1">
+                            <input id="lastWaterSecs" type="number" class="form-control shadow-none" disabled>
+                            <label for="lastWaterSecs">Last secs</label>
+                        </div>
+
+                        <div class="form-floating m-1">
+                            <input id="waterSeconds" type="number" class="form-control shadow-none">
+                            <label for="waterSeconds">Water secs</label>
+                        </div>
+                        <button id="WaterButton" type="button" class="btn btn-warning mx-1">
+                            <i class="fa fa-tint fa-2x"></i>
+                        </button>
+                    </div>
+
+                    <div id="UpdateDisplay"></div>
+
+                </div><!-- end of Col 1 row 1 -->
+
+                <div class="row m-1">
+                    <div class="col p-0">
+                        <div class="form-floating m-1">
+                            <input id="waterInterval" type="number" class="form-control shadow-none">
+                            <label for="waterInterval">Watr int hrs</label>
+                        </div>
+                        <div class="form-floating m-1">
+                            <input id="waterDuration" type="number" class="form-control shadow-none">
+                            <label for="waterDuration">Water dur</label>
+                        </div>
+
+                    </div>
+                    <div class="col p-0">
+                        <div class="form-floating m-1">
+                            <input id="heatInterval" type="number" class="form-control shadow-none">
+                            <label for="heatInterval">Heat interval</label>
+                        </div>
+                        <div class="form-floating m-1">
+                            <input id="heatDuration" type="number" class="form-control shadow-none">
+                            <label for="heatDuration">Heat duration</label>
+                        </div>
+                    </div>
+                    <div class="col p-0">
+                        <div class="form-floating m-1">
+                            <input id="airInterval" type="number" class="form-control shadow-none" disabled>
+                            <label for="airInterval">Air interval</label>
+                        </div>
+                        <div class="form-floating m-1">
+                            <input id="airDuration" type="number" class="form-control shadow-none" disabled>
+                            <label for="airDuration">Air duration</label>
+                        </div>
+                    </div>
+                </div><!-- end of Col 1 row 2 -->
+
+                <div class="row m-1">
+                    <div class="col-4 p-0">
+                        <div class="form-floating m-1">
+                            <input id="configCheckInterval" type="number" class="form-control shadow-none">
+                            <label for="configCheckInterval">Check Interval</label>
+                        </div>
+
+                        <div class="form-floating m-1">
+                            <input id="lightDuration" type="number" class="form-control shadow-none" disabled>
+                            <label for="lightDuration">Light duration</label>
+                        </div>
+
+                    </div>
+                    <div class="col-4 p-0">
+
+
+                    </div>
+                    <div class="col-4 p-0">
+
+                    </div>
+                </div><!-- end of Col 1 row 3 -->
+
+
+            </div> <!-- end Col 1 -->
+
+            <div class="col-sm-4 col-md-4">
+                <!-- Col 2 -->
+                <div class="row">
+                    <div class="col-5 mt-2">
+                        <div class="form-floating">
+                            <input type="date" class="form-control shadow-none" id="MetricsStartDate">
+                            <label for="MetricsStartDate">Metrics Start Date</label>
+                        </div>
+                    </div>
+
+                    <div class="col-3 mt-2">
+                        <div class="form-floating">
+                            <input id="StartHour" type="number" min="0" max="24" class="form-control shadow-none">
+                            <label for="StartHour">Start</label>
+                        </div>
+                    </div>
+                    <div class="col-3 mt-2">
+                        <div class="form-floating">
+                            <input id="StopHour" type="number" min="0" max="24" class="form-control shadow-none">
+                            <label for="StopHour">Stop</label>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <button id="GetMetricsButton" type="button" class="btn btn-success shadow-none mt-2">
+                            <i class="fa fa-area-chart me-1"></i> Get Metrics
+                        </button>
+                    </div>
+                </div> <!-- end of Col 2 row 1-->
+                
+                <div class="row ">
+                    <div class="col">
+                        <!--
+                    <div class="col-xs-12 col-sm-11 col-lg-10 col-xl-7 col-xxl-6">
+
+                        <h6>Daily Temperature</h6>
+                        height="70%"
+                        class="h-50"
+                        -->
+                        <canvas id="DailyTempCanvas" height="200%"></canvas>
+                    </div>
+                </div><!-- end of Col 2 row 2 -->	                
+
+                <div class="row">
+                    col 2 row 3
+                        <button id="GetSelfieButton" type="button" class="btn">
+                            <i class="fa fa-picture-o fa-3x"></i>
+                        </button>
+                        <img id="ImgDisplay" class="img-fluid rounded" width="95%" src=""/>
+                </div><!-- end of Col 2 row 3-->
+
+            </div> <!-- end Col 2 -->
             <div class="col">
-                <button id="GetDataButton" type="button" class="btn btn-success shadow-none mt-2"><i class="fa fa-area-chart me-1"></i> Get Data</button>
-            </div>
-        </div>
-        <!--
-        <div class="row">
-            <div class="col-3 col-sm-2 col-xl-1 mt-2">
-                <div class="form-floating">
-                    <input id="StartHour" type="number" min="0" max="24" class="form-control shadow-none">
-                    <label for="StartHour">Start</label>
-                </div>
-            </div>
-            <div class="col-3 col-sm-2 col-xl-1 mt-2">
-                <div class="form-floating">
-                    <input id="StopHour" type="number" min="0" max="24" class="form-control shadow-none">
-                    <label for="StopHour">Stop</label>
-                </div>
-            </div>
-        </div>
-        -->
+                <!-- Col3 -->
+                <div class="row m-1">
+                    <div class="col p-0">
 
-        <div class="row mt-2">
-			<div class="col-xs-12 col-sm-11 col-lg-10 col-xl-7 col-xxl-6">
-                <!--
-                <h6>Daily Temperature</h6>
-                height="70%"
-                class="h-50"
-                -->
-                <canvas id="DailyTempCanvas" height="200%"></canvas>
-			</div>
+                    </div>
+                    <div class="col p-0">
+                    </div>
+                </div>
+                <div class="row m-1">
+                    <div class="col p-0">
+                        <div class="form-floating m-1">
+                            <input id="configDesc" type="text" class="form-control shadow-none" disabled>
+                            <label for="configDesc">Description</label>
+                        </div>
+                        <div class="form-floating m-1">
+                            <input id="germinationStart" type="date" class="form-control shadow-none" disabled>
+                            <label for="germinationStart">Germination start</label>
+                        </div>
+                        <div class="form-floating m-1">
+                            <input id="plantingDate" type="date" class="form-control shadow-none" disabled>
+                            <label for="plantingDate">Planting date</label>
+                        </div>
+                        <div class="form-floating m-1">
+                            <input id="harvestDate" type="date" class="form-control shadow-none" disabled>
+                            <label for="harvestDate">Harvest start</label>
+                        </div>
+                        <div class="form-floating m-1">
+                            <input id="productionDate" type="date" class="form-control shadow-none" disabled>
+                            <label for="productionDate">Production date</label>
+                        </div>
+                    </div>
+                    <div class="col p-0">
+                        <div class="form-check form-switch mt-1 ms-2">
+                            <input class="form-check-input shadow-none" type="checkbox" role="switch" id="loggingSwitch">
+                            <label class="form-check-label" for="loggingSwitch">Metrics Logging</label>
+                        </div>
+                        <div class="form-check form-switch mt-1 mb-2 ms-2">
+                            <input class="form-check-input shadow-none" type="checkbox" role="switch" id="imagesSwitch">
+                            <label class="form-check-label" for="imagesSwitch">Save Images</label>
+                        </div>
+                        <div class="form-floating m-1">
+                            <input id="daysToGerm" type="text" class="form-control shadow-none">
+                            <label for="daysToGerm">Days to germinate</label>
+                        </div>
+                        <div class="form-floating m-1">
+                            <input id="daysToBloom" type="number" class="form-control shadow-none" disabled>
+                            <label for="daysToBloom">Days to bloom</label>
+                        </div>
+                        <div class="form-floating m-1">
+                            <input id="cureDate" type="date" class="form-control shadow-none" disabled>
+                            <label for="cureDate">Cure start</label>
+                        </div>
+                    </div>
+                </div>
 
-            
-		</div><!-- row -->	                
+            </div> <!-- end Col 3 -->
+
+            <form id="InputValues" action="">
+            </form>
+
+        </div> <!-- end of Main Row -->
+
 
 	</div><!-- end of Genv -->
 
+
 </div><!-- end of main tab content -->
 </div><!-- end of main container -->
+
 
 <div class="offcanvas offcanvas-start" tabindex="-1" id="MediaMenuCanvas" aria-labelledby="MediaMenuCanvasLabel">
     <div class="offcanvas-header">

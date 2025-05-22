@@ -2,7 +2,7 @@
 (C) Copyright 2024 John J Kauflin, All rights reserved.
 --------------------------------------------------------------------------------
 DESCRIPTION:  Main module to handle interactions with database and update
-                of solar metrics components on the web page.  Module
+                of genv components on the web page.  Module
                 uses chart.js library included in the main web page
 --------------------------------------------------------------------------------
 Modification History
@@ -17,19 +17,21 @@ Modification History
                 complicated to convert to datetime and use date match functions
                 Just kept it simple with a start date and start & stop hours
 2025-04-12 JJK  Adding average calculations
+2025-05-21 JJK  Adding GenvMonitor components
 ================================================================================*/
 
-import {empty,showLoadingSpinner,checkFetchResponse,convertUTCDateToLocalDate,formatDate,addDays,addHours,getDateInt,getDateDayInt,getHoursInt} from './util.js';
+import {empty,showLoadingSpinner,checkFetchResponse,convertUTCDateToLocalDate,
+    formatDate,addDays,addHours,getDateInt,getDateDayInt,getHoursInt} from './util.js';
 
 const dailyTempCanvas = document.getElementById("DailyTempCanvas")
 var dailyTempChart = null
 var metricsStartDate = document.getElementById("MetricsStartDate")
 var startHour = document.getElementById("StartHour")
 var stopHour = document.getElementById("StopHour")
-var getDataButton = document.getElementById("GetDataButton")
-var getDataButtonHTML = '<i class="fa fa-area-chart me-1"></i> Get Data'
-getDataButton.innerHTML = getDataButtonHTML
-getDataButton.addEventListener("click", queryGenvMetrics);
+var getMetricsButton = document.getElementById("GetMetricsButton")
+var getMetricsButtonHTML = '<i class="fa fa-area-chart me-1"></i> Get Metrics'
+getMetricsButton.innerHTML = getMetricsButtonHTML
+getMetricsButton.addEventListener("click", queryGenvMetrics);
 
 var currDT = new Date()
 metricsStartDate.value = currDT.toISOString().split('T')[0];
@@ -108,7 +110,7 @@ type Joint @model {
         }
     }
 
-    showLoadingSpinner(getDataButton)
+    showLoadingSpinner(getMetricsButton)
     const endpoint2 = "/data-api/graphql";
     const response = await fetch(endpoint2, {
         method: "POST",
@@ -140,7 +142,7 @@ type Joint @model {
 
 
     const result = await response.json()
-    getDataButton.innerHTML = getDataButtonHTML
+    getMetricsButton.innerHTML = getMetricsButtonHTML
     if (result.errors != null) {
         console.log("Error: "+result.errors[0].message);
         console.table(result.errors);

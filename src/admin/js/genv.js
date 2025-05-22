@@ -97,12 +97,12 @@ function _lookup(event) {
      })
      .then(cr => {
          //console.log("TargetTemperature = "+cr.TargetTemperature)
-         updateDisplay.innerHTML = ""
+         updateDisplay.textContent = ""
          _renderConfig(cr);
      })
      .catch((err) => {
          console.error(`Error in Fetch to ${url}, ${err}`);
-         updateDisplay.innerHTML = "Fetch data FAILED - check log";
+         updateDisplay.textContent = "Fetch data FAILED - check log";
      });
  }
 
@@ -142,12 +142,12 @@ function _lookup(event) {
         return response.json();
      })
      .then(cr => {
-        updateDisplay.innerHTML = "Update successful "
+        updateDisplay.textContent = "Update successful "
         _renderConfig(cr);
      })
      .catch((err) => {
         console.error(`Error in Fetch to ${url}, ${err}`);
-        updateDisplay.innerHTML = "Fetch data FAILED - check log";
+        updateDisplay.textContent = "Fetch data FAILED - check log";
      });
 }
 
@@ -167,23 +167,24 @@ function _lookup(event) {
          return response.text();
      })
      .then(message => {
-         updateDisplay.innerHTML = message;
+         updateDisplay.textContent = message;
      })
      .catch((err) => {
          console.error(`Error in Fetch to ${url}, ${err}`);
-         updateDisplay.innerHTML = "Fetch data FAILED - check log";
+         updateDisplay.textContent = "Fetch data FAILED - check log";
      });
  }
 
  function _getSelfie(event) {
-    updateDisplay.innerHTML = "Getting selfie...";
-    let url = '/genvGetSelfie';
+    updateDisplay.textContent = "Getting selfie...";
+    //let url = '/genvGetSelfie';
+    let url = '/api/GetGenvSelfie';
      fetch(url)
      .then(response => {
          if (!response.ok) {
              throw new Error('Response was not OK');
          }
-         updateDisplay.innerHTML = "";
+         updateDisplay.textContent = "";
          return response.text();
      })
      .then(data => {

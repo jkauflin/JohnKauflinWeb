@@ -207,8 +207,8 @@ namespace JohnKauflinWeb.Function
 
 
         // Genv functions???
-        
-        
+
+
         [Function("GetGenvConfig")]
         public async Task<IActionResult> GetGenvConfig(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequestData req)
@@ -259,6 +259,70 @@ namespace JohnKauflinWeb.Function
             }
 
             return new OkObjectResult(genvConfig);
+        }
+        
+        
+        [Function("GetGenvSelfie")]
+        public async Task<IActionResult> GetGenvSelfie(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequestData req)
+        {
+            string userName = "";
+            if (!authCheck.UserAuthorizedForRole(req, userAdminRole, out userName))
+            {
+                return new BadRequestObjectResult("Unauthorized call - User does not have the correct Admin role");
+            }
+
+            //log.LogInformation($">>> User is authorized - userName: {userName}");
+
+            //------------------------------------------------------------------------------------------------------------------
+            // Query the NoSQL container to get values
+            //------------------------------------------------------------------------------------------------------------------
+            string databaseId = "jjkdb1";
+            string containerId = "GenvImage";
+            string base64ImgData = "";
+
+            try
+            {
+                CosmosClient cosmosClient = new CosmosClient(apiCosmosDbConnStr);
+                Database db = cosmosClient.GetDatabase(databaseId);
+                Container container = db.GetContainer(containerId);
+
+                var currDateTime = DateTime.Now;
+                var queryDefinition = new QueryDefinition(
+                    "SELECT * FROM c WHERE c.PointDay = @PointDay ORDER BY c.PointDayTime DESC")
+                    .WithParameter("@PointDay", int.Parse(currDateTime.ToString("yyyyMMdd")));
+                // Get the existing document from Cosmos DB
+                //var queryText = $"SELECT * FROM c ";
+                var feed = container.GetItemQueryIterator<GenvImage>(queryDefinition);
+                int cnt = 0;
+                while (feed.HasMoreResults)
+                {
+                    var response = await feed.ReadNextAsync();
+                    foreach (var item in response)
+                    {
+                        cnt++;
+                        //log.LogInformation($"{cnt}  id: {genvConfig.id}");
+                        /*
+                            "id": "c55162e0-0717-485a-8598-cb69605000ea",
+                            "PointDay": 20250517,
+                            "PointDateTime": "2025-05-17 00:08:43",
+                            "PointDayTime": 25000843,
+                            "ImgData": 
+                        */
+                        // Get the string value of base64 image data from the most recent photo
+                        base64ImgData = item.ImgData;
+                    }
+                }
+                
+//       res.send(base64ImgData)
+
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult($"Exception in DB query to {containerId}, message = {ex.Message}");
+            }
+
+            return new OkObjectResult(base64ImgData);
         }
 
     } // public class WebApi

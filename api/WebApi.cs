@@ -204,10 +204,62 @@ namespace JohnKauflinWeb.Function
 
             return new OkObjectResult(peopleList);
         }
-        
+
 
         // Genv functions???
+        
+        
+        [Function("GetGenvConfig")]
+        public async Task<IActionResult> GetGenvConfig(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequestData req)
+        {
+            string userName = "";
+            if (!authCheck.UserAuthorizedForRole(req, userAdminRole, out userName))
+            {
+                return new BadRequestObjectResult("Unauthorized call - User does not have the correct Admin role");
+            }
 
+            //log.LogInformation($">>> User is authorized - userName: {userName}");
+
+            //------------------------------------------------------------------------------------------------------------------
+            // Query the NoSQL container to get values
+            //------------------------------------------------------------------------------------------------------------------
+            string databaseId = "jjkdb1";
+            string containerId = "GenvConfig";
+            var genvConfig = new GenvConfig();
+
+            try
+            {
+                CosmosClient cosmosClient = new CosmosClient(apiCosmosDbConnStr);
+                Database db = cosmosClient.GetDatabase(databaseId);
+                Container container = db.GetContainer(containerId);
+
+                var queryDefinition = new QueryDefinition(
+                    "SELECT * FROM c WHERE c.id = @id")
+                    .WithParameter("@id", "1");
+
+                // Get the existing document from Cosmos DB
+                //var queryText = $"SELECT * FROM c ";
+                var feed = container.GetItemQueryIterator<GenvConfig>(queryDefinition);
+                int cnt = 0;
+                while (feed.HasMoreResults)
+                {
+                    var response = await feed.ReadNextAsync();
+                    foreach (var item in response)
+                    {
+                        cnt++;
+                        //log.LogInformation($"{cnt}  id: {genvConfig.id}");
+                        genvConfig = item;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult($"Exception in DB query to {containerId}, message = {ex.Message}");
+            }
+
+            return new OkObjectResult(genvConfig);
+        }
 
     } // public class WebApi
 

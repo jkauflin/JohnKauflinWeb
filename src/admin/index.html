@@ -160,7 +160,9 @@
                             <input id="waterDuration" type="number" class="form-control shadow-none">
                             <label for="waterDuration">Water dur</label>
                         </div>
-
+                        <button id="GetSelfieButton" type="button" class="btn float-end">
+                            <i class="fa fa-picture-o fa-3x"></i>
+                        </button>
                     </div>
                     <div class="col p-0">
                         <div class="form-floating m-1">
@@ -170,6 +172,10 @@
                         <div class="form-floating m-1">
                             <input id="heatDuration" type="number" class="form-control shadow-none">
                             <label for="heatDuration">Heat duration</label>
+                        </div>
+                        <div class="form-floating m-1">
+                            <input id="configCheckInterval" type="number" class="form-control shadow-none">
+                            <label for="configCheckInterval">Check Interval</label>
                         </div>
                     </div>
                     <div class="col p-0">
@@ -181,30 +187,21 @@
                             <input id="airDuration" type="number" class="form-control shadow-none" disabled>
                             <label for="airDuration">Air duration</label>
                         </div>
-                    </div>
-                </div><!-- end of Col 1 row 2 -->
-
-                <div class="row m-1">
-                    <div class="col-4 p-0">
-                    </div>
-                    <div class="col-4 p-0">
-                        <div class="form-floating m-1">
-                            <input id="configCheckInterval" type="number" class="form-control shadow-none">
-                            <label for="configCheckInterval">Check Interval</label>
-                        </div>
-                    </div>
-                    <div class="col-4 p-0">
                         <div class="form-floating m-1">
                             <input id="lightDuration" type="number" class="form-control shadow-none" disabled>
                             <label for="lightDuration">Light duration</label>
                         </div>
                     </div>
-                </div><!-- end of Col 1 row 3 -->
-
+                </div><!-- end of Col 1 row 2 -->
             </div> <!-- end Col 1 -->
 
             <div class="col-sm-4 col-md-4">
                 <!-- Col 2 -->
+
+                <div class="row">
+                        <img id="ImgDisplay" class="img-fluid rounded" width="95%" src=""/>
+                </div><!-- end of Col 2 row 1 -->
+
                 <div class="row">
                     <div class="col-5 mt-2">
                         <div class="form-floating">
@@ -231,7 +228,7 @@
                             <i class="fa fa-area-chart me-1"></i> Get Metrics
                         </button>
                     </div>
-                </div> <!-- end of Col 2 row 1-->
+                </div> <!-- end of Col 2 row 2 -->
                 
                 <div class="row ">
                     <div class="col">
@@ -244,15 +241,8 @@
                         -->
                         <canvas id="DailyTempCanvas" height="200%"></canvas>
                     </div>
-                </div><!-- end of Col 2 row 2 -->	                
+                </div><!-- end of Col 2 row 3 -->	                
 
-                <div class="row">
-                    col 2 row 3
-                        <button id="GetSelfieButton" type="button" class="btn">
-                            <i class="fa fa-picture-o fa-3x"></i>
-                        </button>
-                        <img id="ImgDisplay" class="img-fluid rounded" width="95%" src=""/>
-                </div><!-- end of Col 2 row 3-->
 
             </div> <!-- end Col 2 -->
             <div class="col">

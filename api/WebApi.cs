@@ -12,6 +12,7 @@ Modification History
                 logger (connected to App Insights), and added configuration 
                 to get environment variables for the Cosmos DB connection str
                 Modified to check user role from function context for auth
+2025-05-23 JJK  Added functions for GenvMonitor
 ================================================================================*/
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;

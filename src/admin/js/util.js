@@ -6,6 +6,7 @@
  * Modification History
  * 2024-11-30 JJK   Added the showLoadingSpinner function to display a 
  *                  Loading... message with a built-in Bootstrap spinner
+ * 2025-05-23 JJK   Adding checkbox again
  *============================================================================*/
 
 //=================================================================================================================

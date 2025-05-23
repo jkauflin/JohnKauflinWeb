@@ -18,6 +18,7 @@ Modification History
                 Just kept it simple with a start date and start & stop hours
 2025-04-12 JJK  Adding average calculations
 2025-05-21 JJK  Adding GenvMonitor components
+2025-05-23 JJK  
 ================================================================================*/
 
 import {empty,showLoadingSpinner,checkFetchResponse,convertUTCDateToLocalDate,

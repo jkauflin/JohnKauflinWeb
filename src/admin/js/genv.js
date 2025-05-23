@@ -18,7 +18,7 @@ Modification History
                 Just kept it simple with a start date and start & stop hours
 2025-04-12 JJK  Adding average calculations
 2025-05-21 JJK  Adding GenvMonitor components
-2025-05-23 JJK  
+2025-05-23 JJK  Checking error handling
 ================================================================================*/
 
 import {empty,showLoadingSpinner,checkFetchResponse,convertUTCDateToLocalDate,
@@ -85,10 +85,11 @@ stopHour.value = 24
 
  //=================================================================================================================
  // Module methods
-function _lookup(event) {
+async function _lookup(event) {
     updateDisplay.textContent = "Getting data..."
     //let url = '/getConfigRec';
     let url = '/api/GetGenvConfig';
+    /*
     fetch(url)
      .then(response => {
          if (!response.ok) {
@@ -104,7 +105,25 @@ function _lookup(event) {
      .catch((err) => {
          console.error(`Error in Fetch to ${url}, ${err}`);
          updateDisplay.textContent = "Fetch data FAILED - check log";
-     });
+    });
+    */
+    try {
+        const response = await fetch("/api/GetGenvConfig", {
+            method: "GET",
+            //headers: { "Content-Type": "application/json" },
+            //headers: { "Content-Type": "text/plain" },
+            //body: parcelId
+        })
+        await checkFetchResponse(response)
+        // Success
+        let cr = await response.json();
+        updateDisplay.textContent = ""
+        _renderConfig(cr);
+
+    } catch (err) {
+        console.error(err)
+        updateDisplay.textContent = `Error in Fetch: ${err.message}`
+    }
  }
 
  function _update(event) {
@@ -322,28 +341,6 @@ type Joint @model {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(apiQuery2)
     })
-
-    /*
-    try {
-        const response = await fetch("/api/GetHoaRec", {
-            method: "POST",
-            //headers: { "Content-Type": "application/json" },
-            headers: { "Content-Type": "text/plain" },
-            body: parcelId
-        })
-        await checkFetchResponse(response)
-        // Success
-        //hoaRec = await response.json();
-        let hoaRec = await response.json();
-        messageDisplay.textContent = ""
-        displayDetail(hoaRec)
-
-    } catch (err) {
-        console.error(err)
-        messageDisplay.textContent = `Error in Fetch: ${err.message}`
-    }
-    */
-
 
 
     const result = await response.json()

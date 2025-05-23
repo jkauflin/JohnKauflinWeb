@@ -87,39 +87,15 @@ stopHour.value = 24
  // Module methods
 async function _lookup(event) {
     updateDisplay.textContent = "Getting data..."
-    //let url = '/getConfigRec';
-    let url = '/api/GetGenvConfig';
-    /*
-    fetch(url)
-     .then(response => {
-         if (!response.ok) {
-             throw new Error('Response was not OK');
-         }
-         return response.json();
-     })
-     .then(cr => {
-         //console.log("TargetTemperature = "+cr.TargetTemperature)
-         updateDisplay.textContent = ""
-         _renderConfig(cr);
-     })
-     .catch((err) => {
-         console.error(`Error in Fetch to ${url}, ${err}`);
-         updateDisplay.textContent = "Fetch data FAILED - check log";
-    });
-    */
     try {
         const response = await fetch("/api/GetGenvConfig", {
-            method: "GET",
-            //headers: { "Content-Type": "application/json" },
-            //headers: { "Content-Type": "text/plain" },
-            //body: parcelId
+            method: "GET"
         })
         await checkFetchResponse(response)
         // Success
         let cr = await response.json();
         updateDisplay.textContent = ""
         _renderConfig(cr);
-
     } catch (err) {
         console.error(err)
         updateDisplay.textContent = `Error in Fetch: ${err.message}`

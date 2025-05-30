@@ -83,7 +83,7 @@ stopHour.value = 24
   //=================================================================================================================
  // Bind events
  getDataButton.addEventListener("click", _lookup);
- updateButton.addEventListener("click", _update);
+//updateButton.addEventListener("click", _update);
  waterButton.addEventListener("click", _water);
  GetSelfieButton.addEventListener("click", _getSelfie);
 

@@ -45,6 +45,7 @@ namespace JohnKauflinWeb.Function
             userAdminRole = "jjkadmin";   // add to config ???
         }
 
+
         [Function("UpdateMediaInfo")]
         public async Task<IActionResult> UpdateMediaInfo(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequestData req)
@@ -62,37 +63,18 @@ namespace JohnKauflinWeb.Function
             // find records to update
             //------------------------------------------------------------------------------------------------------------------
             string responseMessage = "";
+            string databaseId = "jjkdb1";
+            string containerId = "MediaInfo";
 
             try
             {
-
-                /*
-                // Get the content string from the HTTP request body
-                string content = await new StreamReader(req.Body).ReadToEndAsync();
-                // Deserialize the JSON string into a generic JSON object
-                JObject jObject = JObject.Parse(content);
-
-                if (jObject.TryGetValue("searchStr", out JToken jToken)) {
-                    string searchStr = (string)jToken;
-                    searchStr = searchStr.Trim().ToUpper();
-                    
-                    sql = $"SELECT * FROM c WHERE "
-                            +$"CONTAINS(UPPER(c.Parcel_ID),'{searchStr}') "
-                            +$"OR CONTAINS(UPPER(c.LotNo),'{searchStr}') "
-                            +$"OR CONTAINS(UPPER(c.Parcel_Location),'{searchStr}') "
-                            +$"OR CONTAINS(UPPER(CONCAT(c.Owner_Name1,' ',c.Owner_Name2,' ',c.Mailing_Name)),'{searchStr}') "
-                            +$"ORDER BY c.id";
-                }
-                */
-
                 var content = await new StreamReader(req.Body).ReadToEndAsync();
                 var updParamData = JsonConvert.DeserializeObject<UpdateParamData>(content);
                 if (updParamData == null)
                 {
                     return new OkObjectResult("Parameter content was NULL");
                 }
-                string databaseId = "jjkdb1";
-                string containerId = "MediaInfo";
+
                 CosmosClient cosmosClient = new CosmosClient(apiCosmosDbConnStr);
                 Database db = cosmosClient.GetDatabase(databaseId);
                 Container container = db.GetContainer(containerId);
@@ -207,8 +189,6 @@ namespace JohnKauflinWeb.Function
         }
 
 
-        // Genv functions???
-
 
         [Function("GetGenvConfig")]
         public async Task<IActionResult> GetGenvConfig(
@@ -261,8 +241,7 @@ namespace JohnKauflinWeb.Function
 
             return new OkObjectResult(genvConfig);
         }
-        
-        
+
         [Function("GetGenvSelfie")]
         public async Task<IActionResult> GetGenvSelfie(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequestData req)
@@ -324,6 +303,106 @@ namespace JohnKauflinWeb.Function
 
             return new OkObjectResult(base64ImgData);
         }
+
+        private class RequestCommandParamData
+        {
+            public string RequestCommand { get; set; }
+            public string RequestValue { get; set; }
+            public override string ToString()
+            {
+                return JsonConvert.SerializeObject(this);
+            }
+        }
+
+        [Function("GenvRequestCommand")]
+        public async Task<IActionResult> GenvRequestCommand(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequestData req)
+        {
+            string userName = "";
+            if (!authCheck.UserAuthorizedForRole(req, userAdminRole, out userName))
+            {
+                return new BadRequestObjectResult("Unauthorized call - User does not have the correct Admin role");
+            }
+
+            log.LogInformation($">>> User is authorized - userName: {userName}");
+
+            //------------------------------------------------------------------------------------------------------------------
+            // Parse the JSON payload content from the Request BODY into a string
+            //------------------------------------------------------------------------------------------------------------------
+            string responseMessage = "";
+            string databaseId = "jjkdb1";
+            string containerId = "GenvConfig";
+            //var genvConfig = new GenvConfig();
+
+            try
+            {
+                var content = await new StreamReader(req.Body).ReadToEndAsync();
+                var paramData = JsonConvert.DeserializeObject<RequestCommandParamData>(content);
+                if (paramData == null)
+                {
+                    return new OkObjectResult("Parameter content was NULL");
+                }
+
+                CosmosClient cosmosClient = new CosmosClient(apiCosmosDbConnStr);
+                Database db = cosmosClient.GetDatabase(databaseId);
+                Container container = db.GetContainer(containerId);
+
+                //PatchOperation.Increment("/inventory/quantity", 5),
+                //PatchOperation.Add("/tags/-", "new-tag")
+                PatchOperation[] patchOperations = new PatchOperation[]
+                {
+                    PatchOperation.Set("/requestCommand", paramData.RequestCommand),
+                    PatchOperation.Set("/requestValue", paramData.RequestValue),
+                };
+
+                ItemResponse<dynamic> response = await container.PatchItemAsync<dynamic>(
+                    "1",
+                    new PartitionKey(1),
+                    patchOperations
+                );
+
+                /*
+                var queryDefinition = new QueryDefinition(
+                    "SELECT * FROM c WHERE c.id = @id")
+                    .WithParameter("@id", "1");
+
+                // Get the existing document from Cosmos DB
+                //var queryText = $"SELECT * FROM c ";
+                var feed = container.GetItemQueryIterator<GenvConfig>(queryDefinition);
+                int cnt = 0;
+                while (feed.HasMoreResults)
+                {
+                    var response = await feed.ReadNextAsync();
+                    foreach (var genvConfig in response)
+                    {
+                        cnt++;
+                        //log.LogInformation($"{cnt}  id: {genvConfig.id}");
+
+                        genvConfig.requestCommand = paramData.RequestCommand;
+                        genvConfig.requestValue = paramData.RequestValue;
+                        //await container.ReplaceItemAsync(genvConfig)
+                        //await container.UpsertItemAsync(mediaInfo, new PartitionKey(mediaInfo.MediaTypeId));
+                    }
+                }
+                if (cnt > 0)
+                {
+
+                    //configContainer.item(cr.id,cr.ConfigId).replace(cr); 
+
+
+                }
+                */
+
+                responseMessage = $"RequestCommand updated";
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult($"Exception in DB to {containerId}, message = {ex.Message}");
+            }
+
+            return new OkObjectResult(responseMessage);
+        } // GenvRequestCommand
+
 
     } // public class WebApi
 

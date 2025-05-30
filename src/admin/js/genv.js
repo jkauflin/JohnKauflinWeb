@@ -19,6 +19,8 @@ Modification History
 2025-04-12 JJK  Adding average calculations
 2025-05-21 JJK  Adding GenvMonitor components
 2025-05-23 JJK  Checking error handling
+2025-05-28 JJK  Added autoSetOn
+2025-05-30 JJK  Added requestCommand for water seconds
 ================================================================================*/
 
 import {empty,showLoadingSpinner,checkFetchResponse,convertUTCDateToLocalDate,
@@ -62,9 +64,9 @@ stopHour.value = 24
  var configCheckInterval = document.getElementById("configCheckInterval")
 
  var lastUpdateTs = document.getElementById("lastUpdateTs")
- var updateDisplay = document.getElementById("UpdateDisplay")
+ var messageDisplay = document.getElementById("MessageDisplay")
  var imgDisplay = document.getElementById("ImgDisplay")
- var returnMessage = document.getElementById("returnMessage")
+ var waterSeconds = document.getElementById("waterSeconds")
 
  var getDataButton = document.getElementById("GetDataButton")
  var updateButton = document.getElementById("UpdateButton")
@@ -73,8 +75,10 @@ stopHour.value = 24
 
  var loggingSwitch = document.getElementById("loggingSwitch")
  var imagesSwitch = document.getElementById("imagesSwitch")
+ var autoSetSwitch = document.getElementById("autoSetSwitch")
  loggingSwitch.checked = false;
  imagesSwitch.checked = false;
+ autoSetSwitch.checked = false;
 
   //=================================================================================================================
  // Bind events
@@ -86,120 +90,108 @@ stopHour.value = 24
  //=================================================================================================================
  // Module methods
 async function _lookup(event) {
-    updateDisplay.textContent = "Getting data..."
+    showLoadingSpinner(messageDisplay)
     try {
         const response = await fetch("/api/GetGenvConfig", {
             method: "GET"
         })
         await checkFetchResponse(response)
         // Success
-        let cr = await response.json();
-        updateDisplay.textContent = ""
+        let cr = await response.json()
+        messageDisplay.textContent = ""
         _renderConfig(cr);
     } catch (err) {
         console.error(err)
-        updateDisplay.textContent = `Error in Fetch: ${err.message}`
+        messageDisplay.textContent = `Error in Fetch: ${err.message}`
     }
- }
-
- function _update(event) {
-    // Update other dates based on planting date
-
-    let url = '/updConfigRec';
-    let paramData = {
-        /*
-        configDesc: configDesc.value,
-        daysToBloom: daysToBloom.value,
-        daysToGerm: daysToGerm.value,
-        germinationStart: germinationStart.value,
-        plantingDate: plantingDate.value,
-        harvestDate: harvestDate.value,
-        cureDate: cureDate.value,
-        productionDate: productionDate.value,
-        */
-        targetTemperature: targetTemperature.value,
-        heatInterval: heatInterval.value,
-        heatDuration: heatDuration.value,
-        waterDuration: waterDuration.value,
-        waterInterval: waterInterval.value,
-        configCheckInterval: configCheckInterval.value,
-        loggingOn: Number(loggingSwitch.checked),
-        selfieOn: Number(imagesSwitch.checked)
-     }
-     fetch(url, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(paramData)
-     })
-     .then(response => {
-        if (!response.ok) {
-            throw new Error('Response was not OK');
-        }
-        return response.json();
-     })
-     .then(cr => {
-        updateDisplay.textContent = "Update successful "
-        _renderConfig(cr);
-     })
-     .catch((err) => {
-        console.error(`Error in Fetch to ${url}, ${err}`);
-        updateDisplay.textContent = "Fetch data FAILED - check log";
-     });
 }
 
- function _water(event) {
-     let url = '/genvWaterOn';
-     let paramData = {
-         waterSeconds: document.getElementById("waterSeconds").value}
-     fetch(url, {
-         method: 'POST',
-         headers: {'Content-Type': 'application/json'},
-         body: JSON.stringify(paramData)
-     })
-     .then(response => {
-         if (!response.ok) {
-             throw new Error('Response was not OK');
-         }
-         return response.text();
-     })
-     .then(message => {
-         updateDisplay.textContent = message;
-     })
-     .catch((err) => {
-         console.error(`Error in Fetch to ${url}, ${err}`);
-         updateDisplay.textContent = "Fetch data FAILED - check log";
-     });
- }
+async function _getSelfie(event) {
+    showLoadingSpinner(messageDisplay)
+    try {
+        const response = await fetch("/api/GetGenvSelfie", {
+            method: "GET"
+        })
+        await checkFetchResponse(response)
+        // Success
+        messageDisplay.textContent = ""
+        imgDisplay.src = await response.text()
+    } catch (err) {
+        console.error(err)
+        messageDisplay.textContent = `Error in Fetch: ${err.message}`
+    }
+}
 
- function _getSelfie(event) {
-    updateDisplay.textContent = "Getting selfie...";
-    //let url = '/genvGetSelfie';
-    let url = '/api/GetGenvSelfie';
-     fetch(url)
-     .then(response => {
-         if (!response.ok) {
-             throw new Error('Response was not OK');
-         }
-         updateDisplay.textContent = "";
-         return response.text();
-     })
-     .then(data => {
-        imgDisplay.src = data
-     })
-     .catch((err) => {
-         console.error(`Error in Fetch to ${url}, ${err}`)
-         updateDisplay.innerHTML = "Selfie fetch FAILED"
-     })
- }
+async function _water(event) {
+    showLoadingSpinner(messageDisplay)
 
+    let paramData = {
+        RequestCommand: "WaterOn",
+        RequestValue: waterSeconds.value
+    }
+
+    try {
+        const response = await fetch("/api/GenvRequestCommand", {
+            method: 'POST',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(paramData)
+            //headers: {'Content-Type': 'text/plain'},
+            //body: waterSeconds.value
+        })
+        await checkFetchResponse(response)
+        // Success
+        messageDisplay.textContent = await response.text()
+    } catch (err) {
+        console.error(err)
+        messageDisplay.textContent = `Error in Fetch: ${err.message}`
+    }
+}
+
+/*
+        if (dbCr.requestCommand == "WaterOn") {
+            let waterSeconds = parseInt(dbCr.requestValue)
+            _waterOn(waterSeconds)
+            cr.requestCommand = ""
+            cr.requestValue = ""
+            cr.requestResult = "Water turned on for "+waterSeconds+" secs"
+        } else if (dbCr.requestCommand == "SetAutoSetOn") {
+            cr.autoSetOn = parseInt(dbCr.requestValue)
+            cr.requestCommand = ""
+            cr.requestValue = ""
+            cr.requestResult = "autoSetOn set to "+cr.autoSetOn
+        } else if (dbCr.requestCommand == "TakeSelfie") {
+            _letMeTakeASelfie()
+            cr.requestCommand = ""
+            cr.requestValue = ""
+            cr.requestResult = "Selfie taken "
+        } else if (dbCr.requestCommand == "WaterDuration") {
+            cr.waterDuration = parseInt(dbCr.requestValue)
+            cr.requestCommand = ""
+            cr.requestValue = ""
+            cr.requestResult = "waterDuration set to "+cr.waterDuration
+        } else if (dbCr.requestCommand == "WaterInterval") {
+            cr.waterInterval = parseInt(dbCr.requestValue)
+            cr.requestCommand = ""
+            cr.requestValue = ""
+            cr.requestResult = "waterInterval set to "+cr.waterInterval
+        } else if (dbCr.requestCommand == "REBOOT") {
+            cr.requestCommand = ""
+            cr.requestValue = ""
+            cr.requestResult = "Initiating REBOOT... "
+            await updServerDb(cr)
+            rebootSystem()
+*/
+
+/*
  function displayImage() {
      // {imgId: 1221, lastChangeTs: '2024-01-04 00:56:06', imgData: '
-     updateDisplay.innerHTML = "ImgTS: "+imgArray[currImg].lastChangeTs+" ("+imgArray[currImg].imgId+")"
+     messageDisplay.innerHTML = "ImgTS: "+imgArray[currImg].lastChangeTs+" ("+imgArray[currImg].imgId+")"
      imgDisplay.src = imgArray[currImg].imgData
  }
+*/
 
- function _renderConfig(cr) {
-     if (cr != null) {
+function _renderConfig(cr) {
+    if (cr != null) {
         configDesc.value = cr.configDesc
         daysToGerm.value = cr.daysToGerm
         daysToBloom.value = cr.daysToBloom
@@ -224,6 +216,10 @@ async function _lookup(event) {
         lastWaterTs.value = cr.lastWaterTs
         lastWaterSecs.value = cr.lastWaterSecs
 
+        if (cr.requestResult != null && cr.requestResult != '') {
+            messageDisplay.textContent = cr.requestResult
+        }
+
         if (cr.loggingOn) {
             loggingSwitch.checked = true;
         } else {
@@ -234,8 +230,13 @@ async function _lookup(event) {
         } else {
             imagesSwitch.checked = false;
         }
-     }
- }
+        if (cr.autoSetOn) {
+            autoSetSwitch.checked = true;
+        } else {
+            autoSetSwitch.checked = false;
+        }
+    }
+}
 
 
 //------------------------------------------------------------------------------------------------------------

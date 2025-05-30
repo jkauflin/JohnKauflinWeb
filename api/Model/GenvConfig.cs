@@ -20,6 +20,7 @@ namespace JohnKauflinWeb.Function.Model
         public float logMetricInterval { get; set; }
         public bool loggingOn { get; set; }
         public bool selfieOn { get; set; }
+        public bool autoSetOn { get; set; }
         public float targetTemperature { get; set; }
         public float currTemperature { get; set; }
         public float airInterval { get; set; }
@@ -34,6 +35,7 @@ namespace JohnKauflinWeb.Function.Model
         public float lastWaterSecs { get; set; }
         public string requestCommand { get; set; }
         public string requestValue { get; set; }
+        public string requestResult { get; set; }
 
 /*        
             configDesc: process.env.configDesc,

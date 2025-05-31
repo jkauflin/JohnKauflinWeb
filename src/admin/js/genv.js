@@ -20,7 +20,7 @@ Modification History
 2025-05-21 JJK  Adding GenvMonitor components
 2025-05-23 JJK  Checking error handling
 2025-05-28 JJK  Added autoSetOn
-2025-05-30 JJK  Added requestCommand for water seconds
+2025-05-30 JJK  Added requestCommand for water seconds (*** need to RE-DO this ***)
 ================================================================================*/
 
 import {empty,showLoadingSpinner,checkFetchResponse,convertUTCDateToLocalDate,

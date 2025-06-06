@@ -14,7 +14,7 @@ Modification History
                 getDateDayInt for the correct day buckets in metrics)
 ================================================================================*/
 
-import {empty,showLoadingSpinner,addDays,addHours,getDateInt,getDateDayInt,getHoursInt} from './util.js';
+import {empty,showLoadingSpinner,checkFetchResponse,addDays,addHours,getDateInt,getDateDayInt,getHoursInt} from './util.js';
 
 //var solarTileButton = document.getElementById("SolarTile");
 //solarTileButton.addEventListener("click", querySolarMetrics);
@@ -65,7 +65,7 @@ export async function querySolarMetrics(paramData) {
 
     //orderBy: { LastUpdateDateTime: ASC },
 
-    let gql2 = `query {
+    let solarQL = `query {
         points(
             filter: { 
                 and: [ 
@@ -117,33 +117,41 @@ export async function querySolarMetrics(paramData) {
           }
     }`
 
-    //console.log("gql2 = "+gql2)
+    //console.log("solarQL = "+solarQL)
 
-    const apiQuery2 = {
-        query: gql2,
+    const solarApiQuery = {
+        query: solarQL,
         variables: {
         }
     }
 
     showLoadingSpinner(pointDateTimeDiv)
-    const endpoint2 = "/data-api/graphql";
-    const response = await fetch(endpoint2, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(apiQuery2)
-    })
-    const result = await response.json()
-    empty(pointDateTimeDiv)
-    if (result.errors != null) {
-        console.log("Error: "+result.errors[0].message);
-        console.table(result.errors);
-    } else {
+    try {
+        const response = await fetch("/data-api/graphql", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(solarApiQuery)
+        })
+        await checkFetchResponse(response)
+        // Success
+        let result = await response.json()
+        //messageDisplay.textContent = ""
+        empty(pointDateTimeDiv)
         //console.log("result.data = "+result.data)
         //console.log("result.data Points = "+result.data.points.items.length)
         //console.table(result.data.points.items);
         //console.table(result.data.totals.items);
         //console.table(result.data.yearTotals.items);
 
+        displaySolarMetrics(result)
+
+    } catch (err) {
+        console.error(err)
+        pointDateTimeDiv.textContent = `Error in Fetch: ${err.message}`
+    }
+}
+
+function displaySolarMetrics(result) {
         let dayTotalData = []
         let dayTotalMaxData = []
         if (result.data.totals.items.length > 0) {
@@ -241,7 +249,6 @@ export async function querySolarMetrics(paramData) {
         if (dayTotalMaxData.length > 0) {
             displayTotalsMax(dayTotalMaxData)
         }
-    }
 }
 
 function convertUTCDateToLocalDate(date) {

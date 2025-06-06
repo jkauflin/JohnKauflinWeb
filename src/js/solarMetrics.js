@@ -125,6 +125,7 @@ export async function querySolarMetrics(paramData) {
         }
     }
 
+    
     showLoadingSpinner(pointDateTimeDiv)
     try {
         const response = await fetch("/data-api/graphql", {

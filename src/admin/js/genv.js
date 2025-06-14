@@ -311,6 +311,7 @@ type Joint @model {
         }
     }
 
+    
     showLoadingSpinner(getMetricsButton)
     const endpoint2 = "/data-api/graphql";
     const response = await fetch(endpoint2, {

@@ -21,6 +21,7 @@ Modification History
 2025-05-23 JJK  Checking error handling
 2025-05-28 JJK  Added autoSetOn
 2025-05-30 JJK  Added requestCommand for water seconds (*** need to RE-DO this ***)
+2025-06-20 JJK  Adding notes and a way to create new Config records
 ================================================================================*/
 
 import {empty,showLoadingSpinner,checkFetchResponse,convertUTCDateToLocalDate,
@@ -43,6 +44,7 @@ stopHour.value = 24
 
 // GenvMonitor elements
  var configDesc = document.getElementById("configDesc")
+ var notes = document.getElementById("notes")
  var daysToGerm = document.getElementById("daysToGerm")
  var daysToBloom = document.getElementById("daysToBloom")
  var germinationStart = document.getElementById("germinationStart")
@@ -193,6 +195,7 @@ async function _water(event) {
 function _renderConfig(cr) {
     if (cr != null) {
         configDesc.value = cr.configDesc
+        notes.value = cr.notes
         daysToGerm.value = cr.daysToGerm
         daysToBloom.value = cr.daysToBloom
         germinationStart.value = cr.germinationStart

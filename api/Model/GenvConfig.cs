@@ -36,7 +36,7 @@ namespace JohnKauflinWeb.Function.Model
         public string requestCommand { get; set; }
         public string requestValue { get; set; }
         public string requestResult { get; set; }
-
+        public string notes { get; set; }
 /*        
             configDesc: process.env.configDesc,
             daysToGerm: process.env.daysToGerm,

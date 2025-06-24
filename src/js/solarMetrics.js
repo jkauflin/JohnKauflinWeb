@@ -48,17 +48,20 @@ export async function querySolarMetrics(paramData) {
 
     // Start Points query at current date minus 3 hours
     //let pointHours = addHours(currDate, -3)
-    let pointHours = addHours(currDate, -2)
+    //let pointHours = addHours(currDate, -2)
+    let pointHours = addHours(currDate, -1)
     //let pointDayTime = parseInt(currDate.toISOString().substring(2,4) + "093000")
     //2024-01-31T19:37:12.291Z
     let pointDayTime = getHoursInt(pointHours)
     let pointMaxRows = 1500
 
     // Get Day totals starting 30 days back
-    let dayTotalStartDate = addDays(new Date(), -30)
+    //let tempDays = 30
+    let tempDays = 7
+    let dayTotalStartDate = addDays(new Date(), -tempDays)
     //let dayTotalStartBucket = getDateInt(dayTotalStartDate)
     let dayTotalStartBucket = getDateDayInt(dayTotalStartDate)
-    let dayTotalMaxRows = 30
+    let dayTotalMaxRows = tempDays
 
     //"PointDayTime": 24060011,
 
@@ -101,6 +104,8 @@ export async function querySolarMetrics(paramData) {
                 WattMaxValue
               }
           }
+    }`
+/*
           yearTotals(
             filter: { 
                 and: [ 
@@ -115,7 +120,7 @@ export async function querySolarMetrics(paramData) {
                 TotalValue
               }
           }
-    }`
+*/
 
     //console.log("solarQL = "+solarQL)
 
@@ -183,6 +188,7 @@ function displaySolarMetrics(result) {
 
         let lifetimeTotal = 0
         let totalsData = []
+        /*
         if (result.data.yearTotals.items.length > 0) {
             result.data.yearTotals.items.forEach((yearTotal) => {
                 //console.log("TotalBucket = "+yearTotal.TotalBucket+", LastUpdateDateTime = "+yearTotal.LastUpdateDateTime+", TotalValue = "+yearTotal.TotalValue)
@@ -193,6 +199,7 @@ function displaySolarMetrics(result) {
                 lifetimeTotal += parseInt(yearTotal.TotalValue)
             })
         }
+            */
         //console.log("lifetimeTotal = "+lifetimeTotal)
 
         //"2024-05-10T11:51:34.6353964-04:00"

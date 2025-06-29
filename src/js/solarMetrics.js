@@ -12,6 +12,7 @@ Modification History
                 display of last 10 values in a table
 2024-12-06 JJK  Added util module and loading spinner (and corrected 
                 getDateDayInt for the correct day buckets in metrics)
+2025-06-29 JJK  Working on queries to make them quicker and more reliable
 ================================================================================*/
 
 import {empty,showLoadingSpinner,checkFetchResponse,addDays,addHours,getDateInt,getDateDayInt,getHoursInt} from './util.js';
@@ -48,8 +49,8 @@ export async function querySolarMetrics(paramData) {
 
     // Start Points query at current date minus 3 hours
     //let pointHours = addHours(currDate, -3)
-    //let pointHours = addHours(currDate, -2)
-    let pointHours = addHours(currDate, -1)
+    let pointHours = addHours(currDate, -2)
+    //let pointHours = addHours(currDate, -1)
     //let pointDayTime = parseInt(currDate.toISOString().substring(2,4) + "093000")
     //2024-01-31T19:37:12.291Z
     let pointDayTime = getHoursInt(pointHours)
@@ -57,7 +58,7 @@ export async function querySolarMetrics(paramData) {
 
     // Get Day totals starting 30 days back
     //let tempDays = 30
-    let tempDays = 7
+    let tempDays = 14
     let dayTotalStartDate = addDays(new Date(), -tempDays)
     //let dayTotalStartBucket = getDateInt(dayTotalStartDate)
     let dayTotalStartBucket = getDateDayInt(dayTotalStartDate)
@@ -78,15 +79,15 @@ export async function querySolarMetrics(paramData) {
             },
             orderBy: { PointDateTime: ASC },
             first: ${pointMaxRows}
-          ) {
+        ) {
               items {
                   PointDateTime
                   pvVolts
                   pvAmps
                   pvWatts
               }
-          }
-          totals(
+        }
+        totals(
             filter: { 
                 and: [ 
                     { id: { eq: "DAY" } }
@@ -95,15 +96,30 @@ export async function querySolarMetrics(paramData) {
             },
             orderBy: { TotalBucket: ASC },
             first: ${dayTotalMaxRows}
-          ) {
-              items {
+        ) {
+            items {
                 TotalBucket
                 LastUpdateDateTime
                 TotalValue
                 AmpMaxValue
                 WattMaxValue
+            }
+        }
+
+        yearTotals(
+            filter: { 
+                and: [ 
+                    { id: { eq: "YEAR" } }
+                ] 
+            },
+            orderBy: { TotalBucket: ASC }
+        ) {
+              items {
+                TotalBucket
+                LastUpdateDateTime
+                TotalValue
               }
-          }
+        }
     }`
 /*
           yearTotals(
@@ -188,7 +204,6 @@ function displaySolarMetrics(result) {
 
         let lifetimeTotal = 0
         let totalsData = []
-        /*
         if (result.data.yearTotals.items.length > 0) {
             result.data.yearTotals.items.forEach((yearTotal) => {
                 //console.log("TotalBucket = "+yearTotal.TotalBucket+", LastUpdateDateTime = "+yearTotal.LastUpdateDateTime+", TotalValue = "+yearTotal.TotalValue)
@@ -199,7 +214,6 @@ function displaySolarMetrics(result) {
                 lifetimeTotal += parseInt(yearTotal.TotalValue)
             })
         }
-            */
         //console.log("lifetimeTotal = "+lifetimeTotal)
 
         //"2024-05-10T11:51:34.6353964-04:00"

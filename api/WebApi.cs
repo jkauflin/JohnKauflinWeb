@@ -217,7 +217,8 @@ namespace JohnKauflinWeb.Function
 
                 var queryDefinition = new QueryDefinition(
                     "SELECT * FROM c WHERE c.id = @id")
-                    .WithParameter("@id", "9");
+                    //.WithParameter("@id", "9");
+                    .WithParameter("@id", "8");
 
                 // Get the existing document from Cosmos DB
                 //var queryText = $"SELECT * FROM c ";

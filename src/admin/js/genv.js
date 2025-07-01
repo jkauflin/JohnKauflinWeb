@@ -22,6 +22,7 @@ Modification History
 2025-05-28 JJK  Added autoSetOn
 2025-05-30 JJK  Added requestCommand for water seconds (*** need to RE-DO this ***)
 2025-06-20 JJK  Adding notes and a way to create new Config records
+2025-07-01 JJK  Adding Genv History (to display, select, and create Config recs)
 ================================================================================*/
 
 import {empty,showLoadingSpinner,checkFetchResponse,convertUTCDateToLocalDate,

@@ -215,6 +215,17 @@ namespace JohnKauflinWeb.Function
                 Database db = cosmosClient.GetDatabase(databaseId);
                 Container container = db.GetContainer(containerId);
 
+                string id = "9";
+                int partitionKey = 9;
+
+                ItemResponse<GenvConfig> response = await container.ReadItemAsync<GenvConfig>(
+                    id: id,
+                    partitionKey: new PartitionKey(partitionKey)
+                );
+
+                genvConfig = response.Resource;
+
+                /*
                 var queryDefinition = new QueryDefinition(
                     "SELECT * FROM c WHERE c.id = @id")
                     //.WithParameter("@id", "9");
@@ -234,6 +245,7 @@ namespace JohnKauflinWeb.Function
                         genvConfig = item;
                     }
                 }
+                */
             }
             catch (Exception ex)
             {

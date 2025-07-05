@@ -94,6 +94,12 @@ stopHour.value = 24
  // Module methods
 async function _lookup(event) {
     showLoadingSpinner(messageDisplay)
+    // id?
+    getGenvConfig()
+    getGenvMetricPoint()
+}
+
+async function getGenvConfig() {
     try {
         const response = await fetch("/api/GetGenvConfig", {
             method: "GET"
@@ -103,6 +109,22 @@ async function _lookup(event) {
         let cr = await response.json()
         messageDisplay.textContent = ""
         _renderConfig(cr);
+    } catch (err) {
+        console.error(err)
+        messageDisplay.textContent = `Error in Fetch: ${err.message}`
+    }
+}
+
+async function getGenvMetricPoint() {
+    try {
+        const response = await fetch("/api/GetGenvMetricPoint", {
+            method: "GET"
+        })
+        await checkFetchResponse(response)
+        // Success
+        let gmp = await response.json()
+        messageDisplay.textContent = ""
+        //_renderConfig(cr);
     } catch (err) {
         console.error(err)
         messageDisplay.textContent = `Error in Fetch: ${err.message}`
@@ -213,12 +235,12 @@ function _renderConfig(cr) {
         heatInterval.value = cr.heatInterval
         heatDuration.value = cr.heatDuration
         lightDuration.value = cr.lightDuration
-        waterInterval.value = cr.waterInterval
-        waterDuration.value = cr.waterDuration
+        //waterInterval.value = cr.waterInterval
+        //waterDuration.value = cr.waterDuration
 
-        lastUpdateTs.value = cr.lastUpdateTs
-        lastWaterTs.value = cr.lastWaterTs
-        lastWaterSecs.value = cr.lastWaterSecs
+        //lastUpdateTs.value = cr.lastUpdateTs
+        //lastWaterTs.value = cr.lastWaterTs
+        //lastWaterSecs.value = cr.lastWaterSecs
 
         if (cr.requestResult != null && cr.requestResult != '') {
             messageDisplay.textContent = cr.requestResult
@@ -266,14 +288,22 @@ type Joint @model {
   airDuration: 0.1,
   heatInterval: 0.2,
   heatDuration: 9.5,
-  relayName0: "lights",
-  relayMetricValue0: 70,
-  relayName1: "water",
-  relayMetricValue1: 70,
-  relayName2: "air",
-  relayMetricValue2: 70,
-  relayName3: "heat",
-  relayMetricValue3: 74,
+
+    "id": "bdf3d46f-3b28-477b-bdf8-d21a531850bb",
+    "PointDay": 20250705,
+    "PointDateTime": "2025-07-05 08:01:19",
+    "PointDayTime": 25080119,
+    "targetTemperature": 78,
+    "currTemperature": 79.59,
+    "airInterval": 0.7,
+    "airDuration": 0.8,
+    "heatInterval": 0.6,
+    "heatDuration": 0.8,
+    "waterDuration": 7,
+    "waterInterval": 9,
+    "lastWaterTs": "2025-07-04 23:59:55",
+    "lastWaterSecs": 7,
+
   */
   let gql2 = `query {
         joints(
@@ -288,21 +318,7 @@ type Joint @model {
             first: ${pointMaxRows}
           ) {
               items {
-                  PointDateTime
-                    targetTemperature
-                    currTemperature
-                    airInterval
-                    airDuration
-                    heatInterval
-                    heatDuration
-                    relayName0
-                    relayMetricValue0
-                    relayName1
-                    relayMetricValue1
-                    relayName2
-                    relayMetricValue2
-                    relayName3
-                    relayMetricValue3
+                currTemperature
               }
           }
     }`

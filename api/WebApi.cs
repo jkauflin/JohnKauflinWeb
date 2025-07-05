@@ -255,6 +255,58 @@ namespace JohnKauflinWeb.Function
             return new OkObjectResult(genvConfig);
         }
 
+        [Function("GetGenvMetricPoint")]
+        public async Task<IActionResult> GetGenvMetricPoint(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequestData req)
+        {
+            string userName = "";
+            if (!authCheck.UserAuthorizedForRole(req, userAdminRole, out userName))
+            {
+                return new BadRequestObjectResult("Unauthorized call - User does not have the correct Admin role");
+            }
+
+            //log.LogInformation($">>> User is authorized - userName: {userName}");
+
+            //------------------------------------------------------------------------------------------------------------------
+            // Query the NoSQL container to get values
+            //------------------------------------------------------------------------------------------------------------------
+            string databaseId = "jjkdb1";
+            string containerId = "GenvMetricPoint";
+            var genvMetricPoint = new GenvMetricPoint();
+
+            try
+            {
+                CosmosClient cosmosClient = new CosmosClient(apiCosmosDbConnStr);
+                Database db = cosmosClient.GetDatabase(databaseId);
+                Container container = db.GetContainer(containerId);
+
+                var queryDefinition = new QueryDefinition(
+                    "SELECT * FROM c ORDER BY c._ts DESC OFFSET 0 LIMIT 1 ");
+                    //"SELECT * FROM c WHERE c.id = @id")
+                    //.WithParameter("@id", "9");
+                    //.WithParameter("@id", "8");
+
+                // Get the existing document from Cosmos DB
+                var feed = container.GetItemQueryIterator<GenvMetricPoint>(queryDefinition);
+                int cnt = 0;
+                while (feed.HasMoreResults)
+                {
+                    var response = await feed.ReadNextAsync();
+                    foreach (var item in response)
+                    {
+                        cnt++;
+                        genvMetricPoint = item;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult($"Exception in DB query to {containerId}, message = {ex.Message}");
+            }
+
+            return new OkObjectResult(genvMetricPoint);
+        }
+
         [Function("GetGenvSelfie")]
         public async Task<IActionResult> GetGenvSelfie(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequestData req)

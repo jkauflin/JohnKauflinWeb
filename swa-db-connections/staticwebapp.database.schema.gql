@@ -9,14 +9,10 @@ type Joint @model {
   airDuration: Float
   heatInterval: Float
   heatDuration: Float
-  relayName0: String
-  relayMetricValue0: Int
-  relayName1: String
-  relayMetricValue1: Int
-  relayName2: String
-  relayMetricValue2: Int
-  relayName3: String
-  relayMetricValue3: Int
+  waterDuration: Int
+  waterInterval: Int
+  lastWaterTs: String
+  lastWaterSecs: Int
 }
 type Point @model {
   id: ID

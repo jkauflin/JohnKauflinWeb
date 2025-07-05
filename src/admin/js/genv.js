@@ -23,6 +23,10 @@ Modification History
 2025-05-30 JJK  Added requestCommand for water seconds (*** need to RE-DO this ***)
 2025-06-20 JJK  Adding notes and a way to create new Config records
 2025-07-01 JJK  Adding Genv History (to display, select, and create Config recs)
+2025-07-04 JJK  Working to switch to cloud db as primary datasource again, and
+                putting updates in this web app.  Pi app just reads from main
+                and puts it's data into the MetricPoint records.
+                Also implementing the stages concept for setting watering
 ================================================================================*/
 
 import {empty,showLoadingSpinner,checkFetchResponse,convertUTCDateToLocalDate,
@@ -124,7 +128,7 @@ async function getGenvMetricPoint() {
         // Success
         let gmp = await response.json()
         messageDisplay.textContent = ""
-        //_renderConfig(cr);
+        _renderGenvMetricPoint(gmp);
     } catch (err) {
         console.error(err)
         messageDisplay.textContent = `Error in Fetch: ${err.message}`
@@ -229,12 +233,13 @@ function _renderConfig(cr) {
         configCheckInterval.value = cr.configCheckInterval
         // cr.logMetricInterval  minutes for selfie
         targetTemperature.value = cr.targetTemperature
-        currTemperature.value = cr.currTemperature
         airInterval.value = cr.airInterval
         airDuration.value = cr.airDuration
         heatInterval.value = cr.heatInterval
         heatDuration.value = cr.heatDuration
         lightDuration.value = cr.lightDuration
+
+        //currTemperature.value = cr.currTemperature
         //waterInterval.value = cr.waterInterval
         //waterDuration.value = cr.waterDuration
 
@@ -242,9 +247,9 @@ function _renderConfig(cr) {
         //lastWaterTs.value = cr.lastWaterTs
         //lastWaterSecs.value = cr.lastWaterSecs
 
-        if (cr.requestResult != null && cr.requestResult != '') {
-            messageDisplay.textContent = cr.requestResult
-        }
+        //if (cr.requestResult != null && cr.requestResult != '') {
+        //    messageDisplay.textContent = cr.requestResult
+        //}
 
         if (cr.loggingOn) {
             loggingSwitch.checked = true;
@@ -264,6 +269,18 @@ function _renderConfig(cr) {
     }
 }
 
+function _renderGenvMetricPoint(gmp) {
+    if (gmp != null) {
+        currTemperature.value = gmp.currTemperature
+        waterInterval.value = gmp.waterInterval
+        waterDuration.value = gmp.waterDuration
+
+        lastUpdateTs.value = gmp.pointDateTime
+
+        lastWaterTs.value = gmp.lastWaterTs
+        lastWaterSecs.value = gmp.lastWaterSecs
+    }
+}
 
 //------------------------------------------------------------------------------------------------------------
 // Query the database for menu and file information and store in js variables
@@ -318,6 +335,7 @@ type Joint @model {
             first: ${pointMaxRows}
           ) {
               items {
+                PointDateTime
                 currTemperature
               }
           }

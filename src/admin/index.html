@@ -34,7 +34,7 @@
 <body>
 <nav class="navbar navbar-expand-sm bg-dark navbar-dark" role="navigation">
     <div class="container-fluid">
-        <a class="navbar-brand" href="/">JJK Admin</a>
+        <a class="navbar-brand" href="/admin">JJK Admin</a>
         <button class="navbar-toggler shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -43,6 +43,8 @@
             <ul class="nav navbar-nav">
                 <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#HomePage">
                     <i class="fa fa-home" ></i> Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="\">
+                    <i class="fa fa-reply" ></i> Main</a></li>
 
                 <li class="nav-item"><a class="nav-link media-page" data-bs-toggle="tab" href="#MediaPage" data-MediaType="1">
                     <i class="fa fa-camera" style="font-size: 1rem;"></i> Photos</a></li>
@@ -80,12 +82,14 @@
 
                 <div class="row ml-1 mb-1">
                     <div class="container-fluid ">
-                        <button class="btn btn-success mt-2 mr-2 link-tile-tab media-page" data-MediaType="1" type="button" role="button">
+                        <button class="btn btn-success mt-2 mr-2 link-tile-tab media-page shadow-none" data-MediaType="1" type="button" role="button">
                             <i class="fa fa-camera fa-2x float-start"></i> Photos</button>
-                        <button class="btn btn-success mt-2 mr-2 link-tile-tab media-page" data-MediaType="2" type="button" role="button">
+                        <button class="btn btn-success mt-2 mr-2 link-tile-tab media-page shadow-none" data-MediaType="2" type="button" role="button">
                             <i class="fa fa-video-camera fa-2x float-start"></i> Videos</button>
-                        <button class="btn btn-success mt-2 mr-2 link-tile-tab media-page" data-MediaType="3" type="button" role="button">
+                        <button class="btn btn-success mt-2 mr-2 link-tile-tab media-page shadow-none" data-MediaType="3" type="button" role="button">
                             <i class="fa fa-music fa-2x float-start"></i> Music</button>
+                        <button id="GenvTabButton" class="btn btn-info mt-2 mr-2 shadow-none" type="button" role="button">
+                            <i class="fa fa-leaf fa-2x float-start"></i> Genv</button>
                     </div>
                 </div>
             </div>
@@ -98,18 +102,19 @@
         <div id="MediaPageMessage"></div>
     </div><!-- end of Media -->
 
-    <div class="tab-pane" id="GenvPage">
+
+    <div class="tab-pane" role="tabpanel" id="GenvPage">
         <div class="row">			
 			<div class="col-sm-4 col-md-4">
                 <!-- Col 1 -->
                 <div class="row m-1">
                     <div class="col-3 p-0">
                         <div class="form-floating m-1">
-                            <input id="targetTemperature" type="number" class="form-control shadow-none" disabled>
-                            <label for="targetTemperature">Target Temp</label>
+                            <input id="targetTemperature" type="number" class="form-control shadow-none">
+                            <label for="targetTemperature">Targ Temp</label>
                         </div>
                         <div class="form-floating m-1">
-                            <input id="currTemperature" type="number" class="form-control shadow-none" disabled>
+                            <input id="currTemperature" type="number" class="form-control shadow-none" readonly>
                             <label for="currTemperature">Curr Temp</label>
                         </div>
                         
@@ -119,11 +124,11 @@
 
                     <div class="col p-0">
                         <div class="form-floating m-1">
-                            <input id="lastWaterTs" type="datetime" class="form-control shadow-none" disabled>
+                            <input id="lastWaterTs" type="datetime" class="form-control shadow-none" readonly>
                             <label for="lastWaterTs">Last Water timestamp</label>
                         </div>
                         <div class="form-floating m-1">
-                            <input id="lastUpdateTs" type="datetime" class="form-control shadow-none" disabled>
+                            <input id="lastUpdateTs" type="datetime" class="form-control shadow-none" readonly>
                             <label for="lastUpdateTs">Last Update timestamp</label>
                         </div>
                         <button id="UpdateButton" type="button" class="btn btn-primary m-2">Update</button>
@@ -131,7 +136,7 @@
 
                     <div class="col-3 p-0">
                         <div class="form-floating m-1">
-                            <input id="lastWaterSecs" type="number" class="form-control shadow-none" disabled>
+                            <input id="lastWaterSecs" type="number" class="form-control shadow-none" readonly>
                             <label for="lastWaterSecs">Last secs</label>
                         </div>
 
@@ -151,11 +156,11 @@
                 <div class="row m-1">
                     <div class="col p-0">
                         <div class="form-floating m-1">
-                            <input id="waterInterval" type="number" class="form-control shadow-none">
+                            <input id="waterInterval" type="number" class="form-control shadow-none" readonly>
                             <label for="waterInterval">Watr int hrs</label>
                         </div>
                         <div class="form-floating m-1">
-                            <input id="waterDuration" type="number" class="form-control shadow-none">
+                            <input id="waterDuration" type="number" class="form-control shadow-none" readonly>
                             <label for="waterDuration">Water dur</label>
                         </div>
                         <button id="GetSelfieButton" type="button" class="btn float-end">
@@ -164,29 +169,29 @@
                     </div>
                     <div class="col p-0">
                         <div class="form-floating m-1">
-                            <input id="heatInterval" type="number" class="form-control shadow-none" disabled>
+                            <input id="heatInterval" type="number" class="form-control shadow-none">
                             <label for="heatInterval">Heat interval</label>
                         </div>
                         <div class="form-floating m-1">
-                            <input id="heatDuration" type="number" class="form-control shadow-none" disabled>
+                            <input id="heatDuration" type="number" class="form-control shadow-none">
                             <label for="heatDuration">Heat duration</label>
                         </div>
                         <div class="form-floating m-1">
-                            <input id="configCheckInterval" type="number" class="form-control shadow-none" disabled>
+                            <input id="configCheckInterval" type="number" class="form-control shadow-none">
                             <label for="configCheckInterval">Check Interval</label>
                         </div>
                     </div>
                     <div class="col p-0">
                         <div class="form-floating m-1">
-                            <input id="airInterval" type="number" class="form-control shadow-none" disabled>
+                            <input id="airInterval" type="number" class="form-control shadow-none">
                             <label for="airInterval">Air interval</label>
                         </div>
                         <div class="form-floating m-1">
-                            <input id="airDuration" type="number" class="form-control shadow-none" disabled>
+                            <input id="airDuration" type="number" class="form-control shadow-none">
                             <label for="airDuration">Air duration</label>
                         </div>
                         <div class="form-floating m-1">
-                            <input id="lightDuration" type="number" class="form-control shadow-none" disabled>
+                            <input id="lightDuration" type="number" class="form-control shadow-none">
                             <label for="lightDuration">Light duration</label>
                         </div>
                     </div>
@@ -200,7 +205,65 @@
                     <img id="ImgDisplay" class="img-fluid rounded" width="95%" src=""/>
                 </div><!-- end of Col 2 row 1 -->
 
-                <div class="row">
+
+
+            </div> <!-- end Col 2 -->
+            <div class="col">
+                <!-- Col3 -->
+                <div class="row m-1">
+                    <div class="col p-0">
+                        <div class="form-floating m-1">
+                            <input id="configDesc" type="text" class="form-control shadow-none">
+                            <label for="configDesc">Description</label>
+                        </div>
+                        <div class="form-floating m-1">
+                            <input id="germinationStart" type="date" class="form-control shadow-none">
+                            <label for="germinationStart">Germination start</label>
+                        </div>
+                        <div class="form-floating m-1">
+                            <input id="plantingDate" type="date" class="form-control shadow-none">
+                            <label for="plantingDate">Planting date</label>
+                        </div>
+                        <div class="form-floating m-1">
+                            <input id="harvestDate" type="date" class="form-control shadow-none">
+                            <label for="harvestDate">Harvest start</label>
+                        </div>
+                        <div class="form-floating m-1">
+                            <input id="productionDate" type="date" class="form-control shadow-none">
+                            <label for="productionDate">Production date</label>
+                        </div>
+                    </div>
+                    <div class="col p-0">
+                        <div class="form-check form-switch mt-1 ms-2">
+                            <input class="form-check-input shadow-none" type="checkbox" role="switch" id="loggingSwitch">
+                            <label class="form-check-label" for="loggingSwitch">Metrics Logging</label>
+                        </div>
+                        <div class="form-check form-switch mt-1 mb-2 ms-2">
+                            <input class="form-check-input shadow-none" type="checkbox" role="switch" id="imagesSwitch">
+                            <label class="form-check-label" for="imagesSwitch">Save Images</label>
+                        </div>
+                        <div class="form-floating m-1">
+                            <input id="daysToGerm" type="text" class="form-control shadow-none">
+                            <label for="daysToGerm">Days to germinate</label>
+                        </div>
+                        <div class="form-floating m-1">
+                            <input id="daysToBloom" type="number" class="form-control shadow-none">
+                            <label for="daysToBloom">Days to bloom</label>
+                        </div>
+                        <div class="form-floating m-1">
+                            <input id="cureDate" type="date" class="form-control shadow-none">
+                            <label for="cureDate">Cure start</label>
+                        </div>
+                        <!--
+                        <div class="form-check form-switch mt-1 mb-2 ms-2">
+                            <input class="form-check-input shadow-none" type="checkbox" role="switch" id="autoSetSwitch">
+                            <label class="form-check-label" for="autoSetSwitch">Auto Set Params</label>
+                        </div>
+                        -->
+                    </div>
+                </div>
+
+                                <div class="row">
                     <div class="col-5 mt-2">
                         <div class="form-floating">
                             <input type="date" class="form-control shadow-none" id="MetricsStartDate">
@@ -239,81 +302,14 @@
                         <h6>Daily Temperature</h6>
                         height="70%"
                         class="h-50"
-                        -->
+
                         <canvas id="DailyTempCanvas" height="200%"></canvas>
+                        -->
+
+                        <canvas id="DailyTempCanvas"></canvas>
+
                     </div>
                 </div><!-- end of Col 2 row 3 -->	                
-
-
-            </div> <!-- end Col 2 -->
-            <div class="col">
-                <!-- Col3 -->
-                <div class="row m-1">
-                    <div class="col p-0">
-                        <!--
-							<div class="mb-2 form-floating">
-								<select  id="configId" class="form-select shadow-none">
-									<option value="9">JJK09 - WW (2025-04-20)</option>
-									<option value="9">JJK08 - DLF (2025-04-20)</option>
-								</select>
-                            	<label for="configId">Configuration</label>
-							</div>
-                        -->
-
-                    </div>
-                    <div class="col p-0">
-                    </div>
-                </div>
-                <div class="row m-1">
-                    <div class="col p-0">
-                        <div class="form-floating m-1">
-                            <input id="configDesc" type="text" class="form-control shadow-none" disabled>
-                            <label for="configDesc">Description</label>
-                        </div>
-                        <div class="form-floating m-1">
-                            <input id="germinationStart" type="date" class="form-control shadow-none" disabled>
-                            <label for="germinationStart">Germination start</label>
-                        </div>
-                        <div class="form-floating m-1">
-                            <input id="plantingDate" type="date" class="form-control shadow-none" disabled>
-                            <label for="plantingDate">Planting date</label>
-                        </div>
-                        <div class="form-floating m-1">
-                            <input id="harvestDate" type="date" class="form-control shadow-none" disabled>
-                            <label for="harvestDate">Harvest start</label>
-                        </div>
-                        <div class="form-floating m-1">
-                            <input id="productionDate" type="date" class="form-control shadow-none" disabled>
-                            <label for="productionDate">Production date</label>
-                        </div>
-                    </div>
-                    <div class="col p-0">
-                        <div class="form-check form-switch mt-1 ms-2">
-                            <input class="form-check-input shadow-none" type="checkbox" role="switch" id="loggingSwitch">
-                            <label class="form-check-label" for="loggingSwitch">Metrics Logging</label>
-                        </div>
-                        <div class="form-check form-switch mt-1 mb-2 ms-2">
-                            <input class="form-check-input shadow-none" type="checkbox" role="switch" id="imagesSwitch">
-                            <label class="form-check-label" for="imagesSwitch">Save Images</label>
-                        </div>
-                        <div class="form-floating m-1">
-                            <input id="daysToGerm" type="text" class="form-control shadow-none" disabled>
-                            <label for="daysToGerm">Days to germinate</label>
-                        </div>
-                        <div class="form-floating m-1">
-                            <input id="daysToBloom" type="number" class="form-control shadow-none" disabled>
-                            <label for="daysToBloom">Days to bloom</label>
-                        </div>
-                        <div class="form-floating m-1">
-                            <input id="cureDate" type="date" class="form-control shadow-none" disabled>
-                            <label for="cureDate">Cure start</label>
-                        </div>
-                        <div class="form-check form-switch mt-1 mb-2 ms-2">
-                            <input class="form-check-input shadow-none" type="checkbox" role="switch" id="autoSetSwitch">
-                            <label class="form-check-label" for="autoSetSwitch">Auto Set Params</label>
-                        </div>
-                    </div>
-                </div>
 
             </div> <!-- end Col 3 -->
 

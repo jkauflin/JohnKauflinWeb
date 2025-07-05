@@ -79,13 +79,15 @@ stopHour.value = 24
  var updateButton = document.getElementById("UpdateButton")
  var waterButton = document.getElementById("WaterButton")
  var GetSelfieButton = document.getElementById("GetSelfieButton")
+ var GenvTabButton = document.getElementById("GenvTabButton")
 
  var loggingSwitch = document.getElementById("loggingSwitch")
  var imagesSwitch = document.getElementById("imagesSwitch")
- var autoSetSwitch = document.getElementById("autoSetSwitch")
+ //var autoSetSwitch = document.getElementById("autoSetSwitch")
  loggingSwitch.checked = false;
  imagesSwitch.checked = false;
- autoSetSwitch.checked = false;
+ //autoSetSwitch.checked = false;
+
 
   //=================================================================================================================
  // Bind events
@@ -94,8 +96,17 @@ stopHour.value = 24
  waterButton.addEventListener("click", _water);
  GetSelfieButton.addEventListener("click", _getSelfie);
 
+GenvTabButton.addEventListener("click", function () {
+    let targetTabElement = document.querySelector(`.navbar-nav a[href="#GenvPage"]`);
+    if (typeof targetTabElement !== "undefined" && targetTabElement !== null) {
+        bootstrap.Tab.getOrCreateInstance(targetTabElement).show();
+    }
+});
+
+
  //=================================================================================================================
  // Module methods
+await _lookup()
 async function _lookup(event) {
     showLoadingSpinner(messageDisplay)
     // id?
@@ -261,11 +272,13 @@ function _renderConfig(cr) {
         } else {
             imagesSwitch.checked = false;
         }
+        /*
         if (cr.autoSetOn) {
             autoSetSwitch.checked = true;
         } else {
             autoSetSwitch.checked = false;
         }
+        */
     }
 }
 
@@ -427,6 +440,9 @@ function displayCharts(pointData) {
 
     if (dailyTempChart == null) {
         //console.log(">>> create dailyTempChart")
+
+        //dailyTempCanvas.style.height = "200%"
+
         dailyTempChart = new Chart(dailyTempCanvas, {
             type: 'line',
             data: {

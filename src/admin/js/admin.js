@@ -84,6 +84,7 @@ document.querySelectorAll("a.nav-link").forEach(el => el.addEventListener("click
         if (typeof targetTabElement !== "undefined" && targetTabElement !== null) {
             bootstrap.Tab.getOrCreateInstance(targetTabElement).show();
         }
+
     }));
 
     // Respond to click on a media-page link tab by dynamically building the menu display

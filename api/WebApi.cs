@@ -194,7 +194,6 @@ namespace JohnKauflinWeb.Function
         }
 
 
-
         [Function("GetGenvConfig")]
         public async Task<IActionResult> GetGenvConfig(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequestData req)
@@ -216,77 +215,41 @@ namespace JohnKauflinWeb.Function
 
             try
             {
-
+                CosmosClient cosmosClient = new CosmosClient(apiCosmosDbConnStr);
+                Database db = cosmosClient.GetDatabase(databaseId);
+                Container container = db.GetContainer(containerId);
 
                 // Get the content string from the HTTP request body
                 string genvConfigId = await new StreamReader(req.Body).ReadToEndAsync();
                 if (string.IsNullOrWhiteSpace(genvConfigId))
                 {
-                    genvConfigId = "9"; // default
-                }
-
-
-                CosmosClient cosmosClient = new CosmosClient(apiCosmosDbConnStr);
-                Database db = cosmosClient.GetDatabase(databaseId);
-                Container container = db.GetContainer(containerId);
-
-                // Get from parameters when I've got the History select working
-                string id = "9";
-                int partitionKey = 9;
-
-                ItemResponse<GenvConfig> response = await container.ReadItemAsync<GenvConfig>(
-                    id: id,
-                    partitionKey: new PartitionKey(partitionKey)
-                );
-
-                genvConfig = response.Resource;
-
-
-                /*
-
-                var queryDefinition = new QueryDefinition(
-                    "SELECT * FROM c ORDER BY c._ts DESC OFFSET 0 LIMIT 1 ");
-                //"SELECT * FROM c WHERE c.id = @id")
-                //.WithParameter("@id", "9");
-                //.WithParameter("@id", "8");
-
-                // Get the existing document from Cosmos DB
-                var feed = container.GetItemQueryIterator<GenvMetricPoint>(queryDefinition);
-                int cnt = 0;
-                while (feed.HasMoreResults)
-                {
-                    var response = await feed.ReadNextAsync();
-                    foreach (var item in response)
+                    // If no id is specified, get the last record
+                    var queryDefinition = new QueryDefinition("SELECT * FROM c ORDER BY c.ConfigId DESC OFFSET 0 LIMIT 1 ");
+                    var feed = container.GetItemQueryIterator<GenvConfig>(queryDefinition);
+                    int cnt = 0;
+                    while (feed.HasMoreResults)
                     {
-                        cnt++;
-                        genvMetricPoint = item;
+                        var response = await feed.ReadNextAsync();
+                        foreach (var item in response)
+                        {
+                            cnt++;
+                            genvConfig = item;
+                        }
                     }
                 }
-
-                */
-                
-
-                /*
-                var queryDefinition = new QueryDefinition(
-                    "SELECT * FROM c WHERE c.id = @id")
-                    //.WithParameter("@id", "9");
-                    .WithParameter("@id", "8");
-
-                // Get the existing document from Cosmos DB
-                //var queryText = $"SELECT * FROM c ";
-                var feed = container.GetItemQueryIterator<GenvConfig>(queryDefinition);
-                int cnt = 0;
-                while (feed.HasMoreResults)
+                else
                 {
-                    var response = await feed.ReadNextAsync();
-                    foreach (var item in response)
-                    {
-                        cnt++;
-                        //log.LogInformation($"{cnt}  id: {genvConfig.id}");
-                        genvConfig = item;
-                    }
+                    // Get from parameters when I've got the History select working
+                    string id = genvConfigId.Trim();
+                    int partitionKey = int.Parse(id);
+
+                    ItemResponse<GenvConfig> response = await container.ReadItemAsync<GenvConfig>(
+                        id: id,
+                        partitionKey: new PartitionKey(partitionKey)
+                    );
+
+                    genvConfig = response.Resource;
                 }
-                */
             }
             catch (Exception ex)
             {

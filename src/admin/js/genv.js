@@ -136,7 +136,7 @@ GenvTabButton.addEventListener("click", function () {
 await _lookup()
 async function _lookup(event) {
     showLoadingSpinner(messageDisplay)
-    // id?
+    // Just default to get the last record when page loads
     getGenvConfig()
     getGenvMetricPoint()
 }

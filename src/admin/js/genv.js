@@ -48,53 +48,78 @@ startHour.value = 0
 stopHour.value = 24
 
 // GenvMonitor elements
- var configDesc = document.getElementById("configDesc")
- var notes = document.getElementById("notes")
- var daysToGerm = document.getElementById("daysToGerm")
- var daysToBloom = document.getElementById("daysToBloom")
- var germinationStart = document.getElementById("germinationStart")
- var plantingDate = document.getElementById("plantingDate")
- var harvestDate = document.getElementById("harvestDate")
- var cureDate = document.getElementById("cureDate")
- var productionDate = document.getElementById("productionDate")
- var targetTemperature = document.getElementById("targetTemperature")
- var currTemperature = document.getElementById("currTemperature")
- var airInterval = document.getElementById("airInterval")
- var airDuration = document.getElementById("airDuration")
- var heatInterval = document.getElementById("heatInterval")
- var heatDuration = document.getElementById("heatDuration")
- var lightDuration =  document.getElementById("lightDuration")
- var waterInterval = document.getElementById("waterInterval")
- var waterDuration = document.getElementById("waterDuration")
- var lastWaterTs = document.getElementById("lastWaterTs")
- var lastWaterSecs = document.getElementById("lastWaterSecs")
- var configCheckInterval = document.getElementById("configCheckInterval")
+var configDesc = document.getElementById("configDesc")
+var notes = document.getElementById("notes")
+var daysToGerm = document.getElementById("daysToGerm")
+var daysToBloom = document.getElementById("daysToBloom")
+var germinationStart = document.getElementById("germinationStart")
+var plantingDate = document.getElementById("plantingDate")
+var harvestDate = document.getElementById("harvestDate")
+var cureDate = document.getElementById("cureDate")
+var productionDate = document.getElementById("productionDate")
+var targetTemperature = document.getElementById("targetTemperature")
+var currTemperature = document.getElementById("currTemperature")
+var airInterval = document.getElementById("airInterval")
+var airDuration = document.getElementById("airDuration")
+var heatInterval = document.getElementById("heatInterval")
+var heatDuration = document.getElementById("heatDuration")
+var lightDuration =  document.getElementById("lightDuration")
+var waterInterval = document.getElementById("waterInterval")
+var waterDuration = document.getElementById("waterDuration")
+var lastWaterTs = document.getElementById("lastWaterTs")
+var lastWaterSecs = document.getElementById("lastWaterSecs")
+var configCheckInterval = document.getElementById("configCheckInterval")
 
- var lastUpdateTs = document.getElementById("lastUpdateTs")
- var messageDisplay = document.getElementById("MessageDisplay")
- var imgDisplay = document.getElementById("ImgDisplay")
- var waterSeconds = document.getElementById("waterSeconds")
+var lastUpdateTs = document.getElementById("lastUpdateTs")
+var messageDisplay = document.getElementById("MessageDisplay")
+var imgDisplay = document.getElementById("ImgDisplay")
+var waterSeconds = document.getElementById("waterSeconds")
 
- var getDataButton = document.getElementById("GetDataButton")
- var updateButton = document.getElementById("UpdateButton")
- var waterButton = document.getElementById("WaterButton")
- var GetSelfieButton = document.getElementById("GetSelfieButton")
- var GenvTabButton = document.getElementById("GenvTabButton")
+var s0day = document.getElementById("s0day")
+var s0waterDuration = document.getElementById("s0waterDuration")
+var s0waterInterval = document.getElementById("s0waterInterval")
+var s1day = document.getElementById("s1day")
+var s1waterDuration = document.getElementById("s1waterDuration")
+var s1waterInterval = document.getElementById("s1waterInterval")
+var s2day = document.getElementById("s2day")
+var s2waterDuration = document.getElementById("s2waterDuration")
+var s2waterInterval = document.getElementById("s2waterInterval")
+var s3day = document.getElementById("s3day")
+var s3waterDuration = document.getElementById("s3waterDuration")
+var s3waterInterval = document.getElementById("s3waterInterval")
+var s4day = document.getElementById("s4day")
+var s4waterDuration = document.getElementById("s4waterDuration")
+var s4waterInterval = document.getElementById("s4waterInterval")
+var s5day = document.getElementById("s5day")
+var s5waterDuration = document.getElementById("s5waterDuration")
+var s5waterInterval = document.getElementById("s5waterInterval")
+var s6day = document.getElementById("s6day")
+var s6waterDuration = document.getElementById("s6waterDuration")
+var s6waterInterval = document.getElementById("s6waterInterval")
 
- var loggingSwitch = document.getElementById("loggingSwitch")
- var imagesSwitch = document.getElementById("imagesSwitch")
- //var autoSetSwitch = document.getElementById("autoSetSwitch")
- loggingSwitch.checked = false;
- imagesSwitch.checked = false;
- //autoSetSwitch.checked = false;
+var GenvFormData = document.getElementById("GenvFormData")
 
 
-  //=================================================================================================================
- // Bind events
- getDataButton.addEventListener("click", _lookup);
+var getDataButton = document.getElementById("GetDataButton")
+var updateButton = document.getElementById("UpdateButton")
+var waterButton = document.getElementById("WaterButton")
+var GetSelfieButton = document.getElementById("GetSelfieButton")
+var GenvTabButton = document.getElementById("GenvTabButton")
+
+var loggingSwitch = document.getElementById("loggingSwitch")
+var imagesSwitch = document.getElementById("imagesSwitch")
+//var autoSetSwitch = document.getElementById("autoSetSwitch")
+loggingSwitch.checked = false;
+imagesSwitch.checked = false;
+//autoSetSwitch.checked = false;
+
+
+//=================================================================================================================
+// Bind events
+getDataButton.addEventListener("click", _lookup);
 //updateButton.addEventListener("click", _update);
- waterButton.addEventListener("click", _water);
- GetSelfieButton.addEventListener("click", _getSelfie);
+waterButton.addEventListener("click", _water);
+GetSelfieButton.addEventListener("click", _getSelfie);
 
 GenvTabButton.addEventListener("click", function () {
     let targetTabElement = document.querySelector(`.navbar-nav a[href="#GenvPage"]`);
@@ -249,6 +274,28 @@ function _renderConfig(cr) {
         heatInterval.value = cr.heatInterval
         heatDuration.value = cr.heatDuration
         lightDuration.value = cr.lightDuration
+
+        s0day.value = cr.s0day
+        s0waterDuration.value = cr.s0waterDuration
+        s0waterInterval.value = cr.s0waterInterval
+        s1day.value = cr.s1day
+        s1waterDuration.value = cr.s1waterDuration
+        s1waterInterval.value = cr.s1waterInterval
+        s2day.value = cr.s2day
+        s2waterDuration.value = cr.s2waterDuration
+        s2waterInterval.value = cr.s2waterInterval
+        s3day.value = cr.s3day
+        s3waterDuration.value = cr.s3waterDuration
+        s3waterInterval.value = cr.s3waterInterval
+        s4day.value = cr.s4day
+        s4waterDuration.value = cr.s4waterDuration
+        s4waterInterval.value = cr.s4waterInterval
+        s5day.value = cr.s5day
+        s5waterDuration.value = cr.s5waterDuration
+        s5waterInterval.value = cr.s5waterInterval
+        s6day.value = cr.s6day
+        s6waterDuration.value = cr.s6waterDuration
+        s6waterInterval.value = cr.s6waterInterval
 
         //if (cr.requestResult != null && cr.requestResult != '') {
         //    messageDisplay.textContent = cr.requestResult

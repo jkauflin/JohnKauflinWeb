@@ -71,7 +71,7 @@ var waterInterval = document.getElementById("waterInterval")
 var waterDuration = document.getElementById("waterDuration")
 var lastWaterTs = document.getElementById("lastWaterTs")
 var lastWaterSecs = document.getElementById("lastWaterSecs")
-var configCheckInterval = document.getElementById("configCheckInterval")
+var logMetricInterval = document.getElementById("logMetricInterval")
 
 var lastUpdateTs = document.getElementById("lastUpdateTs")
 var messageDisplay = document.getElementById("MessageDisplay")
@@ -290,8 +290,7 @@ function _renderConfig(cr) {
         harvestDate.value = cr.harvestDate
         cureDate.value = cr.cureDate
         productionDate.value = cr.productionDate
-        configCheckInterval.value = cr.configCheckInterval
-        // cr.logMetricInterval  minutes for selfie
+        logMetricInterval.value = cr.logMetricInterval
         targetTemperature.value = cr.targetTemperature
         airInterval.value = cr.airInterval
         airDuration.value = cr.airDuration

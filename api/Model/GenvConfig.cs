@@ -16,11 +16,11 @@ namespace JohnKauflinWeb.Function.Model
         public string harvestDate { get; set; }
         public string cureDate { get; set; }
         public string productionDate { get; set; }
-        public float configCheckInterval { get; set; }
-        public float logMetricInterval { get; set; }
+        //public float configCheckInterval { get; set; }
+        public int logMetricInterval { get; set; }
         public bool loggingOn { get; set; }
         public bool selfieOn { get; set; }
-        public bool autoSetOn { get; set; }
+        //public bool autoSetOn { get; set; }
         public float targetTemperature { get; set; }
         public float currTemperature { get; set; }
         public float airInterval { get; set; }

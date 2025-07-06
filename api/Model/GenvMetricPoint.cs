@@ -40,7 +40,7 @@ namespace JohnKauflinWeb.Function.Model
 
         */
         public string id { get; set; }                  // guid "bdf3d46f-3b28-477b-bdf8-d21a531850bb"
-        public int PointDay { get; set; }               // Partition key 20250705
+        public int PointDay { get; set; }               // Partition key 20250705   /PointDay
         public string PointDateTime { get; set; }
         public int PointDayTime { get; set; }
         public float targetTemperature { get; set; }

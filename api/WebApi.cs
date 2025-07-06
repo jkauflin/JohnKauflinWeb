@@ -707,8 +707,8 @@ namespace JohnKauflinWeb.Function
                 genvConfig.harvestDate = GetFieldValue<string>(formFields, "harvestDate");
                 genvConfig.cureDate = GetFieldValue<string>(formFields, "cureDate");
                 genvConfig.productionDate = GetFieldValue<string>(formFields, "productionDate");
-                genvConfig.configCheckInterval = GetFieldValue<float>(formFields, "configCheckInterval");
-                genvConfig.logMetricInterval = GetFieldValue<float>(formFields, "logMetricInterval");
+                //genvConfig.configCheckInterval = GetFieldValue<float>(formFields, "configCheckInterval");
+                genvConfig.logMetricInterval = GetFieldValue<int>(formFields, "logMetricInterval");
                 //genvConfig.autoSetOn = GetFieldValueBool(formFields, "autoSetSwitch");
                 genvConfig.targetTemperature = GetFieldValue<float>(formFields, "targetTemperature");
                 genvConfig.currTemperature = GetFieldValue<float>(formFields, "currTemperature");

@@ -159,10 +159,12 @@ async function updateGenvConfig() {
     }
 }
 
-async function getGenvConfig() {
+async function getGenvConfig(genvConfigId) {
     try {
         const response = await fetch("/api/GetGenvConfig", {
-            method: "GET"
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: genvConfigId
         })
         await checkFetchResponse(response)
         // Success

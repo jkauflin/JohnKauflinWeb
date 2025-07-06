@@ -197,7 +197,7 @@ namespace JohnKauflinWeb.Function
 
         [Function("GetGenvConfig")]
         public async Task<IActionResult> GetGenvConfig(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequestData req)
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequestData req)
         {
             string userName = "";
             if (!authCheck.UserAuthorizedForRole(req, userAdminRole, out userName))
@@ -216,6 +216,16 @@ namespace JohnKauflinWeb.Function
 
             try
             {
+
+
+                // Get the content string from the HTTP request body
+                string genvConfigId = await new StreamReader(req.Body).ReadToEndAsync();
+                if (string.IsNullOrWhiteSpace(genvConfigId))
+                {
+                    genvConfigId = "9"; // default
+                }
+
+
                 CosmosClient cosmosClient = new CosmosClient(apiCosmosDbConnStr);
                 Database db = cosmosClient.GetDatabase(databaseId);
                 Container container = db.GetContainer(containerId);
@@ -230,6 +240,31 @@ namespace JohnKauflinWeb.Function
                 );
 
                 genvConfig = response.Resource;
+
+
+                /*
+
+                var queryDefinition = new QueryDefinition(
+                    "SELECT * FROM c ORDER BY c._ts DESC OFFSET 0 LIMIT 1 ");
+                //"SELECT * FROM c WHERE c.id = @id")
+                //.WithParameter("@id", "9");
+                //.WithParameter("@id", "8");
+
+                // Get the existing document from Cosmos DB
+                var feed = container.GetItemQueryIterator<GenvMetricPoint>(queryDefinition);
+                int cnt = 0;
+                while (feed.HasMoreResults)
+                {
+                    var response = await feed.ReadNextAsync();
+                    foreach (var item in response)
+                    {
+                        cnt++;
+                        genvMetricPoint = item;
+                    }
+                }
+
+                */
+                
 
                 /*
                 var queryDefinition = new QueryDefinition(

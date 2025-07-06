@@ -250,14 +250,6 @@ function _renderConfig(cr) {
         heatDuration.value = cr.heatDuration
         lightDuration.value = cr.lightDuration
 
-        //currTemperature.value = cr.currTemperature
-        //waterInterval.value = cr.waterInterval
-        //waterDuration.value = cr.waterDuration
-
-        //lastUpdateTs.value = cr.lastUpdateTs
-        //lastWaterTs.value = cr.lastWaterTs
-        //lastWaterSecs.value = cr.lastWaterSecs
-
         //if (cr.requestResult != null && cr.requestResult != '') {
         //    messageDisplay.textContent = cr.requestResult
         //}

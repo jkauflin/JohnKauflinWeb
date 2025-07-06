@@ -27,6 +27,7 @@ Modification History
                 putting updates in this web app.  Pi app just reads from main
                 and puts it's data into the MetricPoint records.
                 Also implementing the stages concept for setting watering
+2025-07-05 JJK  Implemented GenvConfig update
 ================================================================================*/
 
 import {empty,showLoadingSpinner,checkFetchResponse,convertUTCDateToLocalDate,
@@ -48,6 +49,8 @@ startHour.value = 0
 stopHour.value = 24
 
 // GenvMonitor elements
+var updId = document.getElementById("updId")
+var configId = document.getElementById("configId")
 var configDesc = document.getElementById("configDesc")
 var notes = document.getElementById("notes")
 var daysToGerm = document.getElementById("daysToGerm")
@@ -99,7 +102,6 @@ var s6waterInterval = document.getElementById("s6waterInterval")
 
 var GenvFormData = document.getElementById("GenvFormData")
 
-
 var getDataButton = document.getElementById("GetDataButton")
 var updateButton = document.getElementById("UpdateButton")
 var waterButton = document.getElementById("WaterButton")
@@ -117,7 +119,7 @@ imagesSwitch.checked = false;
 //=================================================================================================================
 // Bind events
 getDataButton.addEventListener("click", _lookup);
-//updateButton.addEventListener("click", _update);
+updateButton.addEventListener("click", updateGenvConfig);
 waterButton.addEventListener("click", _water);
 GetSelfieButton.addEventListener("click", _getSelfie);
 
@@ -137,6 +139,24 @@ async function _lookup(event) {
     // id?
     getGenvConfig()
     getGenvMetricPoint()
+}
+
+async function updateGenvConfig() {
+    messageDisplay.textContent = "Updating GenvConfig..."
+    try {
+        const response = await fetch("/api/UpdateGenvConfig", {
+            method: "POST",
+            body: new FormData(GenvFormData)
+        })
+        await checkFetchResponse(response)
+        // Success
+        let responseMessage = await response.text()
+        messageDisplay.textContent = responseMessage
+        //_renderConfig(cr);
+    } catch (err) {
+        console.error(err)
+        messageDisplay.textContent = `Error in Fetch: ${err.message}`
+    }
 }
 
 async function getGenvConfig() {
@@ -257,6 +277,8 @@ async function _water(event) {
 
 function _renderConfig(cr) {
     if (cr != null) {
+        updId.value = cr.id
+        configId.value = cr.configId
         configDesc.value = cr.configDesc
         notes.value = cr.notes
         daysToGerm.value = cr.daysToGerm
@@ -345,36 +367,7 @@ export async function queryGenvMetrics(paramData) {
     let endDayTime = parseInt(dateStr.substring(2,4) + stopHour.value.padStart(2,'0') + "0000")
     let pointMaxRows = 5000
 
-/*
-type Joint @model {
-  id: ID
-  PointDay: Int
-  PointDateTime: String
-  PointDayTime: Int
-  targetTemperature: 77,
-  currTemperature: 75.88,
-  airInterval: 1,
-  airDuration: 0.1,
-  heatInterval: 0.2,
-  heatDuration: 9.5,
-
-    "id": "bdf3d46f-3b28-477b-bdf8-d21a531850bb",
-    "PointDay": 20250705,
-    "PointDateTime": "2025-07-05 08:01:19",
-    "PointDayTime": 25080119,
-    "targetTemperature": 78,
-    "currTemperature": 79.59,
-    "airInterval": 0.7,
-    "airDuration": 0.8,
-    "heatInterval": 0.6,
-    "heatDuration": 0.8,
-    "waterDuration": 7,
-    "waterInterval": 9,
-    "lastWaterTs": "2025-07-04 23:59:55",
-    "lastWaterSecs": 7,
-
-  */
-  let gql2 = `query {
+    let gql2 = `query {
         joints(
             filter: { 
                 and: [ 

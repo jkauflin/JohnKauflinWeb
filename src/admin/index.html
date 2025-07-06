@@ -2,26 +2,15 @@
 <html class="no-js" lang="en">
 
 <head>
-	<title>John J Kauflin</title>
-	<meta charset="utf-8">
-	<meta http-equiv="x-ua-compatible" content="ie=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- Emulate iphone XR
-    <meta name="viewport" content="width=414, height=896">
-    <style>
-        body {
-            margin: 0;
-            width: 414px;
-            height: 896px;
-            overflow: hidden;
-        }
-    </style>
-    -->
-	<meta name="keywords" content="kauflin, jkauflin, jkauflin.com, johnkauflin, johnkauflin.com, john kauflin, john j kauflin, jjk, dayton, oh, ohio, personal, web, admin" />
-	<meta name="description" content="John J Kauflin personal website admin" />
-	<meta name="author" content="John J Kauflin" />
+    <title>John J Kauflin</title>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="keywords" content="kauflin, jkauflin, jkauflin.com, johnkauflin, johnkauflin.com, john kauflin, john j kauflin, jjk, dayton, oh, ohio, personal, web, admin" />
+    <meta name="description" content="John J Kauflin personal website admin" />
+    <meta name="author" content="John J Kauflin" />
 
-	<link rel="icon" href="favicon.ico?ver=1.002">
+    <link rel="icon" href="favicon.ico?ver=1.002">
 
     <!-- Bootstrap core CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" 
@@ -69,7 +58,7 @@
 <div class="container-fluid">
 <div class="tab-content">
 
-	<div class="tab-pane show active" id="HomePage">
+    <div class="tab-pane show active" id="HomePage">
         <div class="row">
             <div class="col-sm-5 col-md-3 d-none d-sm-block">
                 <h1 class="ml-2">Welcome!</h1>
@@ -96,7 +85,7 @@
 
         </div>
 
-	</div><!-- end of Home tab -->
+    </div><!-- end of Home tab -->
 
     <div class="tab-pane" id="MediaPage">
         <div id="MediaPageMessage"></div>
@@ -105,31 +94,33 @@
 
     <div class="tab-pane" role="tabpanel" id="GenvPage">
       <form id="GenvFormData" action="">
+
+        <input id="updId" name="updId" type="text" readonly hidden>
+        <input id="configId" name="configId" type="number" readonly hidden>
+
         <div class="row">			
-			<div class="col-sm-4 col-md-4">
+            <div class="col-sm-4 col-md-4">
                 <!-- Col 1 -->
                 <div class="row m-1">
                     <div class="col-3 p-0">
                         <div class="form-floating m-1">
-                            <input id="targetTemperature" type="number" class="form-control shadow-none">
+                            <input id="targetTemperature" name="targetTemperature" type="number" class="form-control shadow-none">
                             <label for="targetTemperature">Targ Temp</label>
                         </div>
                         <div class="form-floating m-1">
-                            <input id="currTemperature" type="number" class="form-control shadow-none" readonly>
+                            <input id="currTemperature" name="currTemperature" type="number" class="form-control shadow-none" readonly>
                             <label for="currTemperature">Curr Temp</label>
                         </div>
-                        
                         <button id="GetDataButton" type="button" class="btn btn-success m-2 float-end">Get</button>
-
                     </div>
 
                     <div class="col p-0">
                         <div class="form-floating m-1">
-                            <input id="lastWaterTs" type="datetime" class="form-control shadow-none" readonly>
+                            <input id="lastWaterTs" name="lastWaterTs" type="datetime" class="form-control shadow-none" readonly>
                             <label for="lastWaterTs">Last Water timestamp</label>
                         </div>
                         <div class="form-floating m-1">
-                            <input id="lastUpdateTs" type="datetime" class="form-control shadow-none" readonly>
+                            <input id="lastUpdateTs" name="lastUpdateTs" type="datetime" class="form-control shadow-none" readonly>
                             <label for="lastUpdateTs">Last Update timestamp</label>
                         </div>
                         <button id="UpdateButton" type="button" class="btn btn-primary m-2">Update</button>
@@ -137,12 +128,12 @@
 
                     <div class="col-3 p-0">
                         <div class="form-floating m-1">
-                            <input id="lastWaterSecs" type="number" class="form-control shadow-none" readonly>
+                            <input id="lastWaterSecs" name="lastWaterSecs" type="number" class="form-control shadow-none" readonly>
                             <label for="lastWaterSecs">Last secs</label>
                         </div>
 
                         <div class="form-floating m-1">
-                            <input id="waterSeconds" type="number" class="form-control shadow-none">
+                            <input id="waterSeconds" name="waterSeconds" type="number" class="form-control shadow-none">
                             <label for="waterSeconds">Water secs</label>
                         </div>
                         <button id="WaterButton" type="button" class="btn btn-warning mx-1">
@@ -157,11 +148,11 @@
                 <div class="row m-1">
                     <div class="col p-0">
                         <div class="form-floating m-1">
-                            <input id="waterInterval" type="number" class="form-control shadow-none" readonly>
+                            <input id="waterInterval" name="waterInterval" type="number" class="form-control shadow-none" readonly>
                             <label for="waterInterval">Watr int hrs</label>
                         </div>
                         <div class="form-floating m-1">
-                            <input id="waterDuration" type="number" class="form-control shadow-none" readonly>
+                            <input id="waterDuration" name="waterDuration" type="number" class="form-control shadow-none" readonly>
                             <label for="waterDuration">Water dur</label>
                         </div>
                         <button id="GetSelfieButton" type="button" class="btn float-end">
@@ -170,29 +161,29 @@
                     </div>
                     <div class="col p-0">
                         <div class="form-floating m-1">
-                            <input id="heatInterval" type="number" class="form-control shadow-none">
+                            <input id="heatInterval" name="heatInterval" type="number" class="form-control shadow-none">
                             <label for="heatInterval">Heat interval</label>
                         </div>
                         <div class="form-floating m-1">
-                            <input id="heatDuration" type="number" class="form-control shadow-none">
+                            <input id="heatDuration" name="heatDuration" type="number" class="form-control shadow-none">
                             <label for="heatDuration">Heat duration</label>
                         </div>
                         <div class="form-floating m-1">
-                            <input id="configCheckInterval" type="number" class="form-control shadow-none">
+                            <input id="configCheckInterval" name="configCheckInterval" type="number" class="form-control shadow-none">
                             <label for="configCheckInterval">Check Interval</label>
                         </div>
                     </div>
                     <div class="col p-0">
                         <div class="form-floating m-1">
-                            <input id="airInterval" type="number" class="form-control shadow-none">
+                            <input id="airInterval" name="airInterval" type="number" class="form-control shadow-none">
                             <label for="airInterval">Air interval</label>
                         </div>
                         <div class="form-floating m-1">
-                            <input id="airDuration" type="number" class="form-control shadow-none">
+                            <input id="airDuration" name="airDuration" type="number" class="form-control shadow-none">
                             <label for="airDuration">Air duration</label>
                         </div>
                         <div class="form-floating m-1">
-                            <input id="lightDuration" type="number" class="form-control shadow-none">
+                            <input id="lightDuration" name="lightDuration" type="number" class="form-control shadow-none">
                             <label for="lightDuration">Light duration</label>
                         </div>
                     </div>
@@ -209,19 +200,19 @@
                 <div class="row">
                     <div class="col p-0">
                         <div class="form-floating m-1">
-                            <input id="s0day" type="number" class="form-control shadow-none">
+                            <input id="s0day" name="s0day" type="number" class="form-control shadow-none">
                             <label for="s0day">s0day</label>
                         </div>
                     </div>
                     <div class="col p-0">
                         <div class="form-floating m-1">
-                            <input id="s0waterDuration" type="number" class="form-control shadow-none">
+                            <input id="s0waterDuration" name="s0waterDuration" type="number" class="form-control shadow-none">
                             <label for="s0waterDuration">s0waterDuration</label>
                         </div>
                     </div>
                     <div class="col p-0">
                         <div class="form-floating m-1">
-                            <input id="s0waterInterval" type="number" class="form-control shadow-none">
+                            <input id="s0waterInterval" name="s0waterInterval" type="number" class="form-control shadow-none">
                             <label for="s0waterInterval">s0waterInterval</label>
                         </div>
                     </div>
@@ -229,19 +220,19 @@
                 <div class="row">
                     <div class="col p-0">
                         <div class="form-floating m-1">
-                            <input id="s1day" type="number" class="form-control shadow-none">
+                            <input id="s1day" name="s1day" type="number" class="form-control shadow-none">
                             <label for="s1day">s1day</label>
                         </div>
                     </div>
                     <div class="col p-0">
                         <div class="form-floating m-1">
-                            <input id="s1waterDuration" type="number" class="form-control shadow-none">
+                            <input id="s1waterDuration" name="s1waterDuration" type="number" class="form-control shadow-none">
                             <label for="s1waterDuration">s1waterDuration</label>
                         </div>
                     </div>
                     <div class="col p-0">
                         <div class="form-floating m-1">
-                            <input id="s1waterInterval" type="number" class="form-control shadow-none">
+                            <input id="s1waterInterval" name="s1waterInterval" type="number" class="form-control shadow-none">
                             <label for="s1waterInterval">s1waterInterval</label>
                         </div>
                     </div>
@@ -249,19 +240,19 @@
                 <div class="row">
                     <div class="col p-0">
                         <div class="form-floating m-1">
-                            <input id="s2day" type="number" class="form-control shadow-none">
+                            <input id="s2day" name="s2day" type="number" class="form-control shadow-none">
                             <label for="s2day">s2day</label>
                         </div>
                     </div>
                     <div class="col p-0">
                         <div class="form-floating m-1">
-                            <input id="s2waterDuration" type="number" class="form-control shadow-none">
+                            <input id="s2waterDuration" name="s2waterDuration" type="number" class="form-control shadow-none">
                             <label for="s2waterDuration">s2waterDuration</label>
                         </div>
                     </div>
                     <div class="col p-0">
                         <div class="form-floating m-1">
-                            <input id="s2waterInterval" type="number" class="form-control shadow-none">
+                            <input id="s2waterInterval" name="s2waterInterval" type="number" class="form-control shadow-none">
                             <label for="s2waterInterval">s2waterInterval</label>
                         </div>
                     </div>
@@ -269,19 +260,19 @@
                 <div class="row">
                     <div class="col p-0">
                         <div class="form-floating m-1">
-                            <input id="s3day" type="number" class="form-control shadow-none">
+                            <input id="s3day" name="s3day" type="number" class="form-control shadow-none">
                             <label for="s3day">s3day</label>
                         </div>
                     </div>
                     <div class="col p-0">
                         <div class="form-floating m-1">
-                            <input id="s3waterDuration" type="number" class="form-control shadow-none">
+                            <input id="s3waterDuration" name="s3waterDuration" type="number" class="form-control shadow-none">
                             <label for="s3waterDuration">s3waterDuration</label>
                         </div>
                     </div>
                     <div class="col p-0">
                         <div class="form-floating m-1">
-                            <input id="s3waterInterval" type="number" class="form-control shadow-none">
+                            <input id="s3waterInterval" name="s3waterInterval" type="number" class="form-control shadow-none">
                             <label for="s3waterInterval">s3waterInterval</label>
                         </div>
                     </div>
@@ -289,19 +280,19 @@
                 <div class="row">
                     <div class="col p-0">
                         <div class="form-floating m-1">
-                            <input id="s4day" type="number" class="form-control shadow-none">
+                            <input id="s4day" name="s4day" type="number" class="form-control shadow-none">
                             <label for="s4day">s4day</label>
                         </div>
                     </div>
                     <div class="col p-0">
                         <div class="form-floating m-1">
-                            <input id="s4waterDuration" type="number" class="form-control shadow-none">
+                            <input id="s4waterDuration" name="s4waterDuration" type="number" class="form-control shadow-none">
                             <label for="s4waterDuration">s4waterDuration</label>
                         </div>
                     </div>
                     <div class="col p-0">
                         <div class="form-floating m-1">
-                            <input id="s4waterInterval" type="number" class="form-control shadow-none">
+                            <input id="s4waterInterval" name="s4waterInterval" type="number" class="form-control shadow-none">
                             <label for="s4waterInterval">s4waterInterval</label>
                         </div>
                     </div>
@@ -309,19 +300,19 @@
                 <div class="row">
                     <div class="col p-0">
                         <div class="form-floating m-1">
-                            <input id="s5day" type="number" class="form-control shadow-none">
+                            <input id="s5day" name="s5day" type="number" class="form-control shadow-none">
                             <label for="s5day">s5day</label>
                         </div>
                     </div>
                     <div class="col p-0">
                         <div class="form-floating m-1">
-                            <input id="s5waterDuration" type="number" class="form-control shadow-none">
+                            <input id="s5waterDuration" name="s5waterDuration" type="number" class="form-control shadow-none">
                             <label for="s5waterDuration">s5waterDuration</label>
                         </div>
                     </div>
                     <div class="col p-0">
                         <div class="form-floating m-1">
-                            <input id="s5waterInterval" type="number" class="form-control shadow-none">
+                            <input id="s5waterInterval" name="s5waterInterval" type="number" class="form-control shadow-none">
                             <label for="s5waterInterval">s5waterInterval</label>
                         </div>
                     </div>
@@ -329,19 +320,19 @@
                 <div class="row">
                     <div class="col p-0">
                         <div class="form-floating m-1">
-                            <input id="s6day" type="number" class="form-control shadow-none">
+                            <input id="s6day" name="s6day" type="number" class="form-control shadow-none">
                             <label for="s6day">s6day</label>
                         </div>
                     </div>
                     <div class="col p-0">
                         <div class="form-floating m-1">
-                            <input id="s6waterDuration" type="number" class="form-control shadow-none">
+                            <input id="s6waterDuration" name="s6waterDuration" type="number" class="form-control shadow-none">
                             <label for="s6waterDuration">s6waterDuration</label>
                         </div>
                     </div>
                     <div class="col p-0">
                         <div class="form-floating m-1">
-                            <input id="s6waterInterval" type="number" class="form-control shadow-none">
+                            <input id="s6waterInterval" name="s6waterInterval" type="number" class="form-control shadow-none">
                             <label for="s6waterInterval">s6waterInterval</label>
                         </div>
                     </div>
@@ -353,45 +344,45 @@
                 <div class="row m-1">
                     <div class="col p-0">
                         <div class="form-floating m-1">
-                            <input id="configDesc" type="text" class="form-control shadow-none">
+                            <input id="configDesc" name="configDesc" type="text" class="form-control shadow-none">
                             <label for="configDesc">Description</label>
                         </div>
                         <div class="form-floating m-1">
-                            <input id="germinationStart" type="date" class="form-control shadow-none">
+                            <input id="germinationStart" name="germinationStart" type="date" class="form-control shadow-none">
                             <label for="germinationStart">Germination start</label>
                         </div>
                         <div class="form-floating m-1">
-                            <input id="plantingDate" type="date" class="form-control shadow-none">
+                            <input id="plantingDate" name="plantingDate" type="date" class="form-control shadow-none">
                             <label for="plantingDate">Planting date</label>
                         </div>
                         <div class="form-floating m-1">
-                            <input id="harvestDate" type="date" class="form-control shadow-none">
+                            <input id="harvestDate" name="harvestDate" type="date" class="form-control shadow-none">
                             <label for="harvestDate">Harvest start</label>
                         </div>
                         <div class="form-floating m-1">
-                            <input id="productionDate" type="date" class="form-control shadow-none">
+                            <input id="productionDate" name="productionDate" type="date" class="form-control shadow-none">
                             <label for="productionDate">Production date</label>
                         </div>
                     </div>
                     <div class="col p-0">
                         <div class="form-check form-switch mt-1 ms-2">
-                            <input class="form-check-input shadow-none" type="checkbox" role="switch" id="loggingSwitch">
+                            <input class="form-check-input shadow-none" type="checkbox" role="switch" id="loggingSwitch" name="loggingSwitch">
                             <label class="form-check-label" for="loggingSwitch">Metrics Logging</label>
                         </div>
                         <div class="form-check form-switch mt-1 mb-2 ms-2">
-                            <input class="form-check-input shadow-none" type="checkbox" role="switch" id="imagesSwitch">
+                            <input class="form-check-input shadow-none" type="checkbox" role="switch" id="imagesSwitch" name="imagesSwitch">
                             <label class="form-check-label" for="imagesSwitch">Save Images</label>
                         </div>
                         <div class="form-floating m-1">
-                            <input id="daysToGerm" type="text" class="form-control shadow-none">
+                            <input id="daysToGerm" name="daysToGerm" type="text" class="form-control shadow-none">
                             <label for="daysToGerm">Days to germinate</label>
                         </div>
                         <div class="form-floating m-1">
-                            <input id="daysToBloom" type="number" class="form-control shadow-none">
+                            <input id="daysToBloom" name="daysToBloom" type="number" class="form-control shadow-none">
                             <label for="daysToBloom">Days to bloom</label>
                         </div>
                         <div class="form-floating m-1">
-                            <input id="cureDate" type="date" class="form-control shadow-none">
+                            <input id="cureDate" name="cureDate" type="date" class="form-control shadow-none">
                             <label for="cureDate">Cure start</label>
                         </div>
                         <!--
@@ -406,20 +397,20 @@
                                 <div class="row">
                     <div class="col-5 mt-2">
                         <div class="form-floating">
-                            <input type="date" class="form-control shadow-none" id="MetricsStartDate">
+                            <input type="date" class="form-control shadow-none" id="MetricsStartDate" name="MetricsStartDate">
                             <label for="MetricsStartDate">Metrics Start Date</label>
                         </div>
                     </div>
 
                     <div class="col-3 mt-2">
                         <div class="form-floating">
-                            <input id="StartHour" type="number" min="0" max="24" class="form-control shadow-none">
+                            <input id="StartHour" name="StartHour" type="number" min="0" max="24" class="form-control shadow-none">
                             <label for="StartHour">Start</label>
                         </div>
                     </div>
                     <div class="col-3 mt-2">
                         <div class="form-floating">
-                            <input id="StopHour" type="number" min="0" max="24" class="form-control shadow-none">
+                            <input id="StopHour" name="StopHour" type="number" min="0" max="24" class="form-control shadow-none">
                             <label for="StopHour">Stop</label>
                         </div>
                     </div>
@@ -459,19 +450,21 @@
         <div class="row">			
             <h6>Notes</h6>
 
-								<div class="col">
-									<div class="mb-2">
-										<label   for="notes" class="form-label">Description</label>
-										<textarea id="notes" type="text" class="form-control" style="height: 118px"></textarea>
-									</div>
-								</div>
+                                <div class="col">
+                                    <div class="mb-2">
+                                        <label   for="notes" class="form-label">Description</label>
+                                        <textarea id="notes" name="notes" type="text" class="form-control" style="height: 118px"></textarea>
+                                    </div>
+                                </div>
 
 
         </div>
 
       </form>
 
-	</div><!-- end of Genv -->
+
+      
+    </div><!-- end of Genv -->
 
 
 </div><!-- end of main tab content -->
@@ -510,138 +503,138 @@
             </div>
 
             <div class="modal-body">
-				<form id="UpdateAssessmentForm" class="needs-validation" novalidate>
-					<div class="row">			
-						<div class="col-md-4"><!-- Col 1 -->
-							<input id="assParcel_ID" name="Parcel_ID" type="text" readonly hidden>
-							<div id="assParcelLocation" class="mb-2">
-								Parcel Location
-							</div>
-		                    <div class="mb-2 form-floating">
-								<input  id="assOwnerID" name="OwnerID" type="text" class="form-control shadow-none" readonly />
-								<label for="assOwnerID">Owner Id - Name</label>
-                        	</div>
-							<input id="assId" name="AssessmentId" type="text" readonly hidden>
-		                    <div class="mb-2 form-floating">
-								<input  id="assFY" name="FY" type="text" class="form-control shadow-none" readonly />
-								<label for="assFY">Year</label>
-                        	</div>
-							<div class="mb-2 form-floating">
-								<input  id="assDuesAmt" name="DuesAmt" type="text" class="form-control shadow-none" />
-								<label for="assDuesAmt">Dues Amt</label>
-							</div>
-							<div class="mb-2 form-floating">
-							    <input  id="assDateDue" name="DateDue" type="date" class="form-control shadow-none" readonly >
-                            	<label for="assDateDue">Date Due</label>
-							</div>
-							<div class="mb-2">
-								<input id="assPaid" name="Paid" class="form-check-input shadow-none" type="checkbox" />
-								<label for="assPaid" class="form-label">Paid</label>
-							</div>
-							<div class="mb-2">
-								<input id="assNonCollectible" name="NonCollectible" class="form-check-input shadow-none" type="checkbox" />
-								<label for="assNonCollectible" class="form-label">Non-Collectible</label>
-							</div>
-							<div class="mb-2 form-floating">
-							    <input  id="assDatePaid" name="DatePaid" type="date" class="form-control shadow-none" >
-                            	<label for="assDatePaid">Date Paid</label>
-							</div>
-							<div class="mb-2 form-floating">
-							    <input  id="assPaymentMethod" name="PaymentMethod" type="text" class="form-control shadow-none" >
-                            	<label for="assPaymentMethod">Payment Method</label>
-							</div>
-							<div class="mb-2 form-floating">
-								<textarea id="assComments" name="Comments" type="text" class="form-control  shadow-none" style="height: 100px"></textarea>
-								<label   for="assComments" class="form-label">Comments</label>
-							</div>
-						</div>
+                <form id="UpdateAssessmentForm" class="needs-validation" novalidate>
+                    <div class="row">			
+                        <div class="col-md-4"><!-- Col 1 -->
+                            <input id="assParcel_ID" name="Parcel_ID" type="text" readonly hidden>
+                            <div id="assParcelLocation" class="mb-2">
+                                Parcel Location
+                            </div>
+                            <div class="mb-2 form-floating">
+                                <input  id="assOwnerID" name="OwnerID" type="text" class="form-control shadow-none" readonly />
+                                <label for="assOwnerID">Owner Id - Name</label>
+                            </div>
+                            <input id="assId" name="AssessmentId" type="text" readonly hidden>
+                            <div class="mb-2 form-floating">
+                                <input  id="assFY" name="FY" type="text" class="form-control shadow-none" readonly />
+                                <label for="assFY">Year</label>
+                            </div>
+                            <div class="mb-2 form-floating">
+                                <input  id="assDuesAmt" name="DuesAmt" type="text" class="form-control shadow-none" />
+                                <label for="assDuesAmt">Dues Amt</label>
+                            </div>
+                            <div class="mb-2 form-floating">
+                                <input  id="assDateDue" name="DateDue" type="date" class="form-control shadow-none" readonly >
+                                <label for="assDateDue">Date Due</label>
+                            </div>
+                            <div class="mb-2">
+                                <input id="assPaid" name="Paid" class="form-check-input shadow-none" type="checkbox" />
+                                <label for="assPaid" class="form-label">Paid</label>
+                            </div>
+                            <div class="mb-2">
+                                <input id="assNonCollectible" name="NonCollectible" class="form-check-input shadow-none" type="checkbox" />
+                                <label for="assNonCollectible" class="form-label">Non-Collectible</label>
+                            </div>
+                            <div class="mb-2 form-floating">
+                                <input  id="assDatePaid" name="DatePaid" type="date" class="form-control shadow-none" >
+                                <label for="assDatePaid">Date Paid</label>
+                            </div>
+                            <div class="mb-2 form-floating">
+                                <input  id="assPaymentMethod" name="PaymentMethod" type="text" class="form-control shadow-none" >
+                                <label for="assPaymentMethod">Payment Method</label>
+                            </div>
+                            <div class="mb-2 form-floating">
+                                <textarea id="assComments" name="assComments" type="text" class="form-control  shadow-none" style="height: 100px"></textarea>
+                                <label   for="assComments" class="form-label">Comments</label>
+                            </div>
+                        </div>
 
-						<div class="col-md-4"><!-- Col 2 -->
-							<button type="submit" class="btn btn-success  shadow-none">
-								<i class="fa fa-floppy-o me-1"></i> Save Assessment
-							</button>
-							<div id="UpdateAssessmentMessageDisplay" class="m-2"></div>
-							<div class="mb-2">
-								<input id="assLien" name="Lien" class="form-check-input shadow-none" type="checkbox" />
-								<label for="assLien" class="form-label">Lien</label>
-							</div>
-							<div class="mb-2 form-floating">
-							    <input  id="assLienRefNo" name="LienRefNo" type="text" class="form-control shadow-none" >
-                            	<label for="assLienRefNo">Lien Ref No</label>
-							</div>
-							<div class="mb-2 form-floating">
-							    <input  id="assDateFiled" name="DateFiled" type="date" class="form-control shadow-none" >
-                            	<label for="assDateFiled">Date Filed</label>
-							</div>
-							<div class="mb-2 form-floating">
-								<select  id="assDisposition" name="Disposition" class="form-select shadow-none">
-									<option value=""></option>
-									<option value="Open">Open</option>
-									<option value="Paid">Paid</option>
-									<option value="Released">Released</option>
-									<option value="Closed">Closed</option>
-								</select>
-                            	<label for="assDisposition">Disposition</label>
-							</div>
-							<div class="mb-2 form-floating">
-							    <input  id="assFilingFee" name="FilingFee" type="number" step="0.01" min="0" class="form-control shadow-none" >
-                            	<label for="assFilingFee">Filing Fee</label>
-							</div>
-							<div class="mb-2 form-floating">
-							    <input  id="assReleaseFee" name="ReleaseFee" type="number" step="0.01" min="0" class="form-control shadow-none" >
-                            	<label for="assReleaseFee">Amount Paid</label>
-							</div>
-							<div class="mb-2 form-floating">
-							    <input  id="assDateReleased" name="DateReleased" type="date" class="form-control shadow-none" >
-                            	<label for="assDateReleased">Date Released</label>
-							</div>
-							<div class="mb-2 form-floating">
-							    <input  id="assLienDatePaid" name="LienDatePaid" type="date" class="form-control shadow-none" >
-                            	<label for="assLienDatePaid">Lien Date Paid</label>
-							</div>
-						</div>
+                        <div class="col-md-4"><!-- Col 2 -->
+                            <button type="submit" class="btn btn-success  shadow-none">
+                                <i class="fa fa-floppy-o me-1"></i> Save Assessment
+                            </button>
+                            <div id="UpdateAssessmentMessageDisplay" class="m-2"></div>
+                            <div class="mb-2">
+                                <input id="assLien" name="Lien" class="form-check-input shadow-none" type="checkbox" />
+                                <label for="assLien" class="form-label">Lien</label>
+                            </div>
+                            <div class="mb-2 form-floating">
+                                <input  id="assLienRefNo" name="LienRefNo" type="text" class="form-control shadow-none" >
+                                <label for="assLienRefNo">Lien Ref No</label>
+                            </div>
+                            <div class="mb-2 form-floating">
+                                <input  id="assDateFiled" name="DateFiled" type="date" class="form-control shadow-none" >
+                                <label for="assDateFiled">Date Filed</label>
+                            </div>
+                            <div class="mb-2 form-floating">
+                                <select  id="assDisposition" name="Disposition" class="form-select shadow-none">
+                                    <option value=""></option>
+                                    <option value="Open">Open</option>
+                                    <option value="Paid">Paid</option>
+                                    <option value="Released">Released</option>
+                                    <option value="Closed">Closed</option>
+                                </select>
+                                <label for="assDisposition">Disposition</label>
+                            </div>
+                            <div class="mb-2 form-floating">
+                                <input  id="assFilingFee" name="FilingFee" type="number" step="0.01" min="0" class="form-control shadow-none" >
+                                <label for="assFilingFee">Filing Fee</label>
+                            </div>
+                            <div class="mb-2 form-floating">
+                                <input  id="assReleaseFee" name="ReleaseFee" type="number" step="0.01" min="0" class="form-control shadow-none" >
+                                <label for="assReleaseFee">Amount Paid</label>
+                            </div>
+                            <div class="mb-2 form-floating">
+                                <input  id="assDateReleased" name="DateReleased" type="date" class="form-control shadow-none" >
+                                <label for="assDateReleased">Date Released</label>
+                            </div>
+                            <div class="mb-2 form-floating">
+                                <input  id="assLienDatePaid" name="LienDatePaid" type="date" class="form-control shadow-none" >
+                                <label for="assLienDatePaid">Lien Date Paid</label>
+                            </div>
+                        </div>
 
-						<div class="col-md-4"><!-- Col 3 -->
-							<div class="mb-2 form-floating">
-							    <input  id="assAmountPaid" name="AmountPaid" type="number" step="0.01" min="0" class="form-control shadow-none" >
-                            	<label for="assAmountPaid">AmountPaid</label>
-							</div>
-							<div class="mb-2">
-							    <input  id="assStopInterestCalc" name="StopInterestCalc" type="checkbox" class="form-check-input shadow-none" >
-                            	<label for="assStopInterestCalc">Stop Interest Calc</label>
-							</div>
-							<div class="mb-2 form-floating">
-							    <input  id="assFilingFeeInterest" name="FilingFeeInterest" type="number" step="0.01" min="0" class="form-control shadow-none" >
-                            	<label for="assFilingFeeInterest">Filing Fee Interest</label>
-							</div>
-							<div class="mb-2 form-floating">
-							    <input  id="assAssessmentInterest" name="AssessmentInterest" type="number" step="0.01" min="0" class="form-control shadow-none" >
-                            	<label for="assAssessmentInterest">Assessment Interest</label>
-							</div>
-							<div class="mb-2">
-							    <input  id="assInterestNotPaid" name="InterestNotPaid" type="checkbox" class="form-check-input shadow-none" >
-                            	<label for="assInterestNotPaid">Interest Not Paid</label>
-							</div>
-							<div class="mb-2 form-floating">
-							    <input  id="assBankFee" name="BankFee" type="number" step="0.01" min="0" class="form-control shadow-none" >
-                            	<label for="assBankFee">Bank Fee</label>
-							</div>
-							<div class="mb-2 form-floating">
-							    <input  id="assLienComment" name="LienComment" type="text" class="form-control shadow-none" >
-                            	<label for="assLienComment">Lien Comment</label>
-							</div>
-							<div class="mb-2 form-floating">
-								<input  id="assLastChangedTs" type="text" class="form-control shadow-none" readonly />
-								<label for="assLastChangedTs" class="form-label">Last Changed</label>
-							</div>
-							<div class="mb-2 form-floating">
-								<input  id="assLastChangedBy" type="text" class="form-control shadow-none" readonly />
-								<label for="assLastChangedBy" class="form-label">Changed By</label>
-							</div>
+                        <div class="col-md-4"><!-- Col 3 -->
+                            <div class="mb-2 form-floating">
+                                <input  id="assAmountPaid" name="AmountPaid" type="number" step="0.01" min="0" class="form-control shadow-none" >
+                                <label for="assAmountPaid">AmountPaid</label>
+                            </div>
+                            <div class="mb-2">
+                                <input  id="assStopInterestCalc" name="StopInterestCalc" type="checkbox" class="form-check-input shadow-none" >
+                                <label for="assStopInterestCalc">Stop Interest Calc</label>
+                            </div>
+                            <div class="mb-2 form-floating">
+                                <input  id="assFilingFeeInterest" name="FilingFeeInterest" type="number" step="0.01" min="0" class="form-control shadow-none" >
+                                <label for="assFilingFeeInterest">Filing Fee Interest</label>
+                            </div>
+                            <div class="mb-2 form-floating">
+                                <input  id="assAssessmentInterest" name="AssessmentInterest" type="number" step="0.01" min="0" class="form-control shadow-none" >
+                                <label for="assAssessmentInterest">Assessment Interest</label>
+                            </div>
+                            <div class="mb-2">
+                                <input  id="assInterestNotPaid" name="InterestNotPaid" type="checkbox" class="form-check-input shadow-none" >
+                                <label for="assInterestNotPaid">Interest Not Paid</label>
+                            </div>
+                            <div class="mb-2 form-floating">
+                                <input  id="assBankFee" name="BankFee" type="number" step="0.01" min="0" class="form-control shadow-none" >
+                                <label for="assBankFee">Bank Fee</label>
+                            </div>
+                            <div class="mb-2 form-floating">
+                                <input  id="assLienComment" name="LienComment" type="text" class="form-control shadow-none" >
+                                <label for="assLienComment">Lien Comment</label>
+                            </div>
+                            <div class="mb-2 form-floating">
+                                <input  id="assLastChangedTs" type="text" class="form-control shadow-none" readonly />
+                                <label for="assLastChangedTs" class="form-label">Last Changed</label>
+                            </div>
+                            <div class="mb-2 form-floating">
+                                <input  id="assLastChangedBy" type="text" class="form-control shadow-none" readonly />
+                                <label for="assLastChangedBy" class="form-label">Changed By</label>
+                            </div>
 
-						</div>
-					</div>
-				</form>
+                        </div>
+                    </div>
+                </form>
 
             </div>
             <div class="modal-footer">

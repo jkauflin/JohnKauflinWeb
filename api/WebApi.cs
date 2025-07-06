@@ -13,7 +13,10 @@ Modification History
                 to get environment variables for the Cosmos DB connection str
                 Modified to check user role from function context for auth
 2025-05-23 JJK  Added functions for GenvMonitor
+2025-07-05 JJK  Added UpdateGenvConfig (first time I used Co-Pilot AI agent 
+                to help with editing code in VS Code)
 ================================================================================*/
+using System.Globalization;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Configuration;
@@ -21,6 +24,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;     // for IActionResult
 using Microsoft.Azure.Cosmos;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Net.Http.Headers;
 
 using JohnKauflinWeb.Function.Model;
 
@@ -215,6 +220,7 @@ namespace JohnKauflinWeb.Function
                 Database db = cosmosClient.GetDatabase(databaseId);
                 Container container = db.GetContainer(containerId);
 
+                // Get from parameters when I've got the History select working
                 string id = "9";
                 int partitionKey = 9;
 
@@ -282,9 +288,9 @@ namespace JohnKauflinWeb.Function
 
                 var queryDefinition = new QueryDefinition(
                     "SELECT * FROM c ORDER BY c._ts DESC OFFSET 0 LIMIT 1 ");
-                    //"SELECT * FROM c WHERE c.id = @id")
-                    //.WithParameter("@id", "9");
-                    //.WithParameter("@id", "8");
+                //"SELECT * FROM c WHERE c.id = @id")
+                //.WithParameter("@id", "9");
+                //.WithParameter("@id", "8");
 
                 // Get the existing document from Cosmos DB
                 var feed = container.GetItemQueryIterator<GenvMetricPoint>(queryDefinition);
@@ -333,8 +339,9 @@ namespace JohnKauflinWeb.Function
                 Container container = db.GetContainer(containerId);
 
                 var currDateTime = DateTime.Now;
+                //    "SELECT * FROM c WHERE c.PointDay = @PointDay ORDER BY c.PointDayTime DESC")
                 var queryDefinition = new QueryDefinition(
-                    "SELECT * FROM c WHERE c.PointDay = @PointDay ORDER BY c.PointDayTime DESC")
+                    "SELECT * FROM c WHERE c.PointDay = @PointDay ORDER BY c._ts DESC OFFSET 0 LIMIT 1 ")
                     .WithParameter("@PointDay", int.Parse(currDateTime.ToString("yyyyMMdd")));
                 // Get the existing document from Cosmos DB
                 //var queryText = $"SELECT * FROM c ";
@@ -467,6 +474,291 @@ namespace JohnKauflinWeb.Function
 
             return new OkObjectResult(responseMessage);
         } // GenvRequestCommand
+
+
+        public void AddPatchField(List<PatchOperation> patchOperations, Dictionary<string, string> formFields, string fieldName, string fieldType = "Text", string operationType = "Replace")
+        {
+            if (patchOperations == null || formFields == null || string.IsNullOrWhiteSpace(fieldName))
+                return; // Prevent potential null reference errors
+
+            if (operationType.Equals("Replace", StringComparison.OrdinalIgnoreCase))
+            {
+                if (fieldType.Equals("Text"))
+                {
+                    if (formFields.ContainsKey(fieldName))
+                    {
+                        string value = formFields[fieldName]?.Trim() ?? string.Empty;
+                        patchOperations.Add(PatchOperation.Replace("/" + fieldName, value));
+                    }
+                }
+                else if (fieldType.Equals("Int"))
+                {
+                    if (formFields.ContainsKey(fieldName))
+                    {
+                        string value = formFields[fieldName]?.Trim() ?? string.Empty;
+                        patchOperations.Add(PatchOperation.Replace("/" + fieldName, int.Parse(value)));
+                    }
+                }
+                else if (fieldType.Equals("Money"))
+                {
+                    string value = formFields[fieldName]?.Trim() ?? string.Empty;
+                    //string input = "$1,234.56";
+                    if (decimal.TryParse(value, NumberStyles.Currency, CultureInfo.GetCultureInfo("en-US"), out decimal moneyVal))
+                    {
+                        Console.WriteLine($"Parsed currency: {moneyVal}");
+                        patchOperations.Add(PatchOperation.Replace("/" + fieldName, moneyVal));
+                    }
+                }
+                else if (fieldType.Equals("Bool"))
+                {
+                    int value = 0;
+                    if (formFields.ContainsKey(fieldName))
+                    {
+                        string checkedValue = formFields[fieldName]?.Trim() ?? string.Empty;
+                        if (checkedValue.Equals("on"))
+                        {
+                            value = 1;
+                        }
+                    }
+                    patchOperations.Add(PatchOperation.Replace("/" + fieldName, value));
+                }
+            }
+            else if (operationType.Equals("Add", StringComparison.OrdinalIgnoreCase))
+            {
+                //string value = formFields[fieldName]?.Trim() ?? string.Empty;
+                //patchOperations.Add(PatchOperation.Add("/" + fieldName, value));
+
+                if (fieldType.Equals("Text"))
+                {
+                    if (formFields.ContainsKey(fieldName))
+                    {
+                        string value = formFields[fieldName]?.Trim() ?? string.Empty;
+                        patchOperations.Add(PatchOperation.Add("/" + fieldName, value));
+                    }
+                }
+                else if (fieldType.Equals("Int"))
+                {
+                    if (formFields.ContainsKey(fieldName))
+                    {
+                        string value = formFields[fieldName]?.Trim() ?? string.Empty;
+                        patchOperations.Add(PatchOperation.Add("/" + fieldName, int.Parse(value)));
+                    }
+                }
+                else if (fieldType.Equals("Bool"))
+                {
+                    int value = 0;
+                    if (formFields.ContainsKey(fieldName))
+                    {
+                        string checkedValue = formFields[fieldName]?.Trim() ?? string.Empty;
+                        if (checkedValue.Equals("on"))
+                        {
+                            value = 1;
+                        }
+                    }
+                    patchOperations.Add(PatchOperation.Add("/" + fieldName, value));
+                }
+            }
+            else if (operationType.Equals("Remove", StringComparison.OrdinalIgnoreCase))
+            {
+                patchOperations.Add(PatchOperation.Remove("/" + fieldName));
+            }
+        }
+
+
+        public T GetFieldValue<T>(Dictionary<string, string> formFields, string fieldName, T defaultValue = default)
+        {
+            if (formFields == null || string.IsNullOrWhiteSpace(fieldName))
+                return defaultValue;
+
+            if (formFields.TryGetValue(fieldName, out string rawValue))
+            {
+                try
+                {
+                    if (typeof(T) == typeof(bool))
+                    {
+                        object boolValue = rawValue.Trim().Equals("on", StringComparison.OrdinalIgnoreCase);
+                        return (T)boolValue;
+                    }
+                    else
+                    {
+                        return (T)Convert.ChangeType(rawValue.Trim(), typeof(T));
+                    }
+                }
+                catch
+                {
+                    // Optionally log the error here
+                    return defaultValue;
+                }
+            }
+
+            return defaultValue;
+        }
+
+        public bool GetFieldValueBool(Dictionary<string, string> formFields, string fieldName)
+        {
+            bool value = false;
+            if (formFields == null || string.IsNullOrWhiteSpace(fieldName))
+                return value; // Prevent potential null reference errors
+
+            if (formFields.ContainsKey(fieldName))
+            {
+                string checkedValue = formFields[fieldName]?.Trim() ?? string.Empty;
+                if (checkedValue.Equals("on"))
+                {
+                    value = true;
+                }
+            }
+            return value;
+        }
+        public decimal GetFieldValueMoney(Dictionary<string, string> formFields, string fieldName)
+        {
+            decimal value = 0.00m;
+            if (formFields == null || string.IsNullOrWhiteSpace(fieldName))
+                return value; // Prevent potential null reference errors
+
+            if (formFields.ContainsKey(fieldName))
+            {
+                string rawValue = formFields[fieldName]?.Trim() ?? string.Empty;
+                //string input = "$1,234.56";
+                if (decimal.TryParse(rawValue, NumberStyles.Currency, CultureInfo.GetCultureInfo("en-US"), out decimal moneyVal))
+                {
+                    //Console.WriteLine($"Parsed currency: {moneyVal}");
+                }
+                value = moneyVal;
+            }
+            return value;
+        }
+
+
+        [Function("UpdateGenvConfig")]
+        public async Task<IActionResult> UpdateGenvConfig(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequestData req)
+        {
+            string userName = "";
+            if (!authCheck.UserAuthorizedForRole(req, userAdminRole, out userName))
+            {
+                return new BadRequestObjectResult("Unauthorized call - User does not have the correct Admin role");
+            }
+
+            log.LogInformation($">>> User is authorized - userName: {userName}");
+
+            //------------------------------------------------------------------------------------------------------------------
+            // Parse the JSON payload content from the Request BODY into a string
+            //------------------------------------------------------------------------------------------------------------------
+            string responseMessage = "";
+            string databaseId = "jjkdb1";
+            string containerId = "GenvConfig";
+            GenvConfig genvConfig = new GenvConfig();
+
+            try
+            {
+                // Get content from the Request BODY
+                var boundary = HeaderUtilities.RemoveQuotes(MediaTypeHeaderValue.Parse(req.Headers.GetValues("Content-Type").FirstOrDefault()).Boundary).Value;
+                var reader = new MultipartReader(boundary, req.Body);
+                var section = await reader.ReadNextSectionAsync();
+
+                var formFields = new Dictionary<string, string>();
+                var files = new List<(string fieldName, string fileName, byte[] content)>();
+
+                while (section != null)
+                {
+                    var contentDisposition = section.GetContentDispositionHeader();
+                    if (contentDisposition != null)
+                    {
+                        if (contentDisposition.IsFileDisposition())
+                        {
+                            using var memoryStream = new MemoryStream();
+                            await section.Body.CopyToAsync(memoryStream);
+                            files.Add((contentDisposition.Name.Value, contentDisposition.FileName.Value, memoryStream.ToArray()));
+                        }
+                        else if (contentDisposition.IsFormDisposition())
+                        {
+                            using var streamReader = new StreamReader(section.Body);
+                            formFields[contentDisposition.Name.Value] = await streamReader.ReadToEndAsync();
+                        }
+                    }
+
+                    section = await reader.ReadNextSectionAsync();
+                }
+
+                CosmosClient cosmosClient = new CosmosClient(apiCosmosDbConnStr);
+                Database db = cosmosClient.GetDatabase(databaseId);
+                Container container = db.GetContainer(containerId);
+
+                DateTime currDateTime = DateTime.Now;
+                string LastChangedTs = currDateTime.ToString("o");
+
+                //------------------------------------------------------------------------------------------------------------------
+                // Query the NoSQL container to get current values
+                //------------------------------------------------------------------------------------------------------------------
+                string id = formFields["updId"].Trim();
+                int configId = int.Parse(formFields["configId"].Trim());
+
+                genvConfig = await container.ReadItemAsync<GenvConfig>(id, new PartitionKey(configId));
+
+                // Overwrite values from formFields
+                genvConfig.configDesc = GetFieldValue<string>(formFields, "configDesc");
+                genvConfig.loggingOn = GetFieldValueBool(formFields, "loggingSwitch");
+                genvConfig.selfieOn = GetFieldValueBool(formFields, "imagesSwitch");
+
+                // 2025-07-06 - this was done with Co-Pilot AI agent in VS Code - pretty cool!
+                genvConfig.daysToGerm = GetFieldValue<string>(formFields, "daysToGerm");
+                genvConfig.daysToBloom = GetFieldValue<int>(formFields, "daysToBloom");
+                genvConfig.germinationStart = GetFieldValue<string>(formFields, "germinationStart");
+                genvConfig.plantingDate = GetFieldValue<string>(formFields, "plantingDate");
+                genvConfig.harvestDate = GetFieldValue<string>(formFields, "harvestDate");
+                genvConfig.cureDate = GetFieldValue<string>(formFields, "cureDate");
+                genvConfig.productionDate = GetFieldValue<string>(formFields, "productionDate");
+                genvConfig.configCheckInterval = GetFieldValue<float>(formFields, "configCheckInterval");
+                genvConfig.logMetricInterval = GetFieldValue<float>(formFields, "logMetricInterval");
+                //genvConfig.autoSetOn = GetFieldValueBool(formFields, "autoSetSwitch");
+                genvConfig.targetTemperature = GetFieldValue<float>(formFields, "targetTemperature");
+                genvConfig.currTemperature = GetFieldValue<float>(formFields, "currTemperature");
+                genvConfig.airInterval = GetFieldValue<float>(formFields, "airInterval");
+                genvConfig.airDuration = GetFieldValue<float>(formFields, "airDuration");
+                genvConfig.heatInterval = GetFieldValue<float>(formFields, "heatInterval");
+                genvConfig.heatDuration = GetFieldValue<float>(formFields, "heatDuration");
+                genvConfig.waterInterval = GetFieldValue<float>(formFields, "waterInterval");
+                genvConfig.waterDuration = GetFieldValue<float>(formFields, "waterDuration");
+                genvConfig.lightDuration = GetFieldValue<float>(formFields, "lightDuration");
+                genvConfig.requestCommand = GetFieldValue<string>(formFields, "requestCommand");
+                genvConfig.requestValue = GetFieldValue<string>(formFields, "requestValue");
+                genvConfig.requestResult = GetFieldValue<string>(formFields, "requestResult");
+                genvConfig.notes = GetFieldValue<string>(formFields, "notes");
+                genvConfig.s0day = GetFieldValue<int>(formFields, "s0day");
+                genvConfig.s0waterDuration = GetFieldValue<int>(formFields, "s0waterDuration");
+                genvConfig.s0waterInterval = GetFieldValue<int>(formFields, "s0waterInterval");
+                genvConfig.s1day = GetFieldValue<int>(formFields, "s1day");
+                genvConfig.s1waterDuration = GetFieldValue<int>(formFields, "s1waterDuration");
+                genvConfig.s1waterInterval = GetFieldValue<int>(formFields, "s1waterInterval");
+                genvConfig.s2day = GetFieldValue<int>(formFields, "s2day");
+                genvConfig.s2waterDuration = GetFieldValue<int>(formFields, "s2waterDuration");
+                genvConfig.s2waterInterval = GetFieldValue<int>(formFields, "s2waterInterval");
+                genvConfig.s3day = GetFieldValue<int>(formFields, "s3day");
+                genvConfig.s3waterDuration = GetFieldValue<int>(formFields, "s3waterDuration");
+                genvConfig.s3waterInterval = GetFieldValue<int>(formFields, "s3waterInterval");
+                genvConfig.s4day = GetFieldValue<int>(formFields, "s4day");
+                genvConfig.s4waterDuration = GetFieldValue<int>(formFields, "s4waterDuration");
+                genvConfig.s4waterInterval = GetFieldValue<int>(formFields, "s4waterInterval");
+                genvConfig.s5day = GetFieldValue<int>(formFields, "s5day");
+                genvConfig.s5waterDuration = GetFieldValue<int>(formFields, "s5waterDuration");
+                genvConfig.s5waterInterval = GetFieldValue<int>(formFields, "s5waterInterval");
+                genvConfig.s6day = GetFieldValue<int>(formFields, "s6day");
+                genvConfig.s6waterDuration = GetFieldValue<int>(formFields, "s6waterDuration");
+                genvConfig.s6waterInterval = GetFieldValue<int>(formFields, "s6waterInterval");
+
+                await container.ReplaceItemAsync(genvConfig, genvConfig.id, new PartitionKey(genvConfig.ConfigId));
+
+                responseMessage = $"GenvConfig updated";
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult($"Exception in DB to {containerId}, message = {ex.Message}");
+            }
+
+            return new OkObjectResult(responseMessage);
+        } // UpdateGenvConfig
+
 
 
     } // public class WebApi

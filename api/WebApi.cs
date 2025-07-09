@@ -211,7 +211,7 @@ namespace JohnKauflinWeb.Function
             //------------------------------------------------------------------------------------------------------------------
             string databaseId = "jjkdb1";
             string containerId = "GenvConfig";
-            var genvConfig = new GenvConfig();
+            var genvConfigList = new List<GenvConfig>();
 
             try
             {
@@ -221,25 +221,38 @@ namespace JohnKauflinWeb.Function
 
                 // Get the content string from the HTTP request body
                 string genvConfigId = await new StreamReader(req.Body).ReadToEndAsync();
+
                 if (string.IsNullOrWhiteSpace(genvConfigId))
                 {
-                    // If no id is specified, get the last record
+                    // If no id is specified, get the last record only
                     var queryDefinition = new QueryDefinition("SELECT * FROM c ORDER BY c.ConfigId DESC OFFSET 0 LIMIT 1 ");
                     var feed = container.GetItemQueryIterator<GenvConfig>(queryDefinition);
-                    int cnt = 0;
                     while (feed.HasMoreResults)
                     {
                         var response = await feed.ReadNextAsync();
                         foreach (var item in response)
                         {
-                            cnt++;
-                            genvConfig = item;
+                            genvConfigList.Add(item);
+                        }
+                    }
+                }
+                else if (genvConfigId.Trim().Equals("History", StringComparison.OrdinalIgnoreCase))
+                {
+                    // If 'History' is specified, return all records ordered by ConfigId descending
+                    var queryDefinition = new QueryDefinition("SELECT * FROM c ORDER BY c.ConfigId DESC");
+                    var feed = container.GetItemQueryIterator<GenvConfig>(queryDefinition);
+                    while (feed.HasMoreResults)
+                    {
+                        var response = await feed.ReadNextAsync();
+                        foreach (var item in response)
+                        {
+                            genvConfigList.Add(item);
                         }
                     }
                 }
                 else
                 {
-                    // Get from parameters when I've got the History select working
+                    // Get a single record by id
                     string id = genvConfigId.Trim();
                     int partitionKey = int.Parse(id);
 
@@ -248,7 +261,10 @@ namespace JohnKauflinWeb.Function
                         partitionKey: new PartitionKey(partitionKey)
                     );
 
-                    genvConfig = response.Resource;
+                    if (response.Resource != null)
+                    {
+                        genvConfigList.Add(response.Resource);
+                    }
                 }
             }
             catch (Exception ex)
@@ -256,7 +272,7 @@ namespace JohnKauflinWeb.Function
                 return new BadRequestObjectResult($"Exception in DB query to {containerId}, message = {ex.Message}");
             }
 
-            return new OkObjectResult(genvConfig);
+            return new OkObjectResult(genvConfigList);
         }
 
         [Function("GetGenvMetricPoint")]
@@ -643,7 +659,6 @@ namespace JohnKauflinWeb.Function
             //------------------------------------------------------------------------------------------------------------------
             // Parse the JSON payload content from the Request BODY into a string
             //------------------------------------------------------------------------------------------------------------------
-            string responseMessage = "";
             string databaseId = "jjkdb1";
             string containerId = "GenvConfig";
             GenvConfig genvConfig = new GenvConfig();
@@ -704,9 +719,14 @@ namespace JohnKauflinWeb.Function
                 genvConfig.daysToBloom = GetFieldValue<int>(formFields, "daysToBloom");
                 genvConfig.germinationStart = GetFieldValue<string>(formFields, "germinationStart");
                 genvConfig.plantingDate = GetFieldValue<string>(formFields, "plantingDate");
-                genvConfig.harvestDate = GetFieldValue<string>(formFields, "harvestDate");
-                genvConfig.cureDate = GetFieldValue<string>(formFields, "cureDate");
-                genvConfig.productionDate = GetFieldValue<string>(formFields, "productionDate");
+
+                // Recalculate harvest, cure, and production dates (based on planting date and days to bloom)
+                DateTime plantingDate = DateTime.Parse(GetFieldValue<string>(formFields, "plantingDate"));
+                int daysToBloom = GetFieldValue<int>(formFields, "daysToBloom");
+                genvConfig.harvestDate = plantingDate.AddDays(daysToBloom).ToString("yyyy-MM-dd");
+                genvConfig.cureDate = plantingDate.AddDays(daysToBloom + 14).ToString("yyyy-MM-dd");
+                genvConfig.productionDate = plantingDate.AddDays(daysToBloom + 21).ToString("yyyy-MM-dd");
+
                 //genvConfig.configCheckInterval = GetFieldValue<float>(formFields, "configCheckInterval");
                 genvConfig.logMetricInterval = GetFieldValue<int>(formFields, "logMetricInterval");
                 //genvConfig.autoSetOn = GetFieldValueBool(formFields, "autoSetSwitch");
@@ -747,14 +767,13 @@ namespace JohnKauflinWeb.Function
 
                 await container.ReplaceItemAsync(genvConfig, genvConfig.id, new PartitionKey(genvConfig.ConfigId));
 
-                responseMessage = $"GenvConfig updated";
             }
             catch (Exception ex)
             {
                 return new BadRequestObjectResult($"Exception in DB to {containerId}, message = {ex.Message}");
             }
 
-            return new OkObjectResult(responseMessage);
+            return new OkObjectResult(genvConfig);
         } // UpdateGenvConfig
 
 

@@ -356,11 +356,11 @@
                             <label for="plantingDate">Planting date</label>
                         </div>
                         <div class="form-floating m-1">
-                            <input id="harvestDate" name="harvestDate" type="date" class="form-control shadow-none">
+                            <input id="harvestDate" name="harvestDate" type="date" class="form-control shadow-none" readonly>
                             <label for="harvestDate">Harvest start</label>
                         </div>
                         <div class="form-floating m-1">
-                            <input id="productionDate" name="productionDate" type="date" class="form-control shadow-none">
+                            <input id="productionDate" name="productionDate" type="date" class="form-control shadow-none" readonly>
                             <label for="productionDate">Production date</label>
                         </div>
                     </div>
@@ -382,20 +382,14 @@
                             <label for="daysToBloom">Days to bloom</label>
                         </div>
                         <div class="form-floating m-1">
-                            <input id="cureDate" name="cureDate" type="date" class="form-control shadow-none">
+                            <input id="cureDate" name="cureDate" type="date" class="form-control shadow-none" readonly>
                             <label for="cureDate">Cure start</label>
                         </div>
                         <div id="currDay" class="m-3"></div>
-                        <!--
-                        <div class="form-check form-switch mt-1 mb-2 ms-2">
-                            <input class="form-check-input shadow-none" type="checkbox" role="switch" id="autoSetSwitch">
-                            <label class="form-check-label" for="autoSetSwitch">Auto Set Params</label>
-                        </div>
-                        -->
                     </div>
                 </div>
 
-                                <div class="row">
+                <div class="row">
                     <div class="col-5 mt-2">
                         <div class="form-floating">
                             <input type="date" class="form-control shadow-none" id="MetricsStartDate" name="MetricsStartDate">
@@ -447,20 +441,15 @@
 
         <div class="row">			
             <h6>Notes</h6>
-
-                                <div class="col">
-                                    <div class="mb-2">
-                                        <label   for="notes" class="form-label">Description</label>
-                                        <textarea id="notes" name="notes" type="text" class="form-control" style="height: 118px"></textarea>
-                                    </div>
-                                </div>
-
-
+            <div class="col">
+                <div class="mb-2">
+                    <label   for="notes" class="form-label">Description</label>
+                    <textarea id="notes" name="notes" type="text" class="form-control" style="height: 118px"></textarea>
+                </div>
+            </div>
         </div>
 
       </form>
-
-
       
     </div><!-- end of Genv -->
 
@@ -468,172 +457,20 @@
 </div><!-- end of main tab content -->
 </div><!-- end of main container -->
 
-<div id="GenvHistoryModal" class="modal fade" role="dialog" tabindex="-1">
+<div id="GenvConfigHistoryModal" class="modal fade" role="dialog" tabindex="-1">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    Genv History
+                    GenvConfig History
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-
             <div class="modal-body">
-
-
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<div id="AssessmentUpdateModal" class="modal fade" role="dialog" tabindex="-1">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">
-                    <img class="m-2" src="https://grhawebstorage.blob.core.windows.net/images/logo-photo.jpg"> Update Assessment
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-
-            <div class="modal-body">
-                <form id="UpdateAssessmentForm" class="needs-validation" novalidate>
-                    <div class="row">			
-                        <div class="col-md-4"><!-- Col 1 -->
-                            <input id="assParcel_ID" name="Parcel_ID" type="text" readonly hidden>
-                            <div id="assParcelLocation" class="mb-2">
-                                Parcel Location
-                            </div>
-                            <div class="mb-2 form-floating">
-                                <input  id="assOwnerID" name="OwnerID" type="text" class="form-control shadow-none" readonly />
-                                <label for="assOwnerID">Owner Id - Name</label>
-                            </div>
-                            <input id="assId" name="AssessmentId" type="text" readonly hidden>
-                            <div class="mb-2 form-floating">
-                                <input  id="assFY" name="FY" type="text" class="form-control shadow-none" readonly />
-                                <label for="assFY">Year</label>
-                            </div>
-                            <div class="mb-2 form-floating">
-                                <input  id="assDuesAmt" name="DuesAmt" type="text" class="form-control shadow-none" />
-                                <label for="assDuesAmt">Dues Amt</label>
-                            </div>
-                            <div class="mb-2 form-floating">
-                                <input  id="assDateDue" name="DateDue" type="date" class="form-control shadow-none" readonly >
-                                <label for="assDateDue">Date Due</label>
-                            </div>
-                            <div class="mb-2">
-                                <input id="assPaid" name="Paid" class="form-check-input shadow-none" type="checkbox" />
-                                <label for="assPaid" class="form-label">Paid</label>
-                            </div>
-                            <div class="mb-2">
-                                <input id="assNonCollectible" name="NonCollectible" class="form-check-input shadow-none" type="checkbox" />
-                                <label for="assNonCollectible" class="form-label">Non-Collectible</label>
-                            </div>
-                            <div class="mb-2 form-floating">
-                                <input  id="assDatePaid" name="DatePaid" type="date" class="form-control shadow-none" >
-                                <label for="assDatePaid">Date Paid</label>
-                            </div>
-                            <div class="mb-2 form-floating">
-                                <input  id="assPaymentMethod" name="PaymentMethod" type="text" class="form-control shadow-none" >
-                                <label for="assPaymentMethod">Payment Method</label>
-                            </div>
-                            <div class="mb-2 form-floating">
-                                <textarea id="assComments" name="assComments" type="text" class="form-control  shadow-none" style="height: 100px"></textarea>
-                                <label   for="assComments" class="form-label">Comments</label>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4"><!-- Col 2 -->
-                            <button type="submit" class="btn btn-success  shadow-none">
-                                <i class="fa fa-floppy-o me-1"></i> Save Assessment
-                            </button>
-                            <div id="UpdateAssessmentMessageDisplay" class="m-2"></div>
-                            <div class="mb-2">
-                                <input id="assLien" name="Lien" class="form-check-input shadow-none" type="checkbox" />
-                                <label for="assLien" class="form-label">Lien</label>
-                            </div>
-                            <div class="mb-2 form-floating">
-                                <input  id="assLienRefNo" name="LienRefNo" type="text" class="form-control shadow-none" >
-                                <label for="assLienRefNo">Lien Ref No</label>
-                            </div>
-                            <div class="mb-2 form-floating">
-                                <input  id="assDateFiled" name="DateFiled" type="date" class="form-control shadow-none" >
-                                <label for="assDateFiled">Date Filed</label>
-                            </div>
-                            <div class="mb-2 form-floating">
-                                <select  id="assDisposition" name="Disposition" class="form-select shadow-none">
-                                    <option value=""></option>
-                                    <option value="Open">Open</option>
-                                    <option value="Paid">Paid</option>
-                                    <option value="Released">Released</option>
-                                    <option value="Closed">Closed</option>
-                                </select>
-                                <label for="assDisposition">Disposition</label>
-                            </div>
-                            <div class="mb-2 form-floating">
-                                <input  id="assFilingFee" name="FilingFee" type="number" step="0.01" min="0" class="form-control shadow-none" >
-                                <label for="assFilingFee">Filing Fee</label>
-                            </div>
-                            <div class="mb-2 form-floating">
-                                <input  id="assReleaseFee" name="ReleaseFee" type="number" step="0.01" min="0" class="form-control shadow-none" >
-                                <label for="assReleaseFee">Amount Paid</label>
-                            </div>
-                            <div class="mb-2 form-floating">
-                                <input  id="assDateReleased" name="DateReleased" type="date" class="form-control shadow-none" >
-                                <label for="assDateReleased">Date Released</label>
-                            </div>
-                            <div class="mb-2 form-floating">
-                                <input  id="assLienDatePaid" name="LienDatePaid" type="date" class="form-control shadow-none" >
-                                <label for="assLienDatePaid">Lien Date Paid</label>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4"><!-- Col 3 -->
-                            <div class="mb-2 form-floating">
-                                <input  id="assAmountPaid" name="AmountPaid" type="number" step="0.01" min="0" class="form-control shadow-none" >
-                                <label for="assAmountPaid">AmountPaid</label>
-                            </div>
-                            <div class="mb-2">
-                                <input  id="assStopInterestCalc" name="StopInterestCalc" type="checkbox" class="form-check-input shadow-none" >
-                                <label for="assStopInterestCalc">Stop Interest Calc</label>
-                            </div>
-                            <div class="mb-2 form-floating">
-                                <input  id="assFilingFeeInterest" name="FilingFeeInterest" type="number" step="0.01" min="0" class="form-control shadow-none" >
-                                <label for="assFilingFeeInterest">Filing Fee Interest</label>
-                            </div>
-                            <div class="mb-2 form-floating">
-                                <input  id="assAssessmentInterest" name="AssessmentInterest" type="number" step="0.01" min="0" class="form-control shadow-none" >
-                                <label for="assAssessmentInterest">Assessment Interest</label>
-                            </div>
-                            <div class="mb-2">
-                                <input  id="assInterestNotPaid" name="InterestNotPaid" type="checkbox" class="form-check-input shadow-none" >
-                                <label for="assInterestNotPaid">Interest Not Paid</label>
-                            </div>
-                            <div class="mb-2 form-floating">
-                                <input  id="assBankFee" name="BankFee" type="number" step="0.01" min="0" class="form-control shadow-none" >
-                                <label for="assBankFee">Bank Fee</label>
-                            </div>
-                            <div class="mb-2 form-floating">
-                                <input  id="assLienComment" name="LienComment" type="text" class="form-control shadow-none" >
-                                <label for="assLienComment">Lien Comment</label>
-                            </div>
-                            <div class="mb-2 form-floating">
-                                <input  id="assLastChangedTs" type="text" class="form-control shadow-none" readonly />
-                                <label for="assLastChangedTs" class="form-label">Last Changed</label>
-                            </div>
-                            <div class="mb-2 form-floating">
-                                <input  id="assLastChangedBy" type="text" class="form-control shadow-none" readonly />
-                                <label for="assLastChangedBy" class="form-label">Changed By</label>
-                            </div>
-
-                        </div>
-                    </div>
-                </form>
-
+				<table class="table table-striped">
+				    <tbody id="GenvConfigHistoryTbody">
+				    </tbody>
+				</table>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>

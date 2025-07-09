@@ -27,7 +27,8 @@ Modification History
                 putting updates in this web app.  Pi app just reads from main
                 and puts it's data into the MetricPoint records.
                 Also implementing the stages concept for setting watering
-2025-07-05 JJK  Implemented GenvConfig update
+2025-07-05 JJK  Implemented GenvConfig update (and date re-calcs)
+2025-07-09 JJK  Implementing history display to choose previous configs
 ================================================================================*/
 
 import {empty,showLoadingSpinner,checkFetchResponse,convertUTCDateToLocalDate,
@@ -101,12 +102,14 @@ var s6waterDuration = document.getElementById("s6waterDuration")
 var s6waterInterval = document.getElementById("s6waterInterval")
 
 var GenvFormData = document.getElementById("GenvFormData")
+var GenvConfigHistoryModal = document.getElementById("GenvConfigHistoryModal")
 
 var getDataButton = document.getElementById("GetDataButton")
 var updateButton = document.getElementById("UpdateButton")
 var waterButton = document.getElementById("WaterButton")
 var GetSelfieButton = document.getElementById("GetSelfieButton")
 var GenvTabButton = document.getElementById("GenvTabButton")
+var GetHistoryButton = document.getElementById("GetHistoryButton")
 
 var currDay = document.getElementById("currDay")
 
@@ -132,6 +135,28 @@ GenvTabButton.addEventListener("click", function () {
     }
 });
 
+GetHistoryButton.addEventListener("click",  getGenvConfigHistory);
+
+
+// Respond to any clicks in the document and check for specific classes to respond to
+// (Do it dynamically because elements with classes will be added to the DOM dynamically)
+document.body.addEventListener('click', function (event) {
+    //console.log("event.target.classList = "+event.target.classList)
+    // Check for specific classes
+    if (event.target && event.target.classList.contains("GenvConfigHistoryLookup")) {
+        event.preventDefault();
+        let genvConfigId = event.target.dataset.configId
+
+        // clear out Metrics fields ???
+
+        getGenvConfig(genvConfigId)
+
+        new bootstrap.Modal(GenvConfigHistoryModal).hide();
+        //const myModal = new bootstrap.Modal(document.getElementById('myModal'));
+        //myModal.hide();
+    }
+})
+
 
  //=================================================================================================================
  // Module methods
@@ -152,9 +177,10 @@ async function updateGenvConfig() {
         })
         await checkFetchResponse(response)
         // Success
-        let responseMessage = await response.text()
-        messageDisplay.textContent = responseMessage
-        //_renderConfig(cr);
+        let cr = await response.json()
+        messageDisplay.textContent = "Update successful "
+        _renderConfig(cr);
+
     } catch (err) {
         console.error(err)
         messageDisplay.textContent = `Error in Fetch: ${err.message}`
@@ -170,14 +196,110 @@ async function getGenvConfig(genvConfigId) {
         })
         await checkFetchResponse(response)
         // Success
-        let cr = await response.json()
-        messageDisplay.textContent = ""
-        _renderConfig(cr);
+        let genvConfigList = await response.json()
+        if (genvConfigList.length > 0) {
+            // Get the last one
+            let cr = genvConfigList[genvConfigList.length - 1]
+            messageDisplay.textContent = "GenvConfig loaded"
+            _renderConfig(cr);
+        } else {
+            messageDisplay.textContent = "No GenvConfig records found"
+            //_renderConfig(null);
+        }   
     } catch (err) {
         console.error(err)
         messageDisplay.textContent = `Error in Fetch: ${err.message}`
     }
 }
+
+async function getGenvConfigHistory() {
+    let genvConfigId = "History"
+    messageDisplay.textContent = "Getting History..."
+    try {
+        const response = await fetch("/api/GetGenvConfig", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: genvConfigId
+        })
+        await checkFetchResponse(response)
+        // Success
+        let genvConfigList = await response.json()
+        if (genvConfigList.length > 0) {
+            messageDisplay.textContent = ""
+            formatGenvConfigHistory(genvConfigList)
+            // Get the last one
+            //let cr = genvConfigList[genvConfigList.length - 1]
+            //messageDisplay.textContent = "GenvConfig loaded"
+            //_renderConfig(cr);
+        } else {
+            messageDisplay.textContent = "No GenvConfig records found"
+            //_renderConfig(null);
+        }   
+
+    } catch (err) {
+        console.error(err)
+        messageDisplay.textContent = `Error in Fetch: ${err.message}`
+    }
+}
+
+function formatGenvConfigHistory(genvConfigList) {
+    empty(GenvConfigHistoryTbody)
+
+    let tr = ''
+    let th = ''
+    let td = ''
+    let tbody = ''
+
+    tbody = GenvConfigHistoryTbody
+    tr = document.createElement('tr')
+    tr.classList.add('small')
+    // Append the header elements
+    th = document.createElement("th"); th.textContent = "Id"; tr.appendChild(th)
+    th = document.createElement("th"); th.textContent = "Desc"; tr.appendChild(th)
+    th = document.createElement("th"); th.textContent = "Germ"; tr.appendChild(th)
+    th = document.createElement("th"); th.textContent = "Planting"; tr.appendChild(th)
+    //th = document.createElement("th"); th.classList.add('d-none','d-md-table-cell'); th.textContent = "Date Purchased"; tr.appendChild(th)
+    tbody.appendChild(tr)
+
+    // Append a row for every record in list
+/*
+    "id": "9",
+    "ConfigId": 9,
+    "configDesc": "JJK09 - WW",
+    "daysToGerm": "4 days - 1 day soak, 3 days to crack and get tap",
+    "daysToBloom": 60,
+    "germinationStart": "2025-06-20",
+    "plantingDate": "2025-06-24",
+    "harvestDate": "2025-08-23",
+    "cureDate": "2025-09-06",
+    "productionDate": "2025-09-13",
+*/
+    for (let index in genvConfigList) {
+        let cr = genvConfigList[index]
+
+        tr = document.createElement('tr')
+        tr.classList.add('small')
+
+        let a = document.createElement("a")
+        a.href = ""
+        a.classList.add("GenvConfigHistoryLookup")
+        a.dataset.configId = cr.configId
+        a.textContent = cr.configId
+        td = document.createElement("td"); 
+        td.appendChild(a);
+        tr.appendChild(td)
+
+        td = document.createElement("td"); td.textContent = cr.configDesc; tr.appendChild(td)
+        td = document.createElement("td"); td.textContent = cr.germinationStart; tr.appendChild(td)
+        td = document.createElement("td"); td.textContent = cr.plantingDate; tr.appendChild(td)
+        //td = document.createElement("td"); td.classList.add('d-none','d-md-table-cell'); td.textContent = standardizeDate(ownerRec.datePurchased); tr.appendChild(td)
+
+        tbody.appendChild(tr)
+    }
+    
+    new bootstrap.Modal(GenvConfigHistoryModal).show();
+}
+
 
 async function getGenvMetricPoint() {
     try {
@@ -187,7 +309,6 @@ async function getGenvMetricPoint() {
         await checkFetchResponse(response)
         // Success
         let gmp = await response.json()
-        messageDisplay.textContent = ""
         _renderGenvMetricPoint(gmp);
     } catch (err) {
         console.error(err)

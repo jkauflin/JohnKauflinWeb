@@ -31,7 +31,7 @@ Modification History
 ================================================================================*/
 
 import {empty,showLoadingSpinner,checkFetchResponse,convertUTCDateToLocalDate,
-    formatDate,addDays,addHours,getDateInt,getDateDayInt,getHoursInt} from './util.js';
+    formatDate,addDays,addHours,getDateInt,getDateDayInt,getHoursInt,daysFromDate} from './util.js';
 
 const dailyTempCanvas = document.getElementById("DailyTempCanvas")
 var dailyTempChart = null
@@ -107,6 +107,8 @@ var updateButton = document.getElementById("UpdateButton")
 var waterButton = document.getElementById("WaterButton")
 var GetSelfieButton = document.getElementById("GetSelfieButton")
 var GenvTabButton = document.getElementById("GenvTabButton")
+
+var currDay = document.getElementById("currDay")
 
 var loggingSwitch = document.getElementById("loggingSwitch")
 var imagesSwitch = document.getElementById("imagesSwitch")
@@ -287,6 +289,10 @@ function _renderConfig(cr) {
         daysToBloom.value = cr.daysToBloom
         germinationStart.value = cr.germinationStart
         plantingDate.value = cr.plantingDate
+
+        let days = daysFromDate(cr.plantingDate)
+        currDay.textContent = "Curr Day: " + days
+
         harvestDate.value = cr.harvestDate
         cureDate.value = cr.cureDate
         productionDate.value = cr.productionDate

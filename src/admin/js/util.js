@@ -270,6 +270,34 @@ export function getHoursInt(inDate,startHour=7,numHours=2) {
     return(parseInt(formattedDate))
 }
 
+export function daysFromDate(dateStr) {
+    let date1 = new Date(dateStr);
+    let date2 = new Date();
+
+    // getTime() returns the number of milliseconds since January 1, 1970 00:00:00
+    // Calculating the time difference
+    // of two dates
+    let Difference_In_Time =
+        date2.getTime() - date1.getTime();
+     
+    // Calculating the no. of days between
+    // two dates
+    let Difference_In_Days =
+        Math.round
+            (Difference_In_Time / (1000 * 3600 * 24));
+     
+    // To display the final no. of days (result)
+    /*
+    console.log
+        ("Total number of days between dates:\n" +
+            date1.toDateString() + " and " +
+            date2.toDateString() +
+            " is: " + Difference_In_Days + " days");    
+    */
+   
+    return(Difference_In_Days-1)
+}
+
 /*
 export function formatDate(inDate) {
     var td = inDate;

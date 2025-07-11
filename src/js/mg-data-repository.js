@@ -259,6 +259,7 @@ type Malbum @model {
 
     //console.log(">>> query gql = "+gql)
 
+    
     const apiQuery = {
         query: gql,
         variables: {

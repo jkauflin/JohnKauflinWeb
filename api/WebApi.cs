@@ -727,9 +727,7 @@ namespace JohnKauflinWeb.Function
                 genvConfig.cureDate = plantingDate.AddDays(daysToBloom + 14).ToString("yyyy-MM-dd");
                 genvConfig.productionDate = plantingDate.AddDays(daysToBloom + 21).ToString("yyyy-MM-dd");
 
-                //genvConfig.configCheckInterval = GetFieldValue<float>(formFields, "configCheckInterval");
                 genvConfig.logMetricInterval = GetFieldValue<int>(formFields, "logMetricInterval");
-                //genvConfig.autoSetOn = GetFieldValueBool(formFields, "autoSetSwitch");
                 genvConfig.targetTemperature = GetFieldValue<float>(formFields, "targetTemperature");
                 genvConfig.currTemperature = GetFieldValue<float>(formFields, "currTemperature");
                 genvConfig.airInterval = GetFieldValue<float>(formFields, "airInterval");

@@ -102,7 +102,7 @@ var s6waterDuration = document.getElementById("s6waterDuration")
 var s6waterInterval = document.getElementById("s6waterInterval")
 
 var GenvFormData = document.getElementById("GenvFormData")
-var GenvConfigHistoryModal = document.getElementById("GenvConfigHistoryModal")
+const GenvConfigHistoryModal = new bootstrap.Modal(document.getElementById('GenvConfigHistoryModal'))
 
 var getDataButton = document.getElementById("GetDataButton")
 var updateButton = document.getElementById("UpdateButton")
@@ -115,10 +115,8 @@ var currDay = document.getElementById("currDay")
 
 var loggingSwitch = document.getElementById("loggingSwitch")
 var imagesSwitch = document.getElementById("imagesSwitch")
-//var autoSetSwitch = document.getElementById("autoSetSwitch")
 loggingSwitch.checked = false;
 imagesSwitch.checked = false;
-//autoSetSwitch.checked = false;
 
 
 //=================================================================================================================
@@ -146,14 +144,8 @@ document.body.addEventListener('click', function (event) {
     if (event.target && event.target.classList.contains("GenvConfigHistoryLookup")) {
         event.preventDefault();
         let genvConfigId = event.target.dataset.configId
-
-        // clear out Metrics fields ???
-
         getGenvConfig(genvConfigId)
-
-        new bootstrap.Modal(GenvConfigHistoryModal).hide();
-        //const myModal = new bootstrap.Modal(document.getElementById('myModal'));
-        //myModal.hide();
+        GenvConfigHistoryModal.hide();
     }
 })
 
@@ -204,7 +196,6 @@ async function getGenvConfig(genvConfigId) {
             _renderConfig(cr);
         } else {
             messageDisplay.textContent = "No GenvConfig records found"
-            //_renderConfig(null);
         }   
     } catch (err) {
         console.error(err)
@@ -227,13 +218,8 @@ async function getGenvConfigHistory() {
         if (genvConfigList.length > 0) {
             messageDisplay.textContent = ""
             formatGenvConfigHistory(genvConfigList)
-            // Get the last one
-            //let cr = genvConfigList[genvConfigList.length - 1]
-            //messageDisplay.textContent = "GenvConfig loaded"
-            //_renderConfig(cr);
         } else {
             messageDisplay.textContent = "No GenvConfig records found"
-            //_renderConfig(null);
         }   
 
     } catch (err) {
@@ -297,7 +283,7 @@ function formatGenvConfigHistory(genvConfigList) {
         tbody.appendChild(tr)
     }
     
-    new bootstrap.Modal(GenvConfigHistoryModal).show();
+    GenvConfigHistoryModal.show();
 }
 
 
@@ -461,13 +447,6 @@ function _renderConfig(cr) {
         } else {
             imagesSwitch.checked = false;
         }
-        /*
-        if (cr.autoSetOn) {
-            autoSetSwitch.checked = true;
-        } else {
-            autoSetSwitch.checked = false;
-        }
-        */
     }
 }
 

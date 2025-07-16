@@ -123,7 +123,10 @@
                             <input id="lastUpdateTs" name="lastUpdateTs" type="datetime" class="form-control shadow-none" readonly>
                             <label for="lastUpdateTs">Last Update timestamp</label>
                         </div>
-                        <button id="UpdateButton" type="button" class="btn btn-primary m-2">Update</button>
+                        <button id="UpdateButton" type="button" class="btn btn-primary m-2 shadow-none">Update</button>
+                        <button id="GetHistoryButton" type="button" class="btn btn-info shadow-none">
+                            <i class="fa fa-history me-1"></i> Hist
+                        </button>
                     </div>
 
                     <div class="col-3 p-0">
@@ -387,67 +390,50 @@
                         </div>
                         <div id="currDay" class="m-3"></div>
                     </div>
+                </div><!-- end of Col 2 row 2 -->
+                <div class="row m-1">
+                    <div class="col p-0">
+                        <div class="form-floating m-1">
+                            <!--
+                            <label   for="notes" class="form-label">Description</label>
+                            -->
+                            <textarea id="notes" name="notes" type="text" class="form-control" style="height: 126px"></textarea>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-5 mt-2">
+            </div> <!-- end Col 3 -->
+        </div> <!-- end of Main Row -->
+
+        <div class="row ">
+            <div class="col-xs col-sm-2 col-lg-1">
+                        <button id="GetMetricsButton" type="button" class="btn btn-success shadow-none mb-2">
+                            <i class="fa fa-area-chart me-1"></i> Get Metrics
+                        </button>
+            </div>
+            <div class="col col-sm-3 col-lg-2">
                         <div class="form-floating">
                             <input type="date" class="form-control shadow-none" id="MetricsStartDate" name="MetricsStartDate">
                             <label for="MetricsStartDate">Metrics Start Date</label>
                         </div>
-                    </div>
-
-                    <div class="col-3 mt-2">
+            </div>
+            <div class="col col-xs col-sm-2 col-lg-1">
                         <div class="form-floating">
                             <input id="StartHour" name="StartHour" type="number" min="0" max="24" class="form-control shadow-none">
                             <label for="StartHour">Start</label>
                         </div>
-                    </div>
-                    <div class="col-3 mt-2">
+            </div>
+            <div class="col col-xs col-sm-2 col-lg-1">
                         <div class="form-floating">
                             <input id="StopHour" name="StopHour" type="number" min="0" max="24" class="form-control shadow-none">
                             <label for="StopHour">Stop</label>
                         </div>
-                    </div>
-
-                    <div class="col">
-                        <button id="GetMetricsButton" type="button" class="btn btn-success shadow-none mt-2">
-                            <i class="fa fa-area-chart me-1"></i> Get Metrics
-                        </button>
-                        <button id="GetHistoryButton" type="button" class="btn btn-info shadow-none mt-2 me-2">
-                            <i class="fa fa-history me-1"></i> Get History
-                        </button>
-                    </div>
-                </div> <!-- end of Col 2 row 2 -->
-                
-                <div class="row ">
-                    <div class="col">
-                        <!--
-                    <div class="col-xs-12 col-sm-11 col-lg-10 col-xl-7 col-xxl-6">
-
-                        <h6>Daily Temperature</h6>
-                        height="70%"
-                        class="h-50"
-                        -->
-                        <canvas id="DailyTempCanvas" height="200%"></canvas>
-
-                    </div>
-                </div><!-- end of Col 2 row 3 -->	                
-
-            </div> <!-- end Col 3 -->
-
-
-        </div> <!-- end of Main Row -->
-
-        <div class="row">			
-            <h6>Notes</h6>
-            <div class="col">
-                <div class="mb-2">
-                    <label   for="notes" class="form-label">Description</label>
-                    <textarea id="notes" name="notes" type="text" class="form-control" style="height: 118px"></textarea>
-                </div>
             </div>
-        </div>
+            <div class="col col-lg-5 col-xl-4">
+                <canvas id="DailyTempCanvas"></canvas>
+            </div>
+        </div><!-- end row -->	                
+
 
       </form>
       

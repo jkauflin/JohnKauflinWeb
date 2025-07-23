@@ -29,6 +29,7 @@ Modification History
                 Also implementing the stages concept for setting watering
 2025-07-05 JJK  Implemented GenvConfig update (and date re-calcs)
 2025-07-09 JJK  Implementing history display to choose previous configs
+2025-07-23 JJK  Implemented commandRequestSwitch to allow for commands to be sent
 ================================================================================*/
 
 import {empty,showLoadingSpinner,checkFetchResponse,convertUTCDateToLocalDate,
@@ -115,8 +116,10 @@ var currDay = document.getElementById("currDay")
 
 var loggingSwitch = document.getElementById("loggingSwitch")
 var imagesSwitch = document.getElementById("imagesSwitch")
+var commandRequestSwitch = document.getElementById("commandRequestSwitch")
 loggingSwitch.checked = false;
 imagesSwitch.checked = false;
+commandRequestSwitch.checked = false;
 
 
 //=================================================================================================================
@@ -322,6 +325,7 @@ async function _water(event) {
     showLoadingSpinner(messageDisplay)
 
     let paramData = {
+        ConfigId: parseInt(configId.value), // Partition key (1)
         RequestCommand: "WaterOn",
         RequestValue: waterSeconds.value
     }
@@ -344,32 +348,21 @@ async function _water(event) {
 }
 
 /*
+    "requestCommand": null,
+    "requestValue": null,
+    "requestResult": null,
+
         if (dbCr.requestCommand == "WaterOn") {
             let waterSeconds = parseInt(dbCr.requestValue)
             _waterOn(waterSeconds)
             cr.requestCommand = ""
             cr.requestValue = ""
             cr.requestResult = "Water turned on for "+waterSeconds+" secs"
-        } else if (dbCr.requestCommand == "SetAutoSetOn") {
-            cr.autoSetOn = parseInt(dbCr.requestValue)
-            cr.requestCommand = ""
-            cr.requestValue = ""
-            cr.requestResult = "autoSetOn set to "+cr.autoSetOn
         } else if (dbCr.requestCommand == "TakeSelfie") {
             _letMeTakeASelfie()
             cr.requestCommand = ""
             cr.requestValue = ""
             cr.requestResult = "Selfie taken "
-        } else if (dbCr.requestCommand == "WaterDuration") {
-            cr.waterDuration = parseInt(dbCr.requestValue)
-            cr.requestCommand = ""
-            cr.requestValue = ""
-            cr.requestResult = "waterDuration set to "+cr.waterDuration
-        } else if (dbCr.requestCommand == "WaterInterval") {
-            cr.waterInterval = parseInt(dbCr.requestValue)
-            cr.requestCommand = ""
-            cr.requestValue = ""
-            cr.requestResult = "waterInterval set to "+cr.waterInterval
         } else if (dbCr.requestCommand == "REBOOT") {
             cr.requestCommand = ""
             cr.requestValue = ""
@@ -433,10 +426,6 @@ function _renderConfig(cr) {
         s6waterDuration.value = cr.s6waterDuration
         s6waterInterval.value = cr.s6waterInterval
 
-        //if (cr.requestResult != null && cr.requestResult != '') {
-        //    messageDisplay.textContent = cr.requestResult
-        //}
-
         if (cr.loggingOn) {
             loggingSwitch.checked = true;
         } else {
@@ -446,6 +435,11 @@ function _renderConfig(cr) {
             imagesSwitch.checked = true;
         } else {
             imagesSwitch.checked = false;
+        }
+        if (cr.commandRequestOn) {
+            commandRequestSwitch.checked = true;
+        } else {
+            commandRequestSwitch.checked = false;
         }
     }
 }

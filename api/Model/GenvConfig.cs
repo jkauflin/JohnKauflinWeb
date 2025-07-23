@@ -16,11 +16,10 @@ namespace JohnKauflinWeb.Function.Model
         public string harvestDate { get; set; }
         public string cureDate { get; set; }
         public string productionDate { get; set; }
-        //public float configCheckInterval { get; set; }
         public int logMetricInterval { get; set; }
         public bool loggingOn { get; set; }
         public bool selfieOn { get; set; }
-        //public bool autoSetOn { get; set; }
+        public bool commandRequestOn { get; set; }
         public float targetTemperature { get; set; }
         public float currTemperature { get; set; }
         public float airInterval { get; set; }
@@ -30,12 +29,6 @@ namespace JohnKauflinWeb.Function.Model
         public float waterInterval { get; set; }
         public float waterDuration { get; set; }
         public float lightDuration { get; set; }
-        //public string lastUpdateTs { get; set; }
-        //public string lastWaterTs { get; set; }
-        //public float lastWaterSecs { get; set; }
-        public string requestCommand { get; set; }
-        public string requestValue { get; set; }
-        public string requestResult { get; set; }
         public string notes { get; set; }
         public int s0day { get; set; }
         public int s0waterDuration { get; set; }

@@ -392,6 +392,7 @@ namespace JohnKauflinWeb.Function
 
         private class RequestCommandParamData
         {
+            public int ConfigId { get; set; } // Partition key (1)
             public string RequestCommand { get; set; }
             public string RequestValue { get; set; }
             public override string ToString()
@@ -417,8 +418,8 @@ namespace JohnKauflinWeb.Function
             //------------------------------------------------------------------------------------------------------------------
             string responseMessage = "";
             string databaseId = "jjkdb1";
-            string containerId = "GenvConfig";
-            //var genvConfig = new GenvConfig();
+            string containerId = "GenvCommandRequest";
+            var genvCommandRequest = new GenvCommandRequest();
 
             try
             {
@@ -433,6 +434,23 @@ namespace JohnKauflinWeb.Function
                 Database db = cosmosClient.GetDatabase(databaseId);
                 Container container = db.GetContainer(containerId);
 
+                genvCommandRequest.id = Guid.NewGuid().ToString(); // Generate a new unique id
+                genvCommandRequest.ConfigId = paramData.ConfigId; // Partition key (1)
+                genvCommandRequest.processed = false; // Initially not processed
+                genvCommandRequest.requestCommand = paramData.RequestCommand;
+                genvCommandRequest.requestValue = paramData.RequestValue;
+                genvCommandRequest.requestResult = "Pending"; // Initial status
+
+                genvCommandRequest.requestTime = DateTime.UtcNow; // Set the request time
+                //genvCommandRequest.responseTime = DateTime.MinValue; // Initial response time
+
+                //await container.ReplaceItemAsync(genvConfig, genvConfig.id, new PartitionKey(genvConfig.ConfigId));
+                await container.CreateItemAsync(
+                    genvCommandRequest,
+                    new PartitionKey(genvCommandRequest.ConfigId)
+                );
+
+                /*
                 //PatchOperation.Increment("/inventory/quantity", 5),
                 //PatchOperation.Add("/tags/-", "new-tag")
                 PatchOperation[] patchOperations = new PatchOperation[]
@@ -446,6 +464,7 @@ namespace JohnKauflinWeb.Function
                     new PartitionKey(1),
                     patchOperations
                 );
+                */
 
                 /*
                 var queryDefinition = new QueryDefinition(
@@ -713,7 +732,8 @@ namespace JohnKauflinWeb.Function
                 genvConfig.configDesc = GetFieldValue<string>(formFields, "configDesc");
                 genvConfig.loggingOn = GetFieldValueBool(formFields, "loggingSwitch");
                 genvConfig.selfieOn = GetFieldValueBool(formFields, "imagesSwitch");
-
+                genvConfig.commandRequestOn = GetFieldValueBool(formFields, "commandRequestSwitch");
+                genvConfig.daysToBloom = GetFieldValue<int>(formFields, "daysToBloom");
                 // 2025-07-06 - this was done with Co-Pilot AI agent in VS Code - pretty cool!
                 genvConfig.daysToGerm = GetFieldValue<string>(formFields, "daysToGerm");
                 genvConfig.daysToBloom = GetFieldValue<int>(formFields, "daysToBloom");
@@ -737,9 +757,6 @@ namespace JohnKauflinWeb.Function
                 genvConfig.waterInterval = GetFieldValue<float>(formFields, "waterInterval");
                 genvConfig.waterDuration = GetFieldValue<float>(formFields, "waterDuration");
                 genvConfig.lightDuration = GetFieldValue<float>(formFields, "lightDuration");
-                genvConfig.requestCommand = GetFieldValue<string>(formFields, "requestCommand");
-                genvConfig.requestValue = GetFieldValue<string>(formFields, "requestValue");
-                genvConfig.requestResult = GetFieldValue<string>(formFields, "requestResult");
                 genvConfig.notes = GetFieldValue<string>(formFields, "notes");
                 genvConfig.s0day = GetFieldValue<int>(formFields, "s0day");
                 genvConfig.s0waterDuration = GetFieldValue<int>(formFields, "s0waterDuration");

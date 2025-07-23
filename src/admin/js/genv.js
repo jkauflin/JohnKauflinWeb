@@ -321,22 +321,23 @@ async function _getSelfie(event) {
     }
 }
 
-async function _water(event) {
-    showLoadingSpinner(messageDisplay)
-
+function _water() {
     let paramData = {
         ConfigId: parseInt(configId.value), // Partition key (1)
         RequestCommand: "WaterOn",
         RequestValue: waterSeconds.value
     }
+    requestCommand(paramData)
+}
+
+async function requestCommand(paramData) {
+    showLoadingSpinner(messageDisplay)
 
     try {
         const response = await fetch("/api/GenvRequestCommand", {
             method: 'POST',
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(paramData)
-            //headers: {'Content-Type': 'text/plain'},
-            //body: waterSeconds.value
         })
         await checkFetchResponse(response)
         // Success

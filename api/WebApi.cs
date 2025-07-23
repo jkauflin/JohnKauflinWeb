@@ -442,63 +442,13 @@ namespace JohnKauflinWeb.Function
                 genvCommandRequest.requestResult = "Pending"; // Initial status
 
                 genvCommandRequest.requestTime = DateTime.UtcNow; // Set the request time
-                //genvCommandRequest.responseTime = DateTime.MinValue; // Initial response time
 
-                //await container.ReplaceItemAsync(genvConfig, genvConfig.id, new PartitionKey(genvConfig.ConfigId));
                 await container.CreateItemAsync(
                     genvCommandRequest,
                     new PartitionKey(genvCommandRequest.ConfigId)
                 );
 
-                /*
-                //PatchOperation.Increment("/inventory/quantity", 5),
-                //PatchOperation.Add("/tags/-", "new-tag")
-                PatchOperation[] patchOperations = new PatchOperation[]
-                {
-                    PatchOperation.Set("/requestCommand", paramData.RequestCommand),
-                    PatchOperation.Set("/requestValue", paramData.RequestValue),
-                };
-
-                ItemResponse<dynamic> response = await container.PatchItemAsync<dynamic>(
-                    "1",
-                    new PartitionKey(1),
-                    patchOperations
-                );
-                */
-
-                /*
-                var queryDefinition = new QueryDefinition(
-                    "SELECT * FROM c WHERE c.id = @id")
-                    .WithParameter("@id", "1");
-
-                // Get the existing document from Cosmos DB
-                //var queryText = $"SELECT * FROM c ";
-                var feed = container.GetItemQueryIterator<GenvConfig>(queryDefinition);
-                int cnt = 0;
-                while (feed.HasMoreResults)
-                {
-                    var response = await feed.ReadNextAsync();
-                    foreach (var genvConfig in response)
-                    {
-                        cnt++;
-                        //log.LogInformation($"{cnt}  id: {genvConfig.id}");
-
-                        genvConfig.requestCommand = paramData.RequestCommand;
-                        genvConfig.requestValue = paramData.RequestValue;
-                        //await container.ReplaceItemAsync(genvConfig)
-                        //await container.UpsertItemAsync(mediaInfo, new PartitionKey(mediaInfo.MediaTypeId));
-                    }
-                }
-                if (cnt > 0)
-                {
-
-                    //configContainer.item(cr.id,cr.ConfigId).replace(cr); 
-
-
-                }
-                */
-
-                responseMessage = $"RequestCommand updated";
+                responseMessage = $"Command requested = {paramData.RequestCommand}, Val = {paramData.RequestValue}";
             }
             catch (Exception ex)
             {

@@ -111,7 +111,9 @@ var waterButton = document.getElementById("WaterButton")
 var GetSelfieButton = document.getElementById("GetSelfieButton")
 var GenvTabButton = document.getElementById("GenvTabButton")
 var GetHistoryButton = document.getElementById("GetHistoryButton")
-
+var TakeSelfieButton = document.getElementById("TakeSelfieButton")
+var RebootButton = document.getElementById("RebootButton")
+var RequestsButton = document.getElementById("RequestsButton")
 var currDay = document.getElementById("currDay")
 
 var loggingSwitch = document.getElementById("loggingSwitch")
@@ -128,6 +130,9 @@ getDataButton.addEventListener("click", _lookup);
 updateButton.addEventListener("click", updateGenvConfig);
 waterButton.addEventListener("click", _water);
 GetSelfieButton.addEventListener("click", _getSelfie);
+TakeSelfieButton.addEventListener("click", takeSelfie);
+RebootButton.addEventListener("click", requestReboot);
+RequestsButton.addEventListener("click", getRequests);
 
 GenvTabButton.addEventListener("click", function () {
     let targetTabElement = document.querySelector(`.navbar-nav a[href="#GenvPage"]`);
@@ -330,6 +335,28 @@ function _water() {
     requestCommand(paramData)
 }
 
+function takeSelfie() {
+    let paramData = {
+        ConfigId: parseInt(configId.value), // Partition key (1)
+        RequestCommand: "TakeSelfie",
+        RequestValue: ""
+    }
+    requestCommand(paramData)
+}
+
+function requestReboot() {
+    let paramData = {
+        ConfigId: parseInt(configId.value), // Partition key (1)
+        RequestCommand: "REBOOT",
+        RequestValue: ""
+    }
+    requestCommand(paramData)
+}
+
+function getRequests() {
+    console.log("getRequests() called")
+}
+
 async function requestCommand(paramData) {
     showLoadingSpinner(messageDisplay)
 
@@ -349,10 +376,6 @@ async function requestCommand(paramData) {
 }
 
 /*
-    "requestCommand": null,
-    "requestValue": null,
-    "requestResult": null,
-
         if (dbCr.requestCommand == "WaterOn") {
             let waterSeconds = parseInt(dbCr.requestValue)
             _waterOn(waterSeconds)

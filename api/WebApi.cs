@@ -24,6 +24,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;     // for IActionResult
 using Microsoft.Azure.Cosmos;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Net.Http.Headers;
 
@@ -40,6 +41,10 @@ namespace JohnKauflinWeb.Function
         private readonly AuthorizationCheck authCheck;
         private readonly string userAdminRole;
 
+        private readonly DbCommon dbCommon;
+
+
+
         public WebApi(ILogger<WebApi> logger, IConfiguration configuration)
         {
             log = logger;
@@ -48,6 +53,8 @@ namespace JohnKauflinWeb.Function
 
             authCheck = new AuthorizationCheck(log);
             userAdminRole = "jjkadmin";   // add to config ???
+
+            dbCommon = new DbCommon(log,config);
         }
 
 

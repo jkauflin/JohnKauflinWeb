@@ -39,51 +39,53 @@
  * ---------------------------------------------------------------------------
  * 2024-03-10 JJK   Migrating to an Azure static web app (SWA)
  * 2024-05-02 JJK   Adding function to support solar metrics and charts
+ * 2025-10-24 JJK   Converting data-api to api function calls (and update to
+ *                  Bootstrap v5.3.8)
  *============================================================================*/
 
 import {querySolarMetrics} from './solarMetrics.js';
+import {} from './mediagallery.js';
 
 // Keep track of the state of the navbar collapse (shown or hidden)
-var navbarCollapseShown = false;
-var collapsibleNavbar = document.getElementsByClassName("navbar-collapse")[0];
-collapsibleNavbar.addEventListener('hidden.bs.collapse', function () {
-    navbarCollapseShown = false;
-})
-collapsibleNavbar.addEventListener('shown.bs.collapse', function () {
-    navbarCollapseShown = true;
-})
- 
-// Listen for nav-link clicks
-document.querySelectorAll("a.nav-link").forEach(el => el.addEventListener("click", function (event) {
-    // Automatically hide the navbar collapse when an item link is clicked (and the collapse is currently shown)
-    if (navbarCollapseShown) {
-        new bootstrap.Collapse(document.getElementsByClassName("navbar-collapse")[0]).hide()
-    }
+var navbarCollapseShown = false
 
-    /*
-    let eventTargetStr = event.target.toString()
-    if (eventTargetStr.indexOf("SolarPage") >= 0) {
-        console.log("a.nav-link click, event.target = "+event.target)
+document.addEventListener('DOMContentLoaded', () => {
+
+    var collapsibleNavbar = document.getElementsByClassName("navbar-collapse")[0]
+    collapsibleNavbar.addEventListener('hidden.bs.collapse', function () {
+        navbarCollapseShown = false
+    })
+    collapsibleNavbar.addEventListener('shown.bs.collapse', function () {
+        navbarCollapseShown = true
+    })
+    
+    // Listen for nav-link clicks
+    document.querySelectorAll("a.nav-link").forEach(el => el.addEventListener("click", function (event) {
+        // Automatically hide the navbar collapse when an item link is clicked (and the collapse is currently shown)
+        if (navbarCollapseShown) {
+            new bootstrap.Collapse(document.getElementsByClassName("navbar-collapse")[0]).hide()
+        }
+    }))
+
+    // Respond to click on a link-tile-tab button by finding the correct TAB and switching/showing it
+    // (These link-tile-tab's also have media-page for creating the Menu, but these handled from the listener on that class)
+    document.querySelectorAll(".link-tile-tab-solar").forEach(el => el.addEventListener("click", function (event) {
+        //console.log("link-tile-tab-solar click ")
+
+        // Get the target tab based on the the MediaType specified, and use the new Bootstrap v5.2 js for showing the tab
+        // the link ('a') with the correct MediaType, within the ".navbar-nav" list
+        let targetTabElement = document.querySelector(`.navbar-nav a[href="#SolarPage"]`);
+
+        // If the target tab element is found, create a Tab object and call the show() method
+        if (typeof targetTabElement !== "undefined" && targetTabElement !== null) {
+            bootstrap.Tab.getOrCreateInstance(targetTabElement).show();
+        }
+
         querySolarMetrics()
-    }
-    */
+    }))
+})
 
-}))
 
-// Respond to click on a link-tile-tab button by finding the correct TAB and switching/showing it
-// (These link-tile-tab's also have media-page for creating the Menu, but these handled from the listener on that class)
-document.querySelectorAll(".link-tile-tab-solar").forEach(el => el.addEventListener("click", function (event) {
-    //console.log("link-tile-tab-solar click ")
 
-    // Get the target tab based on the the MediaType specified, and use the new Bootstrap v5.2 js for showing the tab
-    // the link ('a') with the correct MediaType, within the ".navbar-nav" list
-    let targetTabElement = document.querySelector(`.navbar-nav a[href="#SolarPage"]`);
 
-    // If the target tab element is found, create a Tab object and call the show() method
-    if (typeof targetTabElement !== "undefined" && targetTabElement !== null) {
-        bootstrap.Tab.getOrCreateInstance(targetTabElement).show();
-    }
-
-    querySolarMetrics()
-}))
 

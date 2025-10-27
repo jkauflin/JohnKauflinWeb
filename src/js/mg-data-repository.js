@@ -19,9 +19,11 @@ Modification History
 2024-06-20 JJK  Getting an error from Azure on the MediaType query, so I've
                 hard-coded the categories and menu items for now
 2024-12-02 JJK  Added util module and spinner for loading... mediaPageMessage
+2025-10-24 JJK  Refactored to use new function API endpoint instead of data-api 
 ================================================================================*/
 
-import {empty,showLoadingSpinner,addDays,addHours,getDateInt,getHoursInt} from './util.js';
+//import {empty,showLoadingSpinner,addDays,addHours,getDateInt,getHoursInt} from './util.js';
+import {empty,showLoadingSpinner,checkFetchResponse,addDays,getDateInt} from './util.js';
 import {createMediaPage,displayCurrFileList,updateAdminMessage} from './mg-create-pages.js';
 import {setMenuList} from './mg-menu.js';
 import {setAlbumList,getAlbumName} from './mg-album.js';
@@ -34,7 +36,6 @@ export let mediaInfo = {
 export let mediaType = 1
 export let mediaTypeDesc = "Photos"
 export let contentDesc = ""
-export var getMenu = false
 
 export var queryCategory = ""
 export var querySearchStr = ""
@@ -49,7 +50,10 @@ let photosUri = "https://jjkwebstorage.blob.core.windows.net/photos/"
 let thumbsUri = "https://jjkwebstorage.blob.core.windows.net/thumbs/"
 let musicUri = "https://jjkwebstorage.blob.core.windows.net/music/"
 
-var mediaPageMessage = document.getElementById("MediaPageMessage");
+var MediaPageMessage
+document.addEventListener('DOMContentLoaded', () => {
+    MediaPageMessage = document.getElementById("MediaPageMessage")
+})
 
 export function setMediaType(inMediaType) {
     mediaType = parseInt(inMediaType)
@@ -91,12 +95,55 @@ export async function queryMediaInfo(paramData) {
     //console.log("--------------------------------------------------------------------")
     //console.log("$$$$$ in the QueryMediaInfo, mediaType = "+mediaType)
 
-    getMenu = paramData.getMenu
-    //getMenu = false
+    /* GRHA implementation
+    if (paramData.MediaFilterMediaType != null && paramData.MediaFilterMediaType != '') {
+        setMediaType(parseInt(paramData.MediaFilterMediaType))
+    }
 
-    // Set a default start date of 60 days back from current date
+    // Load the category list for the selected media type
+    let mti = mediaType - 1;
+    mediaTypeDesc = mediaTypeData[mti].MediaTypeDesc;
+    categoryList.length = 0;
+    if (mediaTypeData[mti].Category != null) {
+        for (let i = 0; i < mediaTypeData[mti].Category.length; i++) {
+            categoryList.push(mediaTypeData[mti].Category[i].CategoryName);
+        }
+    }
+
+    // Set these for the createMediaPage function
+    defaultCategory = mediaTypeData[mti].Category[0].CategoryName
+
+    if (paramData.MediaFilterCategory == null || paramData.MediaFilterCategory == '' || paramData.MediaFilterCategory == '0' || paramData.MediaFilterCategory == 'DEFAULT') {
+        paramData.MediaFilterCategory = defaultCategory
+    }
+
+    // Save the parameters from the laste query
+    queryCategory = paramData.MediaFilterCategory
+
+    //..............................................................................
+    // Set a default start date
+    //mediaInfo.startDate = "1972-01-01";
+    mediaInfo.startDate = "";
+    // >>>>> remember this gets set after the query and is used for the NEXT query
+    // need the DEFAULT values to be set for the "first" query
+
+    if (paramData.MediaFilterStartDate != null && paramData.MediaFilterStartDate != '') {
+        if (paramData.MediaFilterStartDate == "DEFAULT") {
+            // Adjust this logic for the different types 
+            //paramData.MediaFilterStartDate = mediaInfo.startDate
+            paramData.MediaFilterStartDate = ""
+        }
+    }
+    */
+
+
+    // >>>>>>>>>>>>>> some info needs to be set in the mediaInfo structure (in addition to setting values for the queries)
+    // decide what to set here, as opposed to what is passed in paramData
+
+    /*
     mediaInfo.menuOrAlbumName = ""
-
+    
+    // Set a default start date of 60 days back from current date
     if (mediaType == 1) {
         mediaInfo.startDate = addDays(new Date(), -60)
     } else {
@@ -110,43 +157,6 @@ export async function queryMediaInfo(paramData) {
 		maxRows = 12
     }
 
-    // When getMenu specified, query the MediaType container for menu values (first page load)
-    let mediaTypeQuery = ""
-    if (getMenu) {
-        // loading...
-        //setThumbnailMessage("Loading...")
-        /*
-        mtype_by_pk(id: ${mediaType.toString()}) {
-            id
-            MediaTypeDesc
-            Category {
-                CategoryName
-                Menu {
-                    MenuItem
-                }
-            }
-        }
-        */
-        mediaTypeQuery = `
-        malbums 
-        {
-            items {
-                AlbumKey
-                AlbumName
-            }
-        }
-        `
-    }
-
-/*
-type Malbum @model {
-  id: ID
-  MediaAlbumId: Int
-  AlbumKey: String
-  AlbumName: String
-  AlbumDesc: String
-}
-*/
 
     let categoryQuery = ""
     if (paramData.MediaFilterCategory != null && paramData.MediaFilterCategory != '' &&
@@ -212,75 +222,23 @@ type Malbum @model {
 	}
 
     let orderBy = "orderBy: { TakenDateTime: ASC }"
-    /*
-    if (mediaType == 2) {
-        orderBy = "orderBy: { Name: ASC }"
-    }
     */
 
-/*
-  id: ID
-  MediaTypeId: Int
-  Name: String
-  TakenDateTime: String
-  TakenFileTime: Float
-  CategoryTags: String
-  MenuTags: String
-  AlbumTags: String
-  Title: String
-  Description: String
-  People: String
-  ToBeProcessed: Boolean
-  SearchStr: String
-*/
-    let gql = `query {
-            books(
-                filter: { 
-                    and: [ 
-                        { MediaTypeId: { eq: ${mediaType} } }
-                        ${categoryQuery}
-                        ${menuQuery}
-                        ${albumQuery}
-                        ${searchQuery}
-                        ${startDateQuery}
-                    ] 
-                },
-                ${orderBy},
-                first: ${maxRows}
-            ) {
-                items {
-                    Name
-                    TakenDateTime
-                    Title
-                }
-            }
-            ${mediaTypeQuery}
-        }`
+    showLoadingSpinner(MediaPageMessage)
+    try {
+        const response = await fetch("/api/GetMediaInfo", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(paramData)
+        })
+        await checkFetchResponse(response)
+        // Success
+        let mediaInfoAll = await response.json()
+        console.log("mediaInfoAll.fileList.length = ",mediaInfoAll.fileList.length)
+        console.log("mediaInfoAll.albumList.length = ",mediaInfoAll.albumList.length)
 
-    //console.log(">>> query gql = "+gql)
+        // Should there be some kind of retry for certain failures?
 
-    
-    const apiQuery = {
-        query: gql,
-        variables: {
-        }
-    }
-
-    showLoadingSpinner(mediaPageMessage)
-    const endpoint = "/data-api/graphql";
-    const response = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(apiQuery)
-    });
-    const result = await response.json();
-    empty(mediaPageMessage)
-    if (result.errors != null) {
-        console.log("Error: "+result.errors[0].message);
-        console.table(result.errors);
-    } else {
-        //console.log("result.data = "+result.data)
-        //console.table(result.data.mtypes.items);
         /*
         console.log("items[0].Category[1].CategoryName = "+result.data.mtypes.items[0].Category[1].CategoryName);
         console.log("items[0].Category[1].Menu = "+result.data.mtypes.items[0].Category[1].Menu);
@@ -297,8 +255,11 @@ type Malbum @model {
             console.log("data.mtype_by_pk.Category[0].Menu[0].MenuItem = "+result.data.mtype_by_pk.Category[0].Menu[0].MenuItem);
         }
         */
+
+        /*
         mediaInfo.fileList.length = 0
-        mediaInfo.fileList = result.data.books.items
+        //mediaInfo.fileList = result.data.books.items
+        mediaInfo.fileList = await response.json()
         mediaInfo.filterList = []
 
         if (mediaInfo.fileList.length > 0) {
@@ -352,15 +313,9 @@ type Malbum @model {
             }
 
         } // if (mediaInfo.fileList.length > 0) {
-
-        /*
-        if (mediaInfo.currMenu != null && mediaInfo.currMenu != "") {
-            contentDesc = mediaTypeDesc + " - " + mediaInfo.currMenu
-        } else if (mediaInfo.currAlbum != null && mediaInfo.currAlbum != "") {
-            contentDesc = mediaTypeDesc + " - " + mediaInfo.currAlbum
-        }
         */
 
+        /*
         if (getMenu) {
             //mediaTypeDesc = result.data.mtype_by_pk.MediaTypeDesc
             let mti = mediaType - 1
@@ -396,27 +351,13 @@ type Malbum @model {
     
                     mediaInfo.menuList.push(menuObject)
                 }
-
-                //mediaTypeData[mti].Category.length
-                /*
-                mediaTypeData[mti].Category.forEach((category) => {
-                    categoryList.push(category.CategoryName)
-    
-                    let menuObject = 
-                    {
-                        category: category.CategoryName,
-                        subMenuList: category.Menu
-                    }
-    
-                    mediaInfo.menuList.push(menuObject)
-                })
-                */
             }
 
             // Save the menu lists
             setMenuList(mediaInfo.menuList)
             setAlbumList(result.data.malbums.items)
         }
+        */
 
         // Save the parameters from the laste query
         queryCategory = paramData.MediaFilterCategory
@@ -437,12 +378,18 @@ type Malbum @model {
             }
         }
 
-        //MediaFilterAlbumKey
-        //queryAlbumKey
+        /*
+        contentDesc = mediaTypeDesc + " - " + queryCategory;
+        createMediaPage(paramData.getMenu);
+        */
 
-        createMediaPage()
+        MediaPageMessage.textContent = ""
+    } catch (err) {
+        console.error(err)
+        MediaPageMessage.textContent = "Error getting media information: " + err.message
     }
-}
+    
+} // queryMediaInfo
 
 
 var mediaTypeData = [

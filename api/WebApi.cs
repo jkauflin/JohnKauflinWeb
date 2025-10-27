@@ -37,13 +37,9 @@ namespace JohnKauflinWeb.Function
         private readonly ILogger<WebApi> log;
         private readonly IConfiguration config;
         private readonly string? apiCosmosDbConnStr;
-
         private readonly AuthorizationCheck authCheck;
         private readonly string userAdminRole;
-
         private readonly DbCommon dbCommon;
-
-
 
         public WebApi(ILogger<WebApi> logger, IConfiguration configuration)
         {
@@ -54,7 +50,54 @@ namespace JohnKauflinWeb.Function
             authCheck = new AuthorizationCheck(log);
             userAdminRole = "jjkadmin";   // add to config ???
 
-            dbCommon = new DbCommon(log,config);
+            dbCommon = new DbCommon(log, config);
+        }
+
+
+        // Public API for media info queries
+        [Function("GetMediaInfo")]
+        public async Task<IActionResult> GetMediaInfo(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequestData req)
+        {
+            try
+            {
+                string body = await new StreamReader(req.Body).ReadToEndAsync();
+                // paramData is a JSON object with filter params
+                var paramData = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>(body);
+             
+                bool getMenu = paramData.ContainsKey("getMenu") ? Convert.ToBoolean(paramData["getMenu"]) : false;
+
+                // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Need to get more than just the list - need to build the menu structures as well
+             
+                // pass back the larger medioInfo structure that has fileList and filterList and menuList ??????????????????????
+
+                var mediaInfoAll = await dbCommon.GetMediaInfoDB(paramData);
+                return new OkObjectResult(mediaInfoAll);
+            }
+            catch (Exception ex)
+            {
+                log.LogError($"Exception in GetMediaInfo: {ex.Message} {ex.StackTrace}");
+                return new BadRequestObjectResult($"Exception, message = {ex.Message}");
+            }
+        }
+
+
+        [Function("GetSolarMetrics")]
+        public async Task<IActionResult> GetSolarMetrics(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequestData req)
+        {
+            try
+            {
+                string body = await new StreamReader(req.Body).ReadToEndAsync();
+                var paramData = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>(body);
+                var solarMetrics = await dbCommon.GetSolarMetricsDB(paramData);
+                return new OkObjectResult(solarMetrics);
+            }
+            catch (Exception ex)
+            {
+                log.LogError($"Exception in GetMediaInfo: {ex.Message} {ex.StackTrace}");
+                return new BadRequestObjectResult($"Exception, message = {ex.Message}");
+            }
         }
 
 

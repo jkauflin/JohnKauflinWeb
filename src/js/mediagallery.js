@@ -1,5 +1,5 @@
 /*==============================================================================
-(C) Copyright 2016,2023,2024 John J Kauflin, All rights reserved.
+(C) Copyright 2016,2023,2024,2025 John J Kauflin, All rights reserved.
 --------------------------------------------------------------------------------
 DESCRIPTION:    A general media gallery that can organize and display photos,
                 auido (MP3s), video (YouTube links), and docs (PDF), using 
@@ -117,13 +117,16 @@ Modification History
 2024-03-29 JJK  Migrating to Azure SWA, blob storage, Cosmos DB with GraphQL
                 for queries.  Also, removing Admin functions to make this just
                 the presentation functions with no edit0
+2025-10-24 JJK  Refactor to use API function calls instead of data-api
 ================================================================================*/
+//import {empty,showLoadingSpinner,formatMoney,setCheckbox,checkFetchResponse} from './util.js'
 import {mediaType,setMediaType,queryMediaInfo} from './mg-data-repository.js'
 
 const MediaPageLinkClass = "media-page";
 
 //=================================================================================================================
 // Bind events
+document.addEventListener('DOMContentLoaded', () => {
 
     // Respond to click on a link-tile-tab button by finding the correct TAB and switching/showing it
     // (These link-tile-tab's also have media-page for creating the Menu, but these handled from the listener on that class)
@@ -150,7 +153,7 @@ const MediaPageLinkClass = "media-page";
             // >>>>>>>>>>>>>>>>>>>>>>>> this is the START of things <<<<<<<<<<<<<<<<<<<
             let paramData = {
                 MediaFilterMediaType: mediaType, 
-                getMenu: true,
+                getMenu: true,                      // top level requests from the tabs, choosing a media type, will cause a rebuild of the menu
                 MediaFilterCategory: "DEFAULT",
                 MediaFilterStartDate: "DEFAULT"}
     
@@ -190,4 +193,8 @@ const MediaPageLinkClass = "media-page";
             bootstrap.Tab.getOrCreateInstance(targetTabElement).show();
         }
     }
+
+})
+
+
 

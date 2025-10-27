@@ -8,12 +8,11 @@ Modification History
 2023-09-01 JJK  Export container for dedicated event click
 2024-01-14 JJK  Added getAlbumName
 ================================================================================*/
+import {empty} from './util.js';
 import {mediaInfo,mediaType,mediaTypeDesc,setMediaType,
     queryMediaInfo,
     getFilePath,getFileName
 } from './mg-data-repository.js'
-
-import {empty} from './mg-create-pages.js'
 
 export const MediaAlbumMenuRequestClass = "MediaAlbumMenuRequest"
 export const mediaAlbumMenuCanvasId = "#MediaAlbumMenuCanvas"

@@ -10,7 +10,8 @@ Modification History
                 for queries.  Also, removing Admin functions to make this just
                 the presentation functions with no edit
 ================================================================================*/
-import {mediaInfo,mediaType,getMenu,
+import {empty} from './util.js';
+import {mediaInfo,mediaType,
     queryCategory,querySearchStr,queryMenuItem,queryAlbumKey,
     categoryList,
     contentDesc,
@@ -61,17 +62,6 @@ var mediaDetailVideoList
 
 var currIndex = 0
 var currSelectAll = false
-
-
-// Remove all child nodes from an element
-export function empty(node) {
-    // Could just set the innerHTML to null, but they say removing the children is faster
-    // and better for removing any associated events
-    //node.innerHTML = "";
-    while (node.firstChild) {
-        node.removeChild(node.firstChild)
-    }
-}
 
 setAudioListeners(thumbnailContainer)
 
@@ -146,7 +136,7 @@ thumbnailContainer.addEventListener("click", function (event) {
     //------------------------------------------------------------------------------------------------------------
     // Dynamically create the DOM elements to add to the Media Page div (either regular display or EDIT mode)
     //------------------------------------------------------------------------------------------------------------
-    export function createMediaPage() {
+    export function createMediaPage(getMenu) {
         //console.log("$$$$ in the createMediaPage")
         empty(filterContainer)
         empty(thumbnailContainer)

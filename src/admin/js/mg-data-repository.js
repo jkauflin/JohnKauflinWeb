@@ -468,7 +468,8 @@ export async function queryMediaInfo(paramData) {
         //MediaFilterAlbumKey
         //queryAlbumKey
 
-        createMediaPage()
+        let getMenu = false
+        createMediaPage(getMenu)
     }
 }
 

@@ -13,21 +13,10 @@ Modification History
 2024-12-06 JJK  Added util module and loading spinner (and corrected 
                 getDateDayInt for the correct day buckets in metrics)
 2025-06-29 JJK  Working on queries to make them quicker and more reliable
+2025-10-24 JJK  Converted data-api calls to api function calls
 ================================================================================*/
 
 import {empty,showLoadingSpinner,checkFetchResponse,addDays,addHours,getDateInt,getDateDayInt,getHoursInt} from './util.js';
-
-//var solarTileButton = document.getElementById("SolarTile");
-//solarTileButton.addEventListener("click", querySolarMetrics);
-const dailyWattsCanvas = document.getElementById('DailyWattsCanvas')
-const dailyTotalsCanvas = document.getElementById('DailyTotalsCanvas')
-const currVoltsGuage = document.getElementById('CurrVoltsGuage'); 
-const currAmpsGuage = document.getElementById('CurrAmpsGuage'); 
-const currWattsGuage = document.getElementById('CurrWattsGuage'); 
-const pointDateTimeDiv = document.getElementById('PointDateTime'); 
-const ytdWatts = document.getElementById('YtdWatts'); 
-const totalsTbody = document.getElementById('TotalsTbody'); 
-const totalsMaxTbody = document.getElementById('TotalsMaxTbody'); 
 
 var gaugeVolts = null
 var gaugeAmps = null
@@ -35,16 +24,38 @@ var gaugeWatts = null
 var dailyWattsChart = null
 var dailyTotalsChart = null
 
-var getDataButton = document.getElementById("GetDataButton")
-getDataButton.addEventListener("click", querySolarMetrics);
+var dailyWattsCanvas
+var dailyTotalsCanvas
+var currVoltsGuage
+var currAmpsGuage
+var currWattsGuage
+var pointDateTimeDiv
+var ytdWatts
+var totalsTbody
+var totalsMaxTbody
+var getDataButton
+
+document.addEventListener('DOMContentLoaded', () => {
+    dailyWattsCanvas = document.getElementById('DailyWattsCanvas')
+    dailyTotalsCanvas = document.getElementById('DailyTotalsCanvas')
+    currVoltsGuage = document.getElementById('CurrVoltsGuage')
+    currAmpsGuage = document.getElementById('CurrAmpsGuage')
+    currWattsGuage = document.getElementById('CurrWattsGuage') 
+    pointDateTimeDiv = document.getElementById('PointDateTime')
+    ytdWatts = document.getElementById('YtdWatts')
+    totalsTbody = document.getElementById('TotalsTbody')
+    totalsMaxTbody = document.getElementById('TotalsMaxTbody') 
+
+    getDataButton = document.getElementById("GetDataButton")
+    getDataButton.addEventListener("click", querySolarMetrics)
+})
 
 //------------------------------------------------------------------------------------------------------------
 // Query the database for menu and file information and store in js variables
 //------------------------------------------------------------------------------------------------------------
-export async function querySolarMetrics(paramData) {
+export async function querySolarMetrics() {
     let currDate = new Date()
     let pointDate = addDays(currDate, -1)
-    //let pointDateStartBucket = getDateInt(pointDate)
     let pointDateStartBucket = getDateDayInt(pointDate)
 
     // Start Points query at current date minus 3 hours
@@ -54,7 +65,8 @@ export async function querySolarMetrics(paramData) {
     //let pointDayTime = parseInt(currDate.toISOString().substring(2,4) + "093000")
     //2024-01-31T19:37:12.291Z
     let pointDayTime = getHoursInt(pointHours)
-    let pointMaxRows = 1500
+    //let pointMaxRows = 1500
+    let pointMaxRows = 500
 
     // Get Day totals starting 30 days back
     //let tempDays = 30
@@ -64,108 +76,31 @@ export async function querySolarMetrics(paramData) {
     let dayTotalStartBucket = getDateDayInt(dayTotalStartDate)
     let dayTotalMaxRows = tempDays
 
-    //"PointDayTime": 24060011,
-
-
-    //orderBy: { LastUpdateDateTime: ASC },
-
-    let solarQL = `query {
-        points(
-            filter: { 
-                and: [ 
-                    { PointDay: { eq: ${pointDateStartBucket} } }
-                    { PointDayTime: { gte: ${pointDayTime} } } 
-                ] 
-            },
-            orderBy: { PointDateTime: ASC },
-            first: ${pointMaxRows}
-        ) {
-              items {
-                  PointDateTime
-                  pvVolts
-                  pvAmps
-                  pvWatts
-              }
-        }
-        totals(
-            filter: { 
-                and: [ 
-                    { id: { eq: "DAY" } }
-                    { TotalBucket: { gte: ${dayTotalStartBucket} } }
-                ] 
-            },
-            orderBy: { TotalBucket: ASC },
-            first: ${dayTotalMaxRows}
-        ) {
-            items {
-                TotalBucket
-                LastUpdateDateTime
-                TotalValue
-                AmpMaxValue
-                WattMaxValue
-            }
-        }
-
-        yearTotals(
-            filter: { 
-                and: [ 
-                    { id: { eq: "YEAR" } }
-                ] 
-            },
-            orderBy: { TotalBucket: ASC }
-        ) {
-              items {
-                TotalBucket
-                LastUpdateDateTime
-                TotalValue
-              }
-        }
-    }`
-/*
-          yearTotals(
-            filter: { 
-                and: [ 
-                    { id: { eq: "YEAR" } }
-                ] 
-            },
-            orderBy: { TotalBucket: ASC }
-          ) {
-              items {
-                TotalBucket
-                LastUpdateDateTime
-                TotalValue
-              }
-          }
-*/
-
-    //console.log("solarQL = "+solarQL)
-
-    const solarApiQuery = {
-        query: solarQL,
-        variables: {
-        }
+    let paramData = {
+        pointDateStartBucket: pointDateStartBucket,
+        pointDayTime: pointDayTime,
+        pointMaxRows: pointMaxRows,
+        dayTotalStartBucket: dayTotalStartBucket,
+        dayTotalMaxRows: dayTotalMaxRows
     }
 
-    
     showLoadingSpinner(pointDateTimeDiv)
     try {
-        const response = await fetch("/data-api/graphql", {
+        const response = await fetch("/api/GetSolarMetrics", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(solarApiQuery)
+            body: JSON.stringify(paramData)
         })
         await checkFetchResponse(response)
         // Success
-        let result = await response.json()
+        let solarMetrics = await response.json()
         //messageDisplay.textContent = ""
         empty(pointDateTimeDiv)
-        //console.log("result.data = "+result.data)
-        //console.log("result.data Points = "+result.data.points.items.length)
-        //console.table(result.data.points.items);
-        //console.table(result.data.totals.items);
-        //console.table(result.data.yearTotals.items);
+        //console.log("result # Points = "+solarMetrics.pointList.length)
+        //console.log("result # Totals = "+solarMetrics.totalList.length)
+        //console.log("result # YearTotals = "+solarMetrics.yearTotalList.length)
 
-        displaySolarMetrics(result)
+        displaySolarMetrics(solarMetrics)
 
     } catch (err) {
         console.error(err)
@@ -173,104 +108,85 @@ export async function querySolarMetrics(paramData) {
     }
 }
 
-function displaySolarMetrics(result) {
-        let dayTotalData = []
-        let dayTotalMaxData = []
-        if (result.data.totals.items.length > 0) {
-            let maxValStart = result.data.totals.items.length - 10
-            let totCnt = 0
-            let tempDateStr = ""
-            result.data.totals.items.forEach((dayTotal) => {
-                totCnt++
-                dayTotalData.push({ 
-                    date: dayTotal.LastUpdateDateTime.substring(5,10), 
-                    total: parseFloat(dayTotal.TotalValue) 
-                })
+function displaySolarMetrics(solarMetrics) {
+    let dayTotalData = []
+    let dayTotalMaxData = []
 
-                // Save the last X number of max totals
-                // 20240624
-                tempDateStr = dayTotal.TotalBucket.toString()
+    if (solarMetrics.totalList.length > 0) {
+        let maxValStart = solarMetrics.totalList.length - 10
+        let totCnt = 0
+        let tempDateStr = ""
+        solarMetrics.totalList.forEach((dayTotal) => {
+            totCnt++
+            dayTotalData.push({ 
+                date: dayTotal.lastUpdateDateTime.substring(5,10), 
+                total: parseFloat(dayTotal.totalValue) 
+            })
+
+            // Save the last X number of max totals
+            // 20240624
+            tempDateStr = dayTotal.totalBucket.toString()
                 
-                //date: dayTotal.LastUpdateDateTime.substring(5,10), 
-                if (totCnt > maxValStart) {
-                    dayTotalMaxData.push({ 
-                        date: tempDateStr.substring(4,6) + "-" + tempDateStr.substring(6,8), 
-                        ampMaxValue: parseFloat(dayTotal.AmpMaxValue), 
-                        wattMaxValue: parseFloat(dayTotal.WattMaxValue) 
-                    })
-                }
-            })
-        }
-
-        let lifetimeTotal = 0
-        let totalsData = []
-        if (result.data.yearTotals.items.length > 0) {
-            result.data.yearTotals.items.forEach((yearTotal) => {
-                //console.log("TotalBucket = "+yearTotal.TotalBucket+", LastUpdateDateTime = "+yearTotal.LastUpdateDateTime+", TotalValue = "+yearTotal.TotalValue)
-                totalsData.push({ 
-                    TotalBucket: yearTotal.TotalBucket,
-                    TotalValue: yearTotal.TotalValue
+            //date: dayTotal.lastUpdateDateTime.substring(5,10), 
+            if (totCnt > maxValStart) {
+                dayTotalMaxData.push({ 
+                    date: tempDateStr.substring(4,6) + "-" + tempDateStr.substring(6,8), 
+                    ampMaxValue: parseFloat(dayTotal.ampMaxValue), 
+                    wattMaxValue: parseFloat(dayTotal.wattMaxValue) 
                 })
-                lifetimeTotal += parseInt(yearTotal.TotalValue)
+            }
+        })
+    }
+
+    let lifetimeTotal = 0
+    let totalsData = []
+    if (solarMetrics.yearTotalList.length > 0) {
+        solarMetrics.yearTotalList.forEach((yearTotal) => {
+            totalsData.push({ 
+                TotalBucket: yearTotal.totalBucket,
+                TotalValue: yearTotal.totalValue
             })
-        }
-        //console.log("lifetimeTotal = "+lifetimeTotal)
+            lifetimeTotal += parseInt(yearTotal.totalValue)
+        })
+    }
 
-        //"2024-05-10T11:51:34.6353964-04:00"
-        let pointLocalDateTime = null
-        let PointDateTime = ""
-        let pvVoltsFloat = 0.0
-        let pvAmpsFloat = 0.0
-        let pvWattsFloat = 0.0
+    //"2024-05-10T11:51:34.6353964-04:00"
+    let pointLocalDateTime = null
+    let PointDateTime = ""
+    let pvVoltsFloat = 0.0
+    let pvAmpsFloat = 0.0
+    let pvWattsFloat = 0.0
 
-        let pointData = []
-        let tempWatts = 0.0
-        if (result.data.points.items.length > 0) {
-            result.data.points.items.forEach((point) => {
-                tempWatts = parseFloat(point.pvWatts)
-                if (tempWatts > 0.0) {
-                    pointLocalDateTime = convertUTCDateToLocalDate(new Date(point.PointDateTime));
-                    PointDateTime = pointLocalDateTime.toISOString()
-                    pointData.push({ 
-                        time: PointDateTime.substring(11,16), 
-                        watts: parseFloat(point.pvWatts) })
+    let pointData = []
+    let tempWatts = 0.0
+    if (solarMetrics.pointList.length > 0) {
+        solarMetrics.pointList.forEach((point) => {
+            tempWatts = parseFloat(point.pvWatts)
+            if (tempWatts > 0.0) {
+                pointLocalDateTime = convertUTCDateToLocalDate(new Date(point.pointDateTime));
+                PointDateTime = pointLocalDateTime.toISOString()
+                pointData.push({ 
+                    time: PointDateTime.substring(11,16), 
+                    watts: parseFloat(point.pvWatts) })
 
-                    // Save to get the values for the last record
-                    pvVoltsFloat = parseFloat(point.pvVolts)
-                    pvAmpsFloat = parseFloat(point.pvAmps)
-                    pvWattsFloat = parseFloat(point.pvWatts)
-                }
-            })
-        }
+                // Save to get the values for the last record
+                pvVoltsFloat = parseFloat(point.pvVolts)
+                pvAmpsFloat = parseFloat(point.pvAmps)
+                pvWattsFloat = parseFloat(point.pvWatts)
+            }
+        })
+    }
 
-        /*
-        (index)
-        TotalBucket
-        LastUpdateDateTime
-        TotalValue
-        0	20240413	'2024-04-13T20:59:46.8069446-04:00'	'12.2'
-        1	20240414	'2024-04-14T20:59:46.8069446-04:00'	'9.9'
-        */
-
-        //console.log("Title = "+result.data.book_by_pk.Title)
-        /*
-        console.log("data.mtype_by_pk.MediaTypeDesc = "+result.data.mtype_by_pk.MediaTypeDesc);
-        console.log("data.mtype_by_pk.Category[0].CategoryName = "+result.data.mtype_by_pk.Category[0].CategoryName);
-        if (result.data.mtype_by_pk.Category[0].Menu != null) {
-            console.log("data.mtype_by_pk.Category[0].Menu[0].MenuItem = "+result.data.mtype_by_pk.Category[0].Menu[0].MenuItem);
-        }
-        */
-
-        displayGauges(PointDateTime,pvVoltsFloat,pvAmpsFloat,pvWattsFloat)
-        if (pointData.length > 0) {
-            displayCharts(pointData,dayTotalData)
-        }
-        if (totalsData.length > 0) {
-            displayTotals(totalsData,lifetimeTotal)
-        }
-        if (dayTotalMaxData.length > 0) {
-            displayTotalsMax(dayTotalMaxData)
-        }
+    displayGauges(PointDateTime,pvVoltsFloat,pvAmpsFloat,pvWattsFloat)
+    if (pointData.length > 0) {
+        displayCharts(pointData,dayTotalData)
+    }
+    if (totalsData.length > 0) {
+        displayTotals(totalsData,lifetimeTotal)
+    }
+    if (dayTotalMaxData.length > 0) {
+        displayTotalsMax(dayTotalMaxData)
+    }
 }
 
 function convertUTCDateToLocalDate(date) {

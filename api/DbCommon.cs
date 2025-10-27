@@ -271,7 +271,7 @@ namespace JohnKauflinWeb.Function
 
             int mediaTypeId = paramData.ContainsKey("MediaFilterMediaType") ? Convert.ToInt32(paramData["MediaFilterMediaType"]) : 1;
             string category = paramData.ContainsKey("MediaFilterCategory") ? (paramData["MediaFilterCategory"]?.ToString() ?? "") : "";
-            
+
             string startDate = paramData.ContainsKey("MediaFilterStartDate") ? (paramData["MediaFilterStartDate"]?.ToString() ?? "") : "";
 
             int maxRows = 100;
@@ -373,14 +373,8 @@ namespace JohnKauflinWeb.Function
         //console.log(">>> searchQuery = "+searchQuery)
 	}
 
-    let orderBy = "orderBy: { TakenDateTime: ASC }"
 */
 
-    /*
-    if (mediaType == 2) {
-        orderBy = "orderBy: { Name: ASC }"
-    }
-    */
 
 /*
   id: ID
@@ -432,6 +426,7 @@ namespace JohnKauflinWeb.Function
 
             // Build SQL query
             string sql = "SELECT TOP @maxRows * FROM c WHERE c.MediaTypeId = @mediaTypeId";
+
             if (!string.IsNullOrEmpty(category) && category != "ALL" && category != "0")
             {
                 sql += " AND CONTAINS(c.CategoryTags, @category)";
@@ -447,7 +442,17 @@ namespace JohnKauflinWeb.Function
                     log.LogWarning($">>> Adding startDate filter: {startDate} ({dtVal})");
                 }
             }
-            sql += " ORDER BY c.MediaDateTimeVal DESC ";
+
+
+            //sql += " ORDER BY c.MediaDateTimeVal DESC ";
+            if (mediaTypeId == 2) {
+                sql += " ORDER BY c.Name ASC ";
+            } else {
+                sql += " ORDER BY c.TakenDateTime ";
+            }
+
+
+
             //log.LogWarning($"*** maxRows: {maxRows}, SQL: {sql}");
 
             var queryDef = new QueryDefinition(sql)

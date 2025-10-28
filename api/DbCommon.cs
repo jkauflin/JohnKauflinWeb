@@ -253,7 +253,7 @@ namespace JohnKauflinWeb.Function
             string albumKey = paramData.ContainsKey("MediaFilterAlbumKey") ? (paramData["MediaFilterAlbumKey"]?.ToString() ?? "") : "";
             string searchStr = paramData.ContainsKey("MediaFilterSearchStr") ? (paramData["MediaFilterSearchStr"]?.ToString().ToLower() ?? "") : "";
 
-            int maxRows = 200;
+            int maxRows = 150;
             if (paramData.ContainsKey("maxRows"))
             {
                 maxRows = Convert.ToInt32(paramData["maxRows"]);
@@ -281,6 +281,7 @@ namespace JohnKauflinWeb.Function
 
             log.LogWarning("-------------------------------------------------------------------------------------------------------------------------------------------");
             log.LogWarning($">>> Filter params: MediaTypeId: {mediaTypeId}, Category: {category}, StartDate: {startDate}, maxRows: {maxRows}");
+            log.LogWarning($">>> Filter params: getMenu: {getMenu}, menuItem: {menuItem}, albumKey: {albumKey}, searchStr: {searchStr}");
 
             if (getMenu)
             {

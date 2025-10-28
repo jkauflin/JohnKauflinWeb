@@ -158,8 +158,8 @@ export async function queryMediaInfo(paramData) {
         // >>>>>>>>>>>>>>>>>  Should there be some kind of retry for certain failures?
         // Success
         let mediaInfoAll = await response.json()
-        console.log("mediaInfoAll.fileList.length = ",mediaInfoAll.fileList.length)
-        console.log("mediaInfoAll.albumList.length = ",mediaInfoAll.albumList.length)
+        //console.log("mediaInfoAll.fileList.length = ",mediaInfoAll.fileList.length)
+        //console.log("mediaInfoAll.albumList.length = ",mediaInfoAll.albumList.length)
 
         mediaInfo.fileList.length = 0
         mediaInfo.fileList = mediaInfoAll.fileList

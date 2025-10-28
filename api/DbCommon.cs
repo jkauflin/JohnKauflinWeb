@@ -305,116 +305,117 @@ namespace JohnKauflinWeb.Function
                 }
             }
 
+            string defaultCategory;
 
-/*
-            mediaInfo.menuOrAlbumName = ""
-
-
-    let categoryQuery = ""
-    if (paramData.MediaFilterCategory != null && paramData.MediaFilterCategory != '' &&
-        paramData.MediaFilterCategory != 'ALL' && paramData.MediaFilterCategory != '0') {
-        if (paramData.MediaFilterCategory == 'DEFAULT') {
-            categoryQuery = `{ CategoryTags: {contains: "${defaultCategory}"} }`
-        } else {
-            let tempCategory = paramData.MediaFilterCategory
-            let pos = 0
-            pos = paramData.MediaFilterCategory.indexOf(" Family")
-            if (pos > -1) {
-                tempCategory = paramData.MediaFilterCategory.substring(0,pos)
-            }
-            pos = paramData.MediaFilterCategory.indexOf(" family")
-            if (pos > -1) {
-                tempCategory = paramData.MediaFilterCategory.substring(0,pos)
-            }
-
-            categoryQuery = `{ CategoryTags: {contains: "${tempCategory}"} }`
-        }
-        //console.log(">>> categoryQuery = "+categoryQuery)
-    }
-
-    let startDateQuery = ""
-    //console.log("paramData.MediaFilterStartDate = "+paramData.MediaFilterStartDate)
-	if (paramData.MediaFilterStartDate != null && paramData.MediaFilterStartDate != '') {
-		if (paramData.MediaFilterStartDate == "DEFAULT") {
-			paramData.MediaFilterStartDate = mediaInfo.startDate
-		}
-        //console.log("      int MediaFilterStartDate = "+getDateInt(paramData.MediaFilterStartDate))
-		//if (paramData.MediaFilterStartDate != "0001-01-01 00:00:00") {
-        if (paramData.MediaFilterStartDate != "1800-01-01") {
-            //startDateQuery = `{ TakenFileTime: { gte: 2023010108 } }`
-            startDateQuery = `{ TakenFileTime: { gte: ${getDateInt(paramData.MediaFilterStartDate)} } }`
-        }
-        //console.log(">>> startDateQuery = "+startDateQuery)
-	}
-
-    let menuQuery = ""
-    if (paramData.MediaFilterMenuItem != null && paramData.MediaFilterMenuItem != '') {
-        // Maybe add Category to this (if needed)
-        mediaInfo.menuOrAlbumName = paramData.MediaFilterMenuItem
-        menuQuery = `{ MenuTags: {contains: "${paramData.MediaFilterMenuItem}"} }`
-        //console.log(">>> menuQuery = "+menuQuery)
-	}
-    
-    let albumQuery = ""
-    if (paramData.MediaFilterAlbumKey != null && paramData.MediaFilterAlbumKey != '') {
-        if (paramData.MediaFilterAlbumName != null && paramData.MediaFilterAlbumName != '') {
-            mediaInfo.menuOrAlbumName = paramData.MediaFilterAlbumName
-        }
-        albumQuery = `{ AlbumTags: {contains: "${paramData.MediaFilterAlbumKey}"} }`
-        //console.log(">>> albumQuery = "+albumQuery)
-	}
-
-    let searchQuery = ""
-    if (paramData.MediaFilterSearchStr != null && paramData.MediaFilterSearchStr != '') {
-        searchQuery = `{ SearchStr: {contains: "${paramData.MediaFilterSearchStr.toLowerCase()}"} }`
-        // If search is specified, clear out the category and start date queries
-        categoryQuery = ""
-        startDateQuery = ""
-        //console.log(">>> searchQuery = "+searchQuery)
-	}
-
-*/
+            /*
+                        mediaInfo.menuOrAlbumName = ""
 
 
-/*
-  id: ID
-  MediaTypeId: Int
-  Name: String
-  TakenDateTime: String
-  TakenFileTime: Float
-  CategoryTags: String
-  MenuTags: String
-  AlbumTags: String
-  Title: String
-  Description: String
-  People: String
-  ToBeProcessed: Boolean
-  SearchStr: String
+                let categoryQuery = ""
+                if (paramData.MediaFilterCategory != null && paramData.MediaFilterCategory != '' &&
+                    paramData.MediaFilterCategory != 'ALL' && paramData.MediaFilterCategory != '0') {
+                    if (paramData.MediaFilterCategory == 'DEFAULT') {
+                        categoryQuery = `{ CategoryTags: {contains: "${defaultCategory}"} }`
+                    } else {
+                        let tempCategory = paramData.MediaFilterCategory
+                        let pos = 0
+                        pos = paramData.MediaFilterCategory.indexOf(" Family")
+                        if (pos > -1) {
+                            tempCategory = paramData.MediaFilterCategory.substring(0,pos)
+                        }
+                        pos = paramData.MediaFilterCategory.indexOf(" family")
+                        if (pos > -1) {
+                            tempCategory = paramData.MediaFilterCategory.substring(0,pos)
+                        }
 
-    let gql = `query {
-            books(
-                filter: { 
-                    and: [ 
-                        { MediaTypeId: { eq: ${mediaType} } }
-                        ${categoryQuery}
-                        ${menuQuery}
-                        ${albumQuery}
-                        ${searchQuery}
-                        ${startDateQuery}
-                    ] 
-                },
-                ${orderBy},
-                first: ${maxRows}
-            ) {
-                items {
-                    Name
-                    TakenDateTime
-                    Title
+                        categoryQuery = `{ CategoryTags: {contains: "${tempCategory}"} }`
+                    }
+                    //console.log(">>> categoryQuery = "+categoryQuery)
                 }
-            }
-            ${mediaTypeQuery}
-        }`
-*/
+
+                let startDateQuery = ""
+                //console.log("paramData.MediaFilterStartDate = "+paramData.MediaFilterStartDate)
+                if (paramData.MediaFilterStartDate != null && paramData.MediaFilterStartDate != '') {
+                    if (paramData.MediaFilterStartDate == "DEFAULT") {
+                        paramData.MediaFilterStartDate = mediaInfo.startDate
+                    }
+                    //console.log("      int MediaFilterStartDate = "+getDateInt(paramData.MediaFilterStartDate))
+                    //if (paramData.MediaFilterStartDate != "0001-01-01 00:00:00") {
+                    if (paramData.MediaFilterStartDate != "1800-01-01") {
+                        //startDateQuery = `{ TakenFileTime: { gte: 2023010108 } }`
+                        startDateQuery = `{ TakenFileTime: { gte: ${getDateInt(paramData.MediaFilterStartDate)} } }`
+                    }
+                    //console.log(">>> startDateQuery = "+startDateQuery)
+                }
+
+                let menuQuery = ""
+                if (paramData.MediaFilterMenuItem != null && paramData.MediaFilterMenuItem != '') {
+                    // Maybe add Category to this (if needed)
+                    mediaInfo.menuOrAlbumName = paramData.MediaFilterMenuItem
+                    menuQuery = `{ MenuTags: {contains: "${paramData.MediaFilterMenuItem}"} }`
+                    //console.log(">>> menuQuery = "+menuQuery)
+                }
+
+                let albumQuery = ""
+                if (paramData.MediaFilterAlbumKey != null && paramData.MediaFilterAlbumKey != '') {
+                    if (paramData.MediaFilterAlbumName != null && paramData.MediaFilterAlbumName != '') {
+                        mediaInfo.menuOrAlbumName = paramData.MediaFilterAlbumName
+                    }
+                    albumQuery = `{ AlbumTags: {contains: "${paramData.MediaFilterAlbumKey}"} }`
+                    //console.log(">>> albumQuery = "+albumQuery)
+                }
+
+                let searchQuery = ""
+                if (paramData.MediaFilterSearchStr != null && paramData.MediaFilterSearchStr != '') {
+                    searchQuery = `{ SearchStr: {contains: "${paramData.MediaFilterSearchStr.toLowerCase()}"} }`
+                    // If search is specified, clear out the category and start date queries
+                    categoryQuery = ""
+                    startDateQuery = ""
+                    //console.log(">>> searchQuery = "+searchQuery)
+                }
+
+            */
+
+
+            /*
+              id: ID
+              MediaTypeId: Int
+              Name: String
+              TakenDateTime: String
+              TakenFileTime: Float
+              CategoryTags: String
+              MenuTags: String
+              AlbumTags: String
+              Title: String
+              Description: String
+              People: String
+              ToBeProcessed: Boolean
+              SearchStr: String
+
+                let gql = `query {
+                        books(
+                            filter: { 
+                                and: [ 
+                                    { MediaTypeId: { eq: ${mediaType} } }
+                                    ${categoryQuery}
+                                    ${menuQuery}
+                                    ${albumQuery}
+                                    ${searchQuery}
+                                    ${startDateQuery}
+                                ] 
+                            },
+                            ${orderBy},
+                            first: ${maxRows}
+                        ) {
+                            items {
+                                Name
+                                TakenDateTime
+                                Title
+                            }
+                        }
+                        ${mediaTypeQuery}
+                    }`
+            */
 
             //log.LogWarning($">>> Filter params: MediaTypeId: {mediaTypeId}, Category: {category}, StartDate: {startDate}, maxRows: {maxRows}");
             // Request options: MaxItemCount controls page size (not total rows)

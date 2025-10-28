@@ -95,7 +95,6 @@ export async function queryMediaInfo(paramData) {
     //console.log("--------------------------------------------------------------------")
     //console.log("$$$$$ in the QueryMediaInfo, mediaType = "+mediaType)
 
-    /* GRHA implementation
     if (paramData.MediaFilterMediaType != null && paramData.MediaFilterMediaType != '') {
         setMediaType(parseInt(paramData.MediaFilterMediaType))
     }
@@ -134,13 +133,12 @@ export async function queryMediaInfo(paramData) {
             paramData.MediaFilterStartDate = ""
         }
     }
-    */
 
 
+    
     // >>>>>>>>>>>>>> some info needs to be set in the mediaInfo structure (in addition to setting values for the queries)
     // decide what to set here, as opposed to what is passed in paramData
 
-    /*
     mediaInfo.menuOrAlbumName = ""
     
     // Set a default start date of 60 days back from current date
@@ -221,8 +219,8 @@ export async function queryMediaInfo(paramData) {
         //console.log(">>> searchQuery = "+searchQuery)
 	}
 
-    let orderBy = "orderBy: { TakenDateTime: ASC }"
-    */
+    //let orderBy = "orderBy: { TakenDateTime: ASC }"
+    
 
     showLoadingSpinner(MediaPageMessage)
     try {

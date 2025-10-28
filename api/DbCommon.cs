@@ -253,7 +253,7 @@ namespace JohnKauflinWeb.Function
             string albumKey = paramData.ContainsKey("MediaFilterAlbumKey") ? (paramData["MediaFilterAlbumKey"]?.ToString() ?? "") : "";
             string searchStr = paramData.ContainsKey("MediaFilterSearchStr") ? (paramData["MediaFilterSearchStr"]?.ToString().ToLower() ?? "") : "";
 
-            int maxRows = 100;
+            int maxRows = 200;
             if (paramData.ContainsKey("maxRows"))
             {
                 maxRows = Convert.ToInt32(paramData["maxRows"]);

@@ -47,8 +47,8 @@ menuAlbumContainer.addEventListener("click", function (event) {
 export function getAlbumName(inAlbumKey) {
     let retAlbumName = ""
     for (let index in albumList) {
-        if (albumList[index].AlbumKey == inAlbumKey) {
-            retAlbumName = albumList[index].AlbumName
+        if (albumList[index].albumKey == inAlbumKey) {
+            retAlbumName = albumList[index].albumName
         }
     }
     return retAlbumName
@@ -72,10 +72,10 @@ export function buildAlbumMenuElements(mediaType) {
             let a = document.createElement("a")
             a.setAttribute('href', "#")
             a.setAttribute('data-MediaType', mediaType)
-            a.setAttribute('data-albumKey', albumRec.AlbumKey)
-            a.setAttribute('data-albumName', albumRec.AlbumName)
+            a.setAttribute('data-albumKey', albumRec.albumKey)
+            a.setAttribute('data-albumName', albumRec.albumName)
             a.classList.add(MediaAlbumMenuRequestClass)
-            a.textContent = albumRec.AlbumName + " (" + albumRec.AlbumKey + ")"
+            a.textContent = albumRec.albumName + " (" + albumRec.albumKey + ")"
 
             let li = document.createElement('li')
             li.appendChild(a)

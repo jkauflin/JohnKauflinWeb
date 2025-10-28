@@ -238,41 +238,20 @@ namespace JohnKauflinWeb.Function
             Database db = cosmosClient.GetDatabase(databaseId);
             Container container = db.GetContainer("MediaInfo");
 
-            log.LogWarning("-------------------------------------------------------------------------------------------------------------------------------------------");
-            log.LogWarning($">>> GetMediaInfoDB paramData: {Newtonsoft.Json.JsonConvert.SerializeObject(paramData)}");
-
-            /*
-            let paramData = {
-                MediaFilterMediaType: mediaType, 
-                getMenu: true,
-                MediaFilterCategory: "DEFAULT",
-                MediaFilterStartDate: "DEFAULT"}
-            */
-
-            //int mediaTypeId = paramData.ContainsKey("MediaTypeId") ? Convert.ToInt32(paramData["MediaTypeId"]) : 1;
+            //log.LogWarning($">>> GetMediaInfoDB paramData: {Newtonsoft.Json.JsonConvert.SerializeObject(paramData)}");
 
             var mediaInfoAll = new MediaInfoAll();
             mediaInfoAll.fileList = new List<MediaInfo>();
             mediaInfoAll.albumList = new List<MediaAlbum>();
 
-
-            DateTime defaultStartDate = DateTime.Today.AddDays(-60);
-            // Set a default start date of 60 days back from current date
-            /*
-            if (mediaType == 1) {
-                mediaInfo.startDate = addDays(new Date(), -60)
-            } else {
-                mediaInfo.startDate = "1800-01-01"
-            }
-            */
-
             // figure out how to get the MediaTypeId and set the getMenu flag
-            bool getMenu = paramData.ContainsKey("getMenu") ? Convert.ToBoolean(paramData["getMenu"]) : false;
-
             int mediaTypeId = paramData.ContainsKey("MediaFilterMediaType") ? Convert.ToInt32(paramData["MediaFilterMediaType"]) : 1;
             string category = paramData.ContainsKey("MediaFilterCategory") ? (paramData["MediaFilterCategory"]?.ToString() ?? "") : "";
-
             string startDate = paramData.ContainsKey("MediaFilterStartDate") ? (paramData["MediaFilterStartDate"]?.ToString() ?? "") : "";
+            bool getMenu = paramData.ContainsKey("getMenu") ? Convert.ToBoolean(paramData["getMenu"]) : false;
+            string menuItem = paramData.ContainsKey("MediaFilterMenuItem") ? (paramData["MediaFilterMenuItem"]?.ToString() ?? "") : "";
+            string albumKey = paramData.ContainsKey("MediaFilterAlbumKey") ? (paramData["MediaFilterAlbumKey"]?.ToString() ?? "") : "";
+            string searchStr = paramData.ContainsKey("MediaFilterSearchStr") ? (paramData["MediaFilterSearchStr"]?.ToString().ToLower() ?? "") : "";
 
             int maxRows = 100;
             if (paramData.ContainsKey("maxRows"))
@@ -287,9 +266,22 @@ namespace JohnKauflinWeb.Function
                 }
             }
 
+            if (!string.IsNullOrEmpty(category) && category != "ALL" && category != "0")
+            {
+                // Adjust category to remove " Family" or " family" suffix if present
+                {
+                    // Remove trailing " Family" (case-insensitive) if present, then trim
+                    const string familySuffix = " Family";
+                    if (!string.IsNullOrEmpty(category) && category.EndsWith(familySuffix, System.StringComparison.OrdinalIgnoreCase))
+                    {
+                        category = category.Substring(0, category.Length - familySuffix.Length).Trim();
+                    }
+                }
+            }
 
-            // When getMenu specified, query the MediaType container for menu values (first page load)
-            //string mediaTypeQuery = "";
+            log.LogWarning("-------------------------------------------------------------------------------------------------------------------------------------------");
+            log.LogWarning($">>> Filter params: MediaTypeId: {mediaTypeId}, Category: {category}, StartDate: {startDate}, maxRows: {maxRows}");
+
             if (getMenu)
             {
                 Container albumContainer = db.GetContainer("MediaAlbum");
@@ -305,119 +297,9 @@ namespace JohnKauflinWeb.Function
                 }
             }
 
-            string defaultCategory;
-
-            /*
-                        mediaInfo.menuOrAlbumName = ""
-
-
-                let categoryQuery = ""
-                if (paramData.MediaFilterCategory != null && paramData.MediaFilterCategory != '' &&
-                    paramData.MediaFilterCategory != 'ALL' && paramData.MediaFilterCategory != '0') {
-                    if (paramData.MediaFilterCategory == 'DEFAULT') {
-                        categoryQuery = `{ CategoryTags: {contains: "${defaultCategory}"} }`
-                    } else {
-                        let tempCategory = paramData.MediaFilterCategory
-                        let pos = 0
-                        pos = paramData.MediaFilterCategory.indexOf(" Family")
-                        if (pos > -1) {
-                            tempCategory = paramData.MediaFilterCategory.substring(0,pos)
-                        }
-                        pos = paramData.MediaFilterCategory.indexOf(" family")
-                        if (pos > -1) {
-                            tempCategory = paramData.MediaFilterCategory.substring(0,pos)
-                        }
-
-                        categoryQuery = `{ CategoryTags: {contains: "${tempCategory}"} }`
-                    }
-                    //console.log(">>> categoryQuery = "+categoryQuery)
-                }
-
-                let startDateQuery = ""
-                //console.log("paramData.MediaFilterStartDate = "+paramData.MediaFilterStartDate)
-                if (paramData.MediaFilterStartDate != null && paramData.MediaFilterStartDate != '') {
-                    if (paramData.MediaFilterStartDate == "DEFAULT") {
-                        paramData.MediaFilterStartDate = mediaInfo.startDate
-                    }
-                    //console.log("      int MediaFilterStartDate = "+getDateInt(paramData.MediaFilterStartDate))
-                    //if (paramData.MediaFilterStartDate != "0001-01-01 00:00:00") {
-                    if (paramData.MediaFilterStartDate != "1800-01-01") {
-                        //startDateQuery = `{ TakenFileTime: { gte: 2023010108 } }`
-                        startDateQuery = `{ TakenFileTime: { gte: ${getDateInt(paramData.MediaFilterStartDate)} } }`
-                    }
-                    //console.log(">>> startDateQuery = "+startDateQuery)
-                }
-
-                let menuQuery = ""
-                if (paramData.MediaFilterMenuItem != null && paramData.MediaFilterMenuItem != '') {
-                    // Maybe add Category to this (if needed)
-                    mediaInfo.menuOrAlbumName = paramData.MediaFilterMenuItem
-                    menuQuery = `{ MenuTags: {contains: "${paramData.MediaFilterMenuItem}"} }`
-                    //console.log(">>> menuQuery = "+menuQuery)
-                }
-
-                let albumQuery = ""
-                if (paramData.MediaFilterAlbumKey != null && paramData.MediaFilterAlbumKey != '') {
-                    if (paramData.MediaFilterAlbumName != null && paramData.MediaFilterAlbumName != '') {
-                        mediaInfo.menuOrAlbumName = paramData.MediaFilterAlbumName
-                    }
-                    albumQuery = `{ AlbumTags: {contains: "${paramData.MediaFilterAlbumKey}"} }`
-                    //console.log(">>> albumQuery = "+albumQuery)
-                }
-
-                let searchQuery = ""
-                if (paramData.MediaFilterSearchStr != null && paramData.MediaFilterSearchStr != '') {
-                    searchQuery = `{ SearchStr: {contains: "${paramData.MediaFilterSearchStr.toLowerCase()}"} }`
-                    // If search is specified, clear out the category and start date queries
-                    categoryQuery = ""
-                    startDateQuery = ""
-                    //console.log(">>> searchQuery = "+searchQuery)
-                }
-
-            */
-
-
-            /*
-              id: ID
-              MediaTypeId: Int
-              Name: String
-              TakenDateTime: String
-              TakenFileTime: Float
-              CategoryTags: String
-              MenuTags: String
-              AlbumTags: String
-              Title: String
-              Description: String
-              People: String
-              ToBeProcessed: Boolean
-              SearchStr: String
-
-                let gql = `query {
-                        books(
-                            filter: { 
-                                and: [ 
-                                    { MediaTypeId: { eq: ${mediaType} } }
-                                    ${categoryQuery}
-                                    ${menuQuery}
-                                    ${albumQuery}
-                                    ${searchQuery}
-                                    ${startDateQuery}
-                                ] 
-                            },
-                            ${orderBy},
-                            first: ${maxRows}
-                        ) {
-                            items {
-                                Name
-                                TakenDateTime
-                                Title
-                            }
-                        }
-                        ${mediaTypeQuery}
-                    }`
-            */
-
-            //log.LogWarning($">>> Filter params: MediaTypeId: {mediaTypeId}, Category: {category}, StartDate: {startDate}, maxRows: {maxRows}");
+            //-------------------------------------------------------------------------------------------------------------------------------------
+            // Build query to get MediaInfo records based on filter parameters
+            //-------------------------------------------------------------------------------------------------------------------------------------
             // Request options: MaxItemCount controls page size (not total rows)
             QueryRequestOptions queryRequestOptions = new QueryRequestOptions
             {
@@ -431,30 +313,37 @@ namespace JohnKauflinWeb.Function
             if (!string.IsNullOrEmpty(category) && category != "ALL" && category != "0")
             {
                 sql += " AND CONTAINS(c.CategoryTags, @category)";
-                log.LogWarning($">>> Adding category filter: {category}");
             }
-            if (!string.IsNullOrEmpty(startDate))
+            long startDateVal = 0;
+            if (!string.IsNullOrEmpty(startDate) && DateTime.TryParse(startDate, out DateTime outDateTime))
             {
-                // Expecting startDate as yyyy-MM-dd or yyyy-MM-ddTHH:mm:ss
-                if (DateTime.TryParse(startDate, out DateTime dt))
-                {
-                    long dtVal = long.Parse(dt.ToString("yyyyMMddHH"));
-                    sql += " AND c.MediaDateTimeVal >= @startDateVal";
-                    log.LogWarning($">>> Adding startDate filter: {startDate} ({dtVal})");
-                }
+                startDateVal = long.Parse(outDateTime.ToString("yyyyMMddHH"));
+                sql += " AND c.TakenFileTime >= @startDateVal";
             }
-
+            if (!string.IsNullOrEmpty(menuItem))
+            {
+                sql += " AND CONTAINS(c.MenuTags, @menuItem)";
+            }
+            if (!string.IsNullOrEmpty(albumKey))
+            {
+                sql += " AND CONTAINS(c.AlbumTags, @albumKey)";
+            }
+            if (!string.IsNullOrEmpty(searchStr))
+            {
+                sql += " AND CONTAINS(c.SearchStr, @searchStr)";
+            }
 
             //sql += " ORDER BY c.MediaDateTimeVal DESC ";
-            if (mediaTypeId == 2) {
-                sql += " ORDER BY c.Name ASC ";
-            } else {
+            if (mediaTypeId == 2)
+            {
+                sql += " ORDER BY c.Name ";
+            }
+            else
+            {
                 sql += " ORDER BY c.TakenDateTime ";
             }
 
-
-
-            //log.LogWarning($"*** maxRows: {maxRows}, SQL: {sql}");
+            log.LogWarning($"*** maxRows: {maxRows}, SQL: {sql}");
 
             var queryDef = new QueryDefinition(sql)
                 .WithParameter("@maxRows", maxRows)
@@ -464,15 +353,23 @@ namespace JohnKauflinWeb.Function
             {
                 queryDef = queryDef.WithParameter("@category", category);
             }
-            if (!string.IsNullOrEmpty(startDate) && DateTime.TryParse(startDate, out DateTime dt2))
+            if (startDateVal > 0) {
+                queryDef = queryDef.WithParameter("@startDateVal", startDateVal);
+            }
+            if (!string.IsNullOrEmpty(menuItem))
             {
-                long dtVal = long.Parse(dt2.ToString("yyyyMMddHH"));
-                queryDef = queryDef.WithParameter("@startDateVal", dtVal);
+                queryDef = queryDef.WithParameter("@menuItem", menuItem);
+            }
+            if (!string.IsNullOrEmpty(albumKey))
+            {
+                queryDef = queryDef.WithParameter("@albumKey", albumKey);
+            }
+            if (!string.IsNullOrEmpty(searchStr))
+            {
+                queryDef = queryDef.WithParameter("@searchStr", searchStr);
             }
 
-            var mediaInfoList = new List<MediaInfo>();
             var feed = container.GetItemQueryIterator<MediaInfo>(queryDef, requestOptions: queryRequestOptions);
-
             int pageCnt = 0;
             int rowCnt = 0;
             while (feed.HasMoreResults)
@@ -483,7 +380,7 @@ namespace JohnKauflinWeb.Function
                 foreach (var item in response)
                 {
                     rowCnt++;
-                    mediaInfoList.Add(item);
+                    mediaInfoAll.fileList.Add(item);
                     //log.LogWarning($">>> {rowCnt} {item.Name}, MediaDateTime: {item.MediaDateTime}, CategoryTags: {item.CategoryTags}");    
                 }
             }

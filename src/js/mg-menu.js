@@ -37,8 +37,8 @@ menuContainer.addEventListener("click", function (event) {
         MediaFilterMenuItem:  event.target.getAttribute('data-menuItem'),
         MediaFilterStartDate: event.target.getAttribute('data-startDate')}
 
-    queryMediaInfo(paramData);
-    hideMediaMenuCanvas()
+        queryMediaInfo(paramData);
+        hideMediaMenuCanvas()
     }
 })
 

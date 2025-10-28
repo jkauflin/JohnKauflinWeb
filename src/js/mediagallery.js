@@ -119,7 +119,6 @@ Modification History
                 the presentation functions with no edit0
 2025-10-24 JJK  Refactor to use API function calls instead of data-api
 ================================================================================*/
-//import {empty,showLoadingSpinner,formatMoney,setCheckbox,checkFetchResponse} from './util.js'
 import {mediaType,setMediaType,queryMediaInfo} from './mg-data-repository.js'
 
 const MediaPageLinkClass = "media-page";
@@ -173,7 +172,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setMediaType(1)
 
         // Clear the parameters from the url
-        //window.history.replaceState({}, document.title, "/home/");
         window.history.replaceState({}, document.title, "/");
 
         let paramData = {

@@ -64,13 +64,6 @@ namespace JohnKauflinWeb.Function
                 string body = await new StreamReader(req.Body).ReadToEndAsync();
                 // paramData is a JSON object with filter params
                 var paramData = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>(body);
-             
-                bool getMenu = paramData.ContainsKey("getMenu") ? Convert.ToBoolean(paramData["getMenu"]) : false;
-
-                // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Need to get more than just the list - need to build the menu structures as well
-             
-                // pass back the larger medioInfo structure that has fileList and filterList and menuList ??????????????????????
-
                 var mediaInfoAll = await dbCommon.GetMediaInfoDB(paramData);
                 return new OkObjectResult(mediaInfoAll);
             }

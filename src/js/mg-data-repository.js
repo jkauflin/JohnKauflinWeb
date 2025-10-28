@@ -64,21 +64,21 @@ export function getFilePath(index,descMod="",fullPath=false) {
     let fi = mediaInfo.fileList[index]
 
     if (mediaType == 3) {
-        return musicUri + fi.Name
+        return musicUri + fi.name
     } else {
         if (descMod == "Thumbs") {
-            return thumbsUri + fi.Name
+            return thumbsUri + fi.name
         } else {
-            return photosUri + fi.Name
+            return photosUri + fi.name
         }
     }
 }
 
 export function getFileName(index) {
     let fi = mediaInfo.fileList[index]
-    let fileNameNoExt = fi.Name
-    if (mediaType == 3 && fi.Title != '') {
-        fileNameNoExt = fi.Title
+    let fileNameNoExt = fi.name
+    if (mediaType == 3 && fi.title != '') {
+        fileNameNoExt = fi.title
     }
     let periodPos = fileNameNoExt.indexOf(".");
     if (periodPos >= 0) {
@@ -95,132 +95,57 @@ export async function queryMediaInfo(paramData) {
     //console.log("--------------------------------------------------------------------")
     //console.log("$$$$$ in the QueryMediaInfo, mediaType = "+mediaType)
 
+    // This is set when tab, tile, or album is clicked, but making sure it get set in the parameter values (for the API calls)
     if (paramData.MediaFilterMediaType != null && paramData.MediaFilterMediaType != '') {
         setMediaType(parseInt(paramData.MediaFilterMediaType))
-    }
+    } else {
+        paramData.MediaFilterMediaType = mediaType.toString()
+    }   
 
     // Load the category list for the selected media type
     let mti = mediaType - 1;
-    mediaTypeDesc = mediaTypeData[mti].MediaTypeDesc;
-    categoryList.length = 0;
-    if (mediaTypeData[mti].Category != null) {
-        for (let i = 0; i < mediaTypeData[mti].Category.length; i++) {
-            categoryList.push(mediaTypeData[mti].Category[i].CategoryName);
-        }
-    }
-
     // Set these for the createMediaPage function
     defaultCategory = mediaTypeData[mti].Category[0].CategoryName
-
     if (paramData.MediaFilterCategory == null || paramData.MediaFilterCategory == '' || paramData.MediaFilterCategory == '0' || paramData.MediaFilterCategory == 'DEFAULT') {
         paramData.MediaFilterCategory = defaultCategory
     }
 
     // Save the parameters from the laste query
     queryCategory = paramData.MediaFilterCategory
+    // Reset menuOrAlbumName (it will be set below if menu or album is specified)
+    mediaInfo.menuOrAlbumName = ""
 
-    //..............................................................................
-    // Set a default start date
-    //mediaInfo.startDate = "1972-01-01";
-    mediaInfo.startDate = "";
     // >>>>> remember this gets set after the query and is used for the NEXT query
     // need the DEFAULT values to be set for the "first" query
-
     if (paramData.MediaFilterStartDate != null && paramData.MediaFilterStartDate != '') {
         if (paramData.MediaFilterStartDate == "DEFAULT") {
-            // Adjust this logic for the different types 
-            //paramData.MediaFilterStartDate = mediaInfo.startDate
-            paramData.MediaFilterStartDate = ""
+            paramData.MediaFilterStartDate = "1800-01-01"
+            if (mediaType == 1) {
+                paramData.MediaFilterStartDate = addDays(new Date(), -60)
+            }
         }
-    }
-
-
-    
-    // >>>>>>>>>>>>>> some info needs to be set in the mediaInfo structure (in addition to setting values for the queries)
-    // decide what to set here, as opposed to what is passed in paramData
-
-    mediaInfo.menuOrAlbumName = ""
-    
-    // Set a default start date of 60 days back from current date
-    if (mediaType == 1) {
-        mediaInfo.startDate = addDays(new Date(), -60)
     } else {
-        mediaInfo.startDate = "1800-01-01"
+        // >>>>>>>> try this to see how it works out
+		paramData.MediaFilterStartDate = mediaInfo.startDate
     }
 
-    //let maxRows = 200
-    let maxRows = 100
-    if (mediaType == 2) {
-		//maxRows = 18
-		maxRows = 12
-    }
-
-
-    let categoryQuery = ""
-    if (paramData.MediaFilterCategory != null && paramData.MediaFilterCategory != '' &&
-        paramData.MediaFilterCategory != 'ALL' && paramData.MediaFilterCategory != '0') {
-        if (paramData.MediaFilterCategory == 'DEFAULT') {
-            categoryQuery = `{ CategoryTags: {contains: "${defaultCategory}"} }`
-        } else {
-            let tempCategory = paramData.MediaFilterCategory
-            let pos = 0
-            pos = paramData.MediaFilterCategory.indexOf(" Family")
-            if (pos > -1) {
-                tempCategory = paramData.MediaFilterCategory.substring(0,pos)
-            }
-            pos = paramData.MediaFilterCategory.indexOf(" family")
-            if (pos > -1) {
-                tempCategory = paramData.MediaFilterCategory.substring(0,pos)
-            }
-
-            categoryQuery = `{ CategoryTags: {contains: "${tempCategory}"} }`
-        }
-        //console.log(">>> categoryQuery = "+categoryQuery)
-    }
-
-    let startDateQuery = ""
-    //console.log("paramData.MediaFilterStartDate = "+paramData.MediaFilterStartDate)
-	if (paramData.MediaFilterStartDate != null && paramData.MediaFilterStartDate != '') {
-		if (paramData.MediaFilterStartDate == "DEFAULT") {
-			paramData.MediaFilterStartDate = mediaInfo.startDate
-		}
-        //console.log("      int MediaFilterStartDate = "+getDateInt(paramData.MediaFilterStartDate))
-		//if (paramData.MediaFilterStartDate != "0001-01-01 00:00:00") {
-        if (paramData.MediaFilterStartDate != "1800-01-01") {
-            //startDateQuery = `{ TakenFileTime: { gte: 2023010108 } }`
-            startDateQuery = `{ TakenFileTime: { gte: ${getDateInt(paramData.MediaFilterStartDate)} } }`
-        }
-        //console.log(">>> startDateQuery = "+startDateQuery)
-	}
-
-    let menuQuery = ""
     if (paramData.MediaFilterMenuItem != null && paramData.MediaFilterMenuItem != '') {
-        // Maybe add Category to this (if needed)
         mediaInfo.menuOrAlbumName = paramData.MediaFilterMenuItem
-        menuQuery = `{ MenuTags: {contains: "${paramData.MediaFilterMenuItem}"} }`
-        //console.log(">>> menuQuery = "+menuQuery)
 	}
-    
-    let albumQuery = ""
     if (paramData.MediaFilterAlbumKey != null && paramData.MediaFilterAlbumKey != '') {
         if (paramData.MediaFilterAlbumName != null && paramData.MediaFilterAlbumName != '') {
             mediaInfo.menuOrAlbumName = paramData.MediaFilterAlbumName
         }
-        albumQuery = `{ AlbumTags: {contains: "${paramData.MediaFilterAlbumKey}"} }`
-        //console.log(">>> albumQuery = "+albumQuery)
 	}
 
-    let searchQuery = ""
+    /*
     if (paramData.MediaFilterSearchStr != null && paramData.MediaFilterSearchStr != '') {
-        searchQuery = `{ SearchStr: {contains: "${paramData.MediaFilterSearchStr.toLowerCase()}"} }`
+        //searchQuery = `{ SearchStr: {contains: "${paramData.MediaFilterSearchStr.toLowerCase()}"} }`
         // If search is specified, clear out the category and start date queries
         categoryQuery = ""
         startDateQuery = ""
-        //console.log(">>> searchQuery = "+searchQuery)
 	}
-
-    //let orderBy = "orderBy: { TakenDateTime: ASC }"
-    
+    */
 
     showLoadingSpinner(MediaPageMessage)
     try {
@@ -230,42 +155,22 @@ export async function queryMediaInfo(paramData) {
             body: JSON.stringify(paramData)
         })
         await checkFetchResponse(response)
+        // >>>>>>>>>>>>>>>>>  Should there be some kind of retry for certain failures?
         // Success
         let mediaInfoAll = await response.json()
         console.log("mediaInfoAll.fileList.length = ",mediaInfoAll.fileList.length)
         console.log("mediaInfoAll.albumList.length = ",mediaInfoAll.albumList.length)
 
-        // Should there be some kind of retry for certain failures?
-
-        /*
-        console.log("items[0].Category[1].CategoryName = "+result.data.mtypes.items[0].Category[1].CategoryName);
-        console.log("items[0].Category[1].Menu = "+result.data.mtypes.items[0].Category[1].Menu);
-        console.log("items[0].Category[1].Menu[0].MenuItem = "+result.data.mtypes.items[0].Category[1].Menu[0].MenuItem);
-        */
-        //console.table(result.data.books.items);
-        //console.table(result.data.book_by_pk);
-        //console.log("Title = "+result.data.book_by_pk.Title)
-        //console.table(result.data.mtype_by_pk);
-        /*
-        console.log("data.mtype_by_pk.MediaTypeDesc = "+result.data.mtype_by_pk.MediaTypeDesc);
-        console.log("data.mtype_by_pk.Category[0].CategoryName = "+result.data.mtype_by_pk.Category[0].CategoryName);
-        if (result.data.mtype_by_pk.Category[0].Menu != null) {
-            console.log("data.mtype_by_pk.Category[0].Menu[0].MenuItem = "+result.data.mtype_by_pk.Category[0].Menu[0].MenuItem);
-        }
-        */
-
-        /*
         mediaInfo.fileList.length = 0
-        //mediaInfo.fileList = result.data.books.items
-        mediaInfo.fileList = await response.json()
+        mediaInfo.fileList = mediaInfoAll.fileList
         mediaInfo.filterList = []
 
         if (mediaInfo.fileList.length > 0) {
-            mediaInfo.startDate = mediaInfo.fileList[0].TakenDateTime.substring(0,10)
+            mediaInfo.startDate = mediaInfo.fileList[0].takenDateTime.substring(0,10)
 
             // Set the filter list elements
             let currYear = mediaInfo.startDate.substring(0,4)
-            let lastTakenDateTime = mediaInfo.fileList[result.data.books.items.length-1].TakenDateTime
+            let lastTakenDateTime = mediaInfo.fileList[mediaInfo.fileList.length-1].takenDateTime
 
             let prevYear = parseInt(mediaInfo.startDate.substring(0,4))-1
             let filterRec = {
@@ -282,7 +187,7 @@ export async function queryMediaInfo(paramData) {
             //console.log("Next, startDate: lastTakenDateTime = "+lastTakenDateTime)
 
             //if ($param->MediaFilterMediaType == 1 && !$albumKeyExists && $cnt > 50) {
-            if (mediaType == 1 && albumQuery == "" && mediaInfo.fileList.length > 50) {
+            if (mediaType == 1 && paramData.MediaFilterAlbumKey == "" && mediaInfo.fileList.length > 50) {
                 filterRec = {
                     filterName: "Winter",
                     startDate: currYear+"-01-01"
@@ -311,11 +216,8 @@ export async function queryMediaInfo(paramData) {
             }
 
         } // if (mediaInfo.fileList.length > 0) {
-        */
 
-        /*
-        if (getMenu) {
-            //mediaTypeDesc = result.data.mtype_by_pk.MediaTypeDesc
+        if (paramData.getMenu) {
             let mti = mediaType - 1
             mediaTypeDesc = mediaTypeData[mti].MediaTypeDesc
             contentDesc = mediaTypeDesc
@@ -353,9 +255,8 @@ export async function queryMediaInfo(paramData) {
 
             // Save the menu lists
             setMenuList(mediaInfo.menuList)
-            setAlbumList(result.data.malbums.items)
+            setAlbumList(mediaInfoAll.albumList)
         }
-        */
 
         // Save the parameters from the laste query
         queryCategory = paramData.MediaFilterCategory
@@ -376,10 +277,8 @@ export async function queryMediaInfo(paramData) {
             }
         }
 
-        /*
         contentDesc = mediaTypeDesc + " - " + queryCategory;
         createMediaPage(paramData.getMenu);
-        */
 
         MediaPageMessage.textContent = ""
     } catch (err) {
@@ -396,9 +295,6 @@ var mediaTypeData = [
     MediaTypeId: 1,
     MediaTypeDesc: "Photos",
     Category: [
-        {
-            CategoryName: "ALL"
-        },
         {
             CategoryName: "1 John J Kauflin",
             Menu: [
@@ -430,6 +326,9 @@ var mediaTypeData = [
                     MenuItem: "Navistar"
                 }
             ]
+        },
+        {
+            CategoryName: "ALL"
         },
         {
             CategoryName: "2 John E Kauflin",

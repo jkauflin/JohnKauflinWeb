@@ -380,7 +380,7 @@ thumbnailContainer.addEventListener("click", function (event) {
                 // *** For Testing ***
                 //let videoLabel = document.createElement("label")
                 //videoLabel.classList.add('mx-1')
-                //videoLabel.textContent = fi.Name.substring(0,20) + " " + fi.TakenDateTime
+                //videoLabel.textContent = fi.name.substring(0,20) + " " + fi.takenDateTime
                 //thumb.appendChild(videoLabel)
                 //thumb.appendChild(img)
 
@@ -389,17 +389,17 @@ thumbnailContainer.addEventListener("click", function (event) {
             } else if (mediaType == 2) {
                 let videoLabel = document.createElement("label")
                 videoLabel.classList.add('mx-1')
-                if (fi.Title.length > titleMax) {
-                    videoLabel.textContent = fi.Title.substring(0,titleMax)
+                if (fi.title.length > titleMax) {
+                    videoLabel.textContent = fi.title.substring(0,titleMax)
                 } else {
-                    videoLabel.textContent = fi.Title
+                    videoLabel.textContent = fi.title
                 }
                 thumb.appendChild(videoLabel)
 
                 let iframe = document.createElement("iframe")
                 iframe.classList.add('m-1')
                 // Use the embed link for iframe (without https so it can be run locally for testing)
-                iframe.setAttribute('src', "//www.youtube.com/embed/" + fi.Name)
+                iframe.setAttribute('src', "//www.youtube.com/embed/" + fi.name)
                 iframe.setAttribute('allowfullscreen', true)
 
                 //iframe.style.width = "230px";
@@ -432,7 +432,7 @@ thumbnailContainer.addEventListener("click", function (event) {
             } else if (mediaType == 4) {
                 // DOCS
                     
-                //console.log("PDF file = " + fi.Name + ", filePath = " + filePath);
+                //console.log("PDF file = " + fi.name + ", filePath = " + filePath);
                 docFiles = true
                 let a = document.createElement("a")
                 a.href = getFilePath(index)

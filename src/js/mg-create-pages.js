@@ -33,7 +33,6 @@ var filterContainer = document.createElement("div")
 var thumbnailContainer = document.createElement("div")
 var editRow1 = document.createElement("div")
 
-
 var mediaAdminMessage
 var mediaCategorySelect
 var mediaMenuSelect
@@ -44,8 +43,6 @@ var mediaPeopleList
 var mediaFilterCategory
 var mediaFilterStartDate
 var mediaFilterSearchStr
-//var mediaFilterMenuItem
-//var mediaFilterAlbumTag
 
 var mediaDetailFilename
 var mediaDetailTitle
@@ -58,7 +55,6 @@ var mediaDetailPeopleList
 var mediaDetailDescription
 // NEW ones
 var mediaDetailVideoList
-
 
 var currIndex = 0
 var currSelectAll = false
@@ -102,71 +98,62 @@ thumbnailContainer.addEventListener("click", function (event) {
 })
 
 
-    //-------------------------------------------------------------------------------------------------------
-    // Respond to Filter requests
-    //-------------------------------------------------------------------------------------------------------
-    function executeFilter() {
-        mediaFilterSearchStr.value = cleanInputStr(mediaFilterSearchStr.value)
-        //console.log(">>> Execute Filter mediaFilterMediaType = "+mediaType)
-        //console.log(">>> Execute Filter mediaFilterCategory = "+mediaFilterCategory.value)
-        //console.log(">>> Filter mediaFilterStartDate = "+mediaFilterStartDate.value)
-        //console.log(">>> Filter mediaFilterSearchStr = "+mediaFilterSearchStr.value)
-        //console.log(">>> Filter mediaFilterMenuItem = "+mediaFilterMenuItem.value)
-        //console.log(">>> Filter mediaFilterAlbumTag = "+mediaFilterAlbumTag.value)
-
-
-                // >>>>> reset the startDate to blank to search all dates <<<<<
-//                mediaFilterStartDate.value = ""
-
-        // if you use the search string, blank out all the other filters???
-
-
-
-        let paramData = {
-            MediaFilterMediaType: mediaType, 
-            getMenu: false,
-            MediaFilterCategory:  mediaFilterCategory.value,
-            MediaFilterStartDate: mediaFilterStartDate.value,
-            MediaFilterSearchStr: mediaFilterSearchStr.value}
-
-        queryMediaInfo(paramData);
-        // After query has retreived data, it will kick off the display page create
-    }
-
-    var nonAlphaNumericSpaceCharsStr = "[\x01-\x1F\x21-\x2F\x3A-\x40\x5B-\x60\x7B-\x7F]";
-    // "g" global so it does more than 1 substitution
-    var regexNonAlphaNumericSpaceChars = new RegExp(nonAlphaNumericSpaceCharsStr, "g");
-    function cleanInputStr(inStr) {
-        // Remove all NON-alphanumeric or space characters
-        return inStr.replace(regexNonAlphaNumericSpaceChars, '');
-    }
+//-------------------------------------------------------------------------------------------------------
+// Respond to Filter requests
+//-------------------------------------------------------------------------------------------------------
+var nonAlphaNumericSpaceCharsStr = "[\x01-\x1F\x21-\x2F\x3A-\x40\x5B-\x60\x7B-\x7F]";
+// "g" global so it does more than 1 substitution
+var regexNonAlphaNumericSpaceChars = new RegExp(nonAlphaNumericSpaceCharsStr, "g");
+function cleanInputStr(inStr) {
+    // Remove all NON-alphanumeric or space characters
+    return inStr.replace(regexNonAlphaNumericSpaceChars, '');
+}
     
-    //------------------------------------------------------------------------------------------------------------
-    // Dynamically create the DOM elements to add to the Media Page div (either regular display or EDIT mode)
-    //------------------------------------------------------------------------------------------------------------
-    export function createMediaPage(getMenu) {
-        //console.log("$$$$ in the createMediaPage")
-        empty(filterContainer)
-        empty(thumbnailContainer)
-        empty(editRow1)
+function executeFilter() {
+    mediaFilterSearchStr.value = cleanInputStr(mediaFilterSearchStr.value)
+    //console.log(">>> Execute Filter mediaFilterMediaType = "+mediaType)
+    //console.log(">>> Execute Filter mediaFilterCategory = "+mediaFilterCategory.value)
+    //console.log(">>> Filter mediaFilterStartDate = "+mediaFilterStartDate.value)
+    //console.log(">>> Filter mediaFilterSearchStr = "+mediaFilterSearchStr.value)
+    //console.log(">>> Filter mediaFilterMenuItem = "+mediaFilterMenuItem.value)
+    //console.log(">>> Filter mediaFilterAlbumTag = "+mediaFilterAlbumTag.value)
 
-        if (getMenu) {
-            buildMenuElements(mediaType)
-            //buildAlbumMenuElements(mediaType)
-        }
-        buildFilterElements(mediaType)
+    let paramData = {
+        MediaFilterMediaType: mediaType, 
+        getMenu: false,
+        MediaFilterCategory:  mediaFilterCategory.value,
+        MediaFilterStartDate: mediaFilterStartDate.value,
+        MediaFilterSearchStr: mediaFilterSearchStr.value}
 
-        mediaPageContainer.appendChild(filterContainer);
-        mediaPageContainer.appendChild(thumbnailContainer);
+    queryMediaInfo(paramData);
+    // After query has retreived data, it will kick off the display page create
+}
 
-        displayCurrFileList()
+//------------------------------------------------------------------------------------------------------------
+// Dynamically create the DOM elements to add to the Media Page div (either regular display or EDIT mode)
+//------------------------------------------------------------------------------------------------------------
+export function createMediaPage(getMenu) {
+    //console.log("$$$$ in the createMediaPage")
+    empty(filterContainer)
+    empty(thumbnailContainer)
+    empty(editRow1)
+
+    if (getMenu) {
+        buildMenuElements(mediaType)
     }
+    buildFilterElements(mediaType)
 
-    export function updateAdminMessage(displayMessage) {
-        if (mediaAdminMessage != null) {
-            mediaAdminMessage.textContent = displayMessage
-        }
+    mediaPageContainer.appendChild(filterContainer);
+    mediaPageContainer.appendChild(thumbnailContainer);
+
+    displayCurrFileList()
+}
+
+export function updateAdminMessage(displayMessage) {
+    if (mediaAdminMessage != null) {
+        mediaAdminMessage.textContent = displayMessage
     }
+}
 
     //------------------------------------------------------------------------------------------------------------
     // Create a collapsible menu from a directory structure
@@ -278,9 +265,9 @@ thumbnailContainer.addEventListener("click", function (event) {
         mediaFilterStartDate = document.createElement("input")
         mediaFilterStartDate.classList.add('form-control','shadow-none')
         mediaFilterStartDate.setAttribute('type',"date")
-
         //mediaFilterStartDate.value = mediaInfo.startDate
-
+        //const currDate = new Date().toISOString().split('T')[0]
+        //mediaFilterStartDate.value = currDate
         tCol1.appendChild(mediaFilterStartDate);
         tRow.appendChild(tCol1)
         mediaFilterStartDate.addEventListener("change", function () {

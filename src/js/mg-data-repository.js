@@ -107,6 +107,7 @@ export async function queryMediaInfo(paramData) {
     // Load the category list for the selected media type
     let mti = mediaType - 1;
     // Set these for the createMediaPage function
+    // >>>>>>> sometimes this is NOT set yet 
     defaultCategory = mediaTypeData[mti].Category[0].CategoryName
     if (paramData.MediaFilterCategory == null || paramData.MediaFilterCategory == '' || paramData.MediaFilterCategory == '0' || paramData.MediaFilterCategory == 'DEFAULT') {
         paramData.MediaFilterCategory = defaultCategory
@@ -117,7 +118,6 @@ export async function queryMediaInfo(paramData) {
     // Reset menuOrAlbumName (it will be set below if menu or album is specified)
     mediaInfo.menuOrAlbumName = ""
 
-    // >>>>> remember this gets set after the query and is used for the NEXT query
     // need the DEFAULT values to be set for the "first" query
     if (paramData.MediaFilterStartDate != null && paramData.MediaFilterStartDate != '') {
         if (paramData.MediaFilterStartDate == "DEFAULT") {
@@ -126,9 +126,6 @@ export async function queryMediaInfo(paramData) {
                 paramData.MediaFilterStartDate = addDays(new Date(), -60)
             }
         }
-    } else {
-        // >>>>>>>> try this to see how it works out
-		//paramData.MediaFilterStartDate = mediaInfo.startDate
     }
 
     if (paramData.MediaFilterMenuItem != null && paramData.MediaFilterMenuItem != '') {
@@ -139,15 +136,6 @@ export async function queryMediaInfo(paramData) {
             mediaInfo.menuOrAlbumName = paramData.MediaFilterAlbumName
         }
 	}
-
-    /*
-    if (paramData.MediaFilterSearchStr != null && paramData.MediaFilterSearchStr != '') {
-        //searchQuery = `{ SearchStr: {contains: "${paramData.MediaFilterSearchStr.toLowerCase()}"} }`
-        // If search is specified, clear out the category and start date queries
-        categoryQuery = ""
-        startDateQuery = ""
-	}
-    */
 
     showLoadingSpinner(MediaPageMessage)
     try {
@@ -262,7 +250,6 @@ export async function queryMediaInfo(paramData) {
 
             // Save the menu lists
             setMenuList(mediaInfo.menuList)
-            //setAlbumList(mediaInfoAll.albumList)
         }
 
         // Save the parameters from the laste query
@@ -289,7 +276,7 @@ export async function queryMediaInfo(paramData) {
         MediaPageMessage.textContent = ""
 
         if (paramData.getMenu) {
-            queryMediaAlbum()
+            queryMediaAlbum(paramData)
         }
 
     } catch (err) {
@@ -310,22 +297,11 @@ export async function queryMediaAlbum(paramData) {
             body: JSON.stringify(paramData)
         })
         await checkFetchResponse(response)
-        // >>>>>>>>>>>>>>>>>  Should there be some kind of retry for certain failures?
         // Success
         let mediaAlbumList = await response.json()
         //console.log("mediaAlbumList.length = ",mediaAlbumList.length)
         setAlbumList(mediaAlbumList)
         buildAlbumMenuElements(mediaType)
-
-        /*
-        if (paramData.MediaFilterAlbumKey != null & paramData.MediaFilterAlbumKey != "") {
-            queryAlbumKey = paramData.MediaFilterAlbumKey
-            // Get the Album Name if not included
-            if (mediaInfo.menuOrAlbumName == "") {
-                mediaInfo.menuOrAlbumName = getAlbumName(queryAlbumKey)
-            }
-        }
-        */
 
     } catch (err) {
         console.error(err)

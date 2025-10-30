@@ -19,12 +19,14 @@ Modification History
 2024-06-20 JJK  Getting an error from Azure on the MediaType query, so I've
                 hard-coded the categories and menu items for now
 2024-12-02 JJK  Added util module and spinner for loading... mediaPageMessage
-2025-10-24 JJK  Refactored to use new function API endpoint instead of data-api 
+2025-10-24 JJK  Refactored to use new function API endpoint instead of data-api
+2025-10-30 JJK  Adjusting logic for media queries 
 ================================================================================*/
 
 //import {empty,showLoadingSpinner,addDays,addHours,getDateInt,getHoursInt} from './util.js';
 import {empty,showLoadingSpinner,checkFetchResponse,addDays,getDateInt} from './util.js';
 import {createMediaPage,displayCurrFileList,updateAdminMessage} from './mg-create-pages.js';
+import {mediaAlbumMenuCanvasId,buildAlbumMenuElements} from './mg-album.js'
 import {setMenuList} from './mg-menu.js';
 import {setAlbumList,getAlbumName} from './mg-album.js';
 export let mediaInfo = {
@@ -126,7 +128,7 @@ export async function queryMediaInfo(paramData) {
         }
     } else {
         // >>>>>>>> try this to see how it works out
-		paramData.MediaFilterStartDate = mediaInfo.startDate
+		//paramData.MediaFilterStartDate = mediaInfo.startDate
     }
 
     if (paramData.MediaFilterMenuItem != null && paramData.MediaFilterMenuItem != '') {
@@ -157,23 +159,28 @@ export async function queryMediaInfo(paramData) {
         await checkFetchResponse(response)
         // >>>>>>>>>>>>>>>>>  Should there be some kind of retry for certain failures?
         // Success
-        let mediaInfoAll = await response.json()
-        //console.log("mediaInfoAll.fileList.length = ",mediaInfoAll.fileList.length)
-        //console.log("mediaInfoAll.albumList.length = ",mediaInfoAll.albumList.length)
+        let mediaInfoList = await response.json()
+        //console.log("mediaInfoList.length = ",mediaInfoList.length)
 
         mediaInfo.fileList.length = 0
-        mediaInfo.fileList = mediaInfoAll.fileList
+        mediaInfo.fileList = mediaInfoList
         mediaInfo.filterList = []
 
         if (mediaInfo.fileList.length > 0) {
             mediaInfo.startDate = mediaInfo.fileList[0].takenDateTime.substring(0,10)
+            //console.log(">>> mediaInfo.startDate = "+mediaInfo.startDate)
 
             // Set the filter list elements
             let currYear = mediaInfo.startDate.substring(0,4)
             let lastTakenDateTime = mediaInfo.fileList[mediaInfo.fileList.length-1].takenDateTime
+            let filterRec = {
+                filterName: "StartDate",
+                startDate: mediaInfo.startDate
+            }
+            mediaInfo.filterList.push(filterRec)
 
             let prevYear = parseInt(mediaInfo.startDate.substring(0,4))-1
-            let filterRec = {
+            filterRec = {
                 filterName: "Prev Year",
                 startDate: prevYear.toString()+"-01-01"
             }
@@ -255,7 +262,7 @@ export async function queryMediaInfo(paramData) {
 
             // Save the menu lists
             setMenuList(mediaInfo.menuList)
-            setAlbumList(mediaInfoAll.albumList)
+            //setAlbumList(mediaInfoAll.albumList)
         }
 
         // Save the parameters from the laste query
@@ -277,10 +284,14 @@ export async function queryMediaInfo(paramData) {
             }
         }
 
-        contentDesc = mediaTypeDesc + " - " + queryCategory;
-        createMediaPage(paramData.getMenu);
-
+        contentDesc = mediaTypeDesc + " - " + queryCategory
+        createMediaPage(paramData.getMenu)
         MediaPageMessage.textContent = ""
+
+        if (paramData.getMenu) {
+            queryMediaAlbum()
+        }
+
     } catch (err) {
         console.error(err)
         MediaPageMessage.textContent = "Error getting media information: " + err.message
@@ -288,6 +299,40 @@ export async function queryMediaInfo(paramData) {
     
 } // queryMediaInfo
 
+//------------------------------------------------------------------------------------------------------------
+// Query the database for media album list
+//------------------------------------------------------------------------------------------------------------
+export async function queryMediaAlbum(paramData) {
+    try {
+        const response = await fetch("/api/GetMediaAlbum", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(paramData)
+        })
+        await checkFetchResponse(response)
+        // >>>>>>>>>>>>>>>>>  Should there be some kind of retry for certain failures?
+        // Success
+        let mediaAlbumList = await response.json()
+        //console.log("mediaAlbumList.length = ",mediaAlbumList.length)
+        setAlbumList(mediaAlbumList)
+        buildAlbumMenuElements(mediaType)
+
+        /*
+        if (paramData.MediaFilterAlbumKey != null & paramData.MediaFilterAlbumKey != "") {
+            queryAlbumKey = paramData.MediaFilterAlbumKey
+            // Get the Album Name if not included
+            if (mediaInfo.menuOrAlbumName == "") {
+                mediaInfo.menuOrAlbumName = getAlbumName(queryAlbumKey)
+            }
+        }
+        */
+
+    } catch (err) {
+        console.error(err)
+        MediaPageMessage.textContent = "Error getting media album information: " + err.message
+    }
+    
+} // queryMediaInfo
 
 var mediaTypeData = [
 {

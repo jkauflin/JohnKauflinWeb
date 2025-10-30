@@ -232,7 +232,7 @@ namespace JohnKauflinWeb.Function
         
 
         // Query Cosmos DB for MediaInfo records based on paramData
-        public async Task<MediaInfoAll> GetMediaInfoDB(Dictionary<string, object> paramData)
+        public async Task<List<MediaInfo>> GetMediaInfoDB(Dictionary<string, object> paramData)
         {
             CosmosClient cosmosClient = new CosmosClient(apiCosmosDbConnStr);
             Database db = cosmosClient.GetDatabase(databaseId);
@@ -240,18 +240,16 @@ namespace JohnKauflinWeb.Function
 
             //log.LogWarning($">>> GetMediaInfoDB paramData: {Newtonsoft.Json.JsonConvert.SerializeObject(paramData)}");
 
-            var mediaInfoAll = new MediaInfoAll();
-            mediaInfoAll.fileList = new List<MediaInfo>();
-            mediaInfoAll.albumList = new List<MediaAlbum>();
+            var mediaInfoList = new List<MediaInfo>();
 
             // figure out how to get the MediaTypeId and set the getMenu flag
             int mediaTypeId = paramData.ContainsKey("MediaFilterMediaType") ? Convert.ToInt32(paramData["MediaFilterMediaType"]) : 1;
             string category = paramData.ContainsKey("MediaFilterCategory") ? (paramData["MediaFilterCategory"]?.ToString() ?? "") : "";
             string startDate = paramData.ContainsKey("MediaFilterStartDate") ? (paramData["MediaFilterStartDate"]?.ToString() ?? "") : "";
-            bool getMenu = paramData.ContainsKey("getMenu") ? Convert.ToBoolean(paramData["getMenu"]) : false;
             string menuItem = paramData.ContainsKey("MediaFilterMenuItem") ? (paramData["MediaFilterMenuItem"]?.ToString() ?? "") : "";
             string albumKey = paramData.ContainsKey("MediaFilterAlbumKey") ? (paramData["MediaFilterAlbumKey"]?.ToString() ?? "") : "";
             string searchStr = paramData.ContainsKey("MediaFilterSearchStr") ? (paramData["MediaFilterSearchStr"]?.ToString().ToLower() ?? "") : "";
+            //bool getMenu = paramData.ContainsKey("getMenu") ? Convert.ToBoolean(paramData["getMenu"]) : false;
 
             int maxRows = 150;
             if (paramData.ContainsKey("maxRows"))
@@ -281,22 +279,7 @@ namespace JohnKauflinWeb.Function
 
             log.LogWarning("-------------------------------------------------------------------------------------------------------------------------------------------");
             log.LogWarning($">>> Filter params: MediaTypeId: {mediaTypeId}, Category: {category}, StartDate: {startDate}, maxRows: {maxRows}");
-            log.LogWarning($">>> Filter params: getMenu: {getMenu}, menuItem: {menuItem}, albumKey: {albumKey}, searchStr: {searchStr}");
-
-            if (getMenu)
-            {
-                Container albumContainer = db.GetContainer("MediaAlbum");
-                var albumQuery = new QueryDefinition("SELECT * FROM c ORDER BY c.AlbumName");
-                var albumFeed = albumContainer.GetItemQueryIterator<MediaAlbum>(albumQuery);
-                while (albumFeed.HasMoreResults)
-                {
-                    var response = await albumFeed.ReadNextAsync();
-                    foreach (var item in response)
-                    {
-                        mediaInfoAll.albumList.Add(item);
-                    }
-                }
-            }
+            log.LogWarning($">>> Filter params: menuItem: {menuItem}, albumKey: {albumKey}, searchStr: {searchStr}");
 
             //-------------------------------------------------------------------------------------------------------------------------------------
             // Build query to get MediaInfo records based on filter parameters
@@ -381,14 +364,37 @@ namespace JohnKauflinWeb.Function
                 foreach (var item in response)
                 {
                     rowCnt++;
-                    mediaInfoAll.fileList.Add(item);
+                    mediaInfoList.Add(item);
                     //log.LogWarning($">>> {rowCnt} {item.Name}, MediaDateTime: {item.MediaDateTime}, CategoryTags: {item.CategoryTags}");    
                 }
             }
 
-            return mediaInfoAll;
+            return mediaInfoList;
         }
 
+        // Query Cosmos DB for MediaInfo records based on paramData
+        public async Task<List<MediaAlbum>> GetMediaAlbumDB(Dictionary<string, object> paramData)
+        {
+            CosmosClient cosmosClient = new CosmosClient(apiCosmosDbConnStr);
+            Database db = cosmosClient.GetDatabase(databaseId);
+            Container container = db.GetContainer("MediaAlbum");
+
+            //log.LogWarning($">>> GetMediaInfoDB paramData: {Newtonsoft.Json.JsonConvert.SerializeObject(paramData)}");
+
+            var albumList = new List<MediaAlbum>();
+            var albumQuery = new QueryDefinition("SELECT * FROM c ORDER BY c.AlbumName");
+            var albumFeed = container.GetItemQueryIterator<MediaAlbum>(albumQuery);
+            while (albumFeed.HasMoreResults)
+            {
+                var response = await albumFeed.ReadNextAsync();
+                foreach (var item in response)
+                {
+                    albumList.Add(item);
+                }
+            }
+
+            return albumList;
+        }
 
     } // public class DbCommon
 } // namespace

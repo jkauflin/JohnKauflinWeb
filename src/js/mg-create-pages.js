@@ -114,6 +114,14 @@ thumbnailContainer.addEventListener("click", function (event) {
         //console.log(">>> Filter mediaFilterMenuItem = "+mediaFilterMenuItem.value)
         //console.log(">>> Filter mediaFilterAlbumTag = "+mediaFilterAlbumTag.value)
 
+
+                // >>>>> reset the startDate to blank to search all dates <<<<<
+//                mediaFilterStartDate.value = ""
+
+        // if you use the search string, blank out all the other filters???
+
+
+
         let paramData = {
             MediaFilterMediaType: mediaType, 
             getMenu: false,
@@ -144,7 +152,7 @@ thumbnailContainer.addEventListener("click", function (event) {
 
         if (getMenu) {
             buildMenuElements(mediaType)
-            buildAlbumMenuElements(mediaType)
+            //buildAlbumMenuElements(mediaType)
         }
         buildFilterElements(mediaType)
 
@@ -270,7 +278,9 @@ thumbnailContainer.addEventListener("click", function (event) {
         mediaFilterStartDate = document.createElement("input")
         mediaFilterStartDate.classList.add('form-control','shadow-none')
         mediaFilterStartDate.setAttribute('type',"date")
-        mediaFilterStartDate.value = mediaInfo.startDate
+
+        //mediaFilterStartDate.value = mediaInfo.startDate
+
         tCol1.appendChild(mediaFilterStartDate);
         tRow.appendChild(tCol1)
         mediaFilterStartDate.addEventListener("change", function () {
@@ -293,10 +303,6 @@ thumbnailContainer.addEventListener("click", function (event) {
             // If the user presses the "Enter" key on the keyboard
             if (event.key === "Enter") {
                 // Cancel the default action, if needed
-
-                // >>>>> reset the startDate to blank to search all dates <<<<<
-                mediaFilterStartDate.value = ""
-
                 event.preventDefault();
                 executeFilter()
             }
@@ -515,13 +521,18 @@ thumbnailContainer.addEventListener("click", function (event) {
             buttonMax = 4
         }
 
+        let displayStartDate = ""
         if (mediaInfo.filterList != null) {
             let buttonColor = 'btn-primary'
             for (let index in mediaInfo.filterList) {
+                let FilterRec = mediaInfo.filterList[index]
+                if (FilterRec.filterName == 'StartDate') {
+                    displayStartDate = FilterRec.startDate
+                    continue
+                }
                 if (index > buttonMax) {
                     continue
                 }
-                let FilterRec = mediaInfo.filterList[index]
 
                 buttonColor = 'btn-primary'
                 if (FilterRec.filterName == 'Winter') {
@@ -573,6 +584,12 @@ thumbnailContainer.addEventListener("click", function (event) {
                 buttonTop.addEventListener("click", function () {
                     window.scrollTo(0, 0)
                 });
+            }
+
+            if (displayStartDate != "") {
+                let spanStartDate = document.createElement("span")
+                spanStartDate.innerHTML = "<b>"+displayStartDate+"</b>"
+                thumbnailRow1Col1.appendChild(spanStartDate)
             }
         }
 

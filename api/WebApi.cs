@@ -64,8 +64,28 @@ namespace JohnKauflinWeb.Function
                 string body = await new StreamReader(req.Body).ReadToEndAsync();
                 // paramData is a JSON object with filter params
                 var paramData = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>(body);
-                var mediaInfoAll = await dbCommon.GetMediaInfoDB(paramData);
-                return new OkObjectResult(mediaInfoAll);
+                var mediaInfoList = await dbCommon.GetMediaInfoDB(paramData);
+                return new OkObjectResult(mediaInfoList);
+            }
+            catch (Exception ex)
+            {
+                log.LogError($"Exception in GetMediaInfo: {ex.Message} {ex.StackTrace}");
+                return new BadRequestObjectResult($"Exception, message = {ex.Message}");
+            }
+        }
+
+        // Public API for media info queries
+        [Function("GetMediaAlbum")]
+        public async Task<IActionResult> GetMediaAlbum(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequestData req)
+        {
+            try
+            {
+                string body = await new StreamReader(req.Body).ReadToEndAsync();
+                // paramData is a JSON object with filter params
+                var paramData = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>(body);
+                var mediaAlbumList = await dbCommon.GetMediaAlbumDB(paramData);
+                return new OkObjectResult(mediaAlbumList);
             }
             catch (Exception ex)
             {

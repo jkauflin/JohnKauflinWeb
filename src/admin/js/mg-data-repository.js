@@ -24,6 +24,7 @@ Modification History
                 CategoryName (and MediaType)
 2024-08-08 JJK  Added an API call to get people list
 2024-12-02 JJK  Added util module and spinner for loading... mediaPageMessage
+2025-10-30 JJK  Commented out data-api queries until I can re-factor
 ================================================================================*/
 
 import {empty,showLoadingSpinner,addDays,addHours,getDateInt,getHoursInt} from './util.js';
@@ -103,6 +104,7 @@ export async function queryMediaInfo(paramData) {
     //console.log("--------------------------------------------------------------------")
     //console.log("$$$$$ in the ADMIN QueryMediaInfo, mediaType = "+mediaType)
 
+    /*
     getMenu = paramData.getMenu
 
     // Set a default start date of 60 days back from current date
@@ -122,28 +124,6 @@ export async function queryMediaInfo(paramData) {
     // When getMenu specified, query the MediaType container for menu values (first page load)
     let mediaTypeQuery = ""
     if (getMenu) {
-
-        // loading...
-        //setThumbnailMessage("Loading...")
-        /*
-        mtype_by_pk(id: ${mediaType.toString()}) {
-            id
-            MediaTypeDesc
-            Category {
-                CategoryName
-                Menu {
-                    MenuItem
-                }
-            }
-        }
-
-        mpeoples 
-        {
-            items {
-                PeopleName
-            }
-        }
-        */
         mediaTypeQuery = `
         malbums 
         {
@@ -218,21 +198,6 @@ export async function queryMediaInfo(paramData) {
         //console.log(">>> searchQuery = "+searchQuery)
 	}
 
-/*
-  id: ID
-  MediaTypeId: Int
-  Name: String
-  TakenDateTime: String
-  TakenFileTime: Float <<<<<<<<<<<<<<<<<<<< set from TakenDateTime string (on update)
-  CategoryTags: String
-  MenuTags: String
-  AlbumTags: String
-  Title: String
-  Description: String
-  People: String
-  ToBeProcessed: Boolean
-  SearchStr: String <<<<<<<<<<<<<<<<<<<<<<<< dynamically from entity values (on update)
-*/
     let gql = `query {
             books(
                 filter: { 
@@ -266,19 +231,6 @@ export async function queryMediaInfo(paramData) {
     
         }`
 
-/*
-        mediaDetailFilename.textContent = fi.Name;
-        mediaDetailTitle.value = fi.Title
-        mediaDetailTaken.value = fi.TakenDateTime
-        mediaDetailCategoryTags.value = fi.CategoryTags
-        mediaDetailMenuTags.value = fi.MenuTags
-        mediaDetailAlbumTags.value = fi.AlbumTags
-        mediaDetailPeopleList.value = fi.People
-        mediaDetailDescription.value = fi.Description
-        searchStr ??????
-*/
-
-    //console.log("gql = "+gql)
 
     const apiQuery = {
         query: gql,
@@ -299,24 +251,6 @@ export async function queryMediaInfo(paramData) {
         console.log("Error: "+result.errors[0].message);
         console.table(result.errors);
     } else {
-        //console.log("result.data = "+result.data)
-        //console.table(result.data.mtypes.items);
-        /*
-        console.log("items[0].Category[1].CategoryName = "+result.data.mtypes.items[0].Category[1].CategoryName);
-        console.log("items[0].Category[1].Menu = "+result.data.mtypes.items[0].Category[1].Menu);
-        console.log("items[0].Category[1].Menu[0].MenuItem = "+result.data.mtypes.items[0].Category[1].Menu[0].MenuItem);
-        */
-        //console.table(result.data.books.items);
-        //console.table(result.data.book_by_pk);
-        //console.log("Title = "+result.data.book_by_pk.Title)
-        //console.table(result.data.mtype_by_pk);
-        /*
-        console.log("data.mtype_by_pk.MediaTypeDesc = "+result.data.mtype_by_pk.MediaTypeDesc);
-        console.log("data.mtype_by_pk.Category[0].CategoryName = "+result.data.mtype_by_pk.Category[0].CategoryName);
-        if (result.data.mtype_by_pk.Category[0].Menu != null) {
-            console.log("data.mtype_by_pk.Category[0].Menu[0].MenuItem = "+result.data.mtype_by_pk.Category[0].Menu[0].MenuItem);
-        }
-        */
         mediaInfo.fileList.length = 0
         mediaInfo.fileList = result.data.books.items
         if (mediaInfo.fileList.length > 0) {
@@ -378,13 +312,6 @@ export async function queryMediaInfo(paramData) {
 
         } // if (mediaInfo.fileList.length > 0) {
 
-        /*
-        if (mediaInfo.currMenu != null && mediaInfo.currMenu != "") {
-            contentDesc = mediaTypeDesc + " - " + mediaInfo.currMenu
-        } else if (mediaInfo.currAlbum != null && mediaInfo.currAlbum != "") {
-            contentDesc = mediaTypeDesc + " - " + mediaInfo.currAlbum
-        }
-        */
 
         if (getMenu) {
             //mediaTypeDesc = result.data.mtype_by_pk.MediaTypeDesc
@@ -437,13 +364,6 @@ export async function queryMediaInfo(paramData) {
             setMenuList(mediaInfo.menuList)
             setAlbumList(result.data.malbums.items)
             
-            /*
-            if (result.data.mpeoples != null) {
-                result.data.mpeoples.items.forEach((peep) => {
-                    peopleList.push(peep.PeopleName)
-                })
-            }
-            */
         }
 
         // Save the parameters from the laste query
@@ -471,6 +391,7 @@ export async function queryMediaInfo(paramData) {
         let getMenu = false
         createMediaPage(getMenu)
     }
+    */
 }
 
 
@@ -478,6 +399,7 @@ export async function queryMediaInfo(paramData) {
 // Query the database for people data and store in js variables
 //------------------------------------------------------------------------------------------------------------
 export async function queryPeopleInfo() {
+    /*
     if (peopleList.length > 0) {
         return
     }
@@ -516,6 +438,7 @@ export async function queryPeopleInfo() {
         }
 
     }
+    */
 }
 
 

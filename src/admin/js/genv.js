@@ -30,6 +30,8 @@ Modification History
 2025-07-05 JJK  Implemented GenvConfig update (and date re-calcs)
 2025-07-09 JJK  Implementing history display to choose previous configs
 2025-07-23 JJK  Implemented commandRequestSwitch to allow for commands to be sent
+2025-10-30 JJK  Commented out queryGenvMetrics until I can get it converted to
+                Function API
 ================================================================================*/
 
 import {empty,showLoadingSpinner,checkFetchResponse,convertUTCDateToLocalDate,
@@ -256,18 +258,6 @@ function formatGenvConfigHistory(genvConfigList) {
     tbody.appendChild(tr)
 
     // Append a row for every record in list
-/*
-    "id": "9",
-    "ConfigId": 9,
-    "configDesc": "JJK09 - WW",
-    "daysToGerm": "4 days - 1 day soak, 3 days to crack and get tap",
-    "daysToBloom": 60,
-    "germinationStart": "2025-06-20",
-    "plantingDate": "2025-06-24",
-    "harvestDate": "2025-08-23",
-    "cureDate": "2025-09-06",
-    "productionDate": "2025-09-13",
-*/
     for (let index in genvConfigList) {
         let cr = genvConfigList[index]
 
@@ -376,26 +366,6 @@ async function requestCommand(paramData) {
 }
 
 /*
-        if (dbCr.requestCommand == "WaterOn") {
-            let waterSeconds = parseInt(dbCr.requestValue)
-            _waterOn(waterSeconds)
-            cr.requestCommand = ""
-            cr.requestValue = ""
-            cr.requestResult = "Water turned on for "+waterSeconds+" secs"
-        } else if (dbCr.requestCommand == "TakeSelfie") {
-            _letMeTakeASelfie()
-            cr.requestCommand = ""
-            cr.requestValue = ""
-            cr.requestResult = "Selfie taken "
-        } else if (dbCr.requestCommand == "REBOOT") {
-            cr.requestCommand = ""
-            cr.requestValue = ""
-            cr.requestResult = "Initiating REBOOT... "
-            await updServerDb(cr)
-            rebootSystem()
-*/
-
-/*
  function displayImage() {
      // {imgId: 1221, lastChangeTs: '2024-01-04 00:56:06', imgData: '
      messageDisplay.innerHTML = "ImgTS: "+imgArray[currImg].lastChangeTs+" ("+imgArray[currImg].imgId+")"
@@ -492,6 +462,7 @@ export async function queryGenvMetrics(paramData) {
     let endDayTime = parseInt(dateStr.substring(2,4) + stopHour.value.padStart(2,'0') + "0000")
     let pointMaxRows = 5000
 
+    /*
     let gql2 = `query {
         joints(
             filter: { 
@@ -564,18 +535,6 @@ export async function queryGenvMetrics(paramData) {
                 pointLocalDateTime = convertUTCDateToLocalDate(new Date(point.PointDateTime));
                 PointDateTime = pointLocalDateTime.toISOString()
 
-                /*
-                avgCnt++
-                avgTotal += point.currTemperature
-                // every X points
-                if (avgCnt == numPointsForAvg-1) {
-                    avgValue = avgTotal / numPointsForAvg
-                    avgCnt = 0
-                    avgTotal = point.currTemperature
-                }
-                //console.log(cnt+", "+PointDateTime+", currTemp: "+point.currTemperature+", avgCnt: "+avgCnt+", avgTotal: "+avgTotal+", avgValue: "+avgValue)
-                */
-
                 pointData.push({ 
                     time: PointDateTime.substring(11,16), 
                     currTemp: parseFloat(point.currTemperature),
@@ -588,11 +547,11 @@ export async function queryGenvMetrics(paramData) {
             displayCharts(pointData)
         }
     }
+    */
 }
 
 
 function displayCharts(pointData) {
-
     // create the 2nd dataset by taking the average of X number of data points (like every 10 or 100?)
 
     if (dailyTempChart == null) {

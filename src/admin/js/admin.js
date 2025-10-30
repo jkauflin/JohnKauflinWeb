@@ -39,36 +39,34 @@
  * ---------------------------------------------------------------------------
  * 2024-03-10 JJK   Migrating to an Azure static web app (SWA)
  * 2024-04-26 JJK   moved the mediagallery code here for admin version
- *    swa start ./src --data-api-location swa-db-connections
  * 2024-06-25 JJK   Trying to get back into Admin development to update
- *                  metadata on pictures.  Now using this to start SWA:
- *    npx swa start
+ *                  metadata on pictures.  
+ * 2025-10-24 JJK   Converting data-api to api function calls (and update to
+ *                  Bootstrap v5.3.8)
  *============================================================================*/
- import {mediaType,setMediaType,queryMediaInfo} from './mg-data-repository.js'
+import {mediaType,setMediaType,queryMediaInfo} from './mg-data-repository.js'
+import {} from './genv.js';
 
- const MediaPageLinkClass = "media-page";
+const MediaPageLinkClass = "media-page";
  
 // Keep track of the state of the navbar collapse (shown or hidden)
 var navbarCollapseShownAdmin = false;
-var collapsibleNavbar = document.getElementsByClassName("navbar-collapse")[0];
-collapsibleNavbar.addEventListener('hidden.bs.collapse', function () {
-    navbarCollapseShownAdmin = false;
-})
-collapsibleNavbar.addEventListener('shown.bs.collapse', function () {
-    navbarCollapseShownAdmin = true;
-})
- 
-// Listen for nav-link clicks
-document.querySelectorAll("a.nav-link").forEach(el => el.addEventListener("click", function (event) {
-    // Automatically hide the navbar collapse when an item link is clicked (and the collapse is currently shown)
-    if (navbarCollapseShownAdmin) {
-        new bootstrap.Collapse(document.getElementsByClassName("navbar-collapse")[0]).hide()
-    }
-}))
-
-
-//=================================================================================================================
-// Bind events
+document.addEventListener('DOMContentLoaded', () => {
+    var collapsibleNavbar = document.getElementsByClassName("navbar-collapse")[0]
+    collapsibleNavbar.addEventListener('hidden.bs.collapse', function () {
+        navbarCollapseShown = false
+    })
+    collapsibleNavbar.addEventListener('shown.bs.collapse', function () {
+        navbarCollapseShown = true
+    })
+    
+    // Listen for nav-link clicks
+    document.querySelectorAll("a.nav-link").forEach(el => el.addEventListener("click", function (event) {
+        // Automatically hide the navbar collapse when an item link is clicked (and the collapse is currently shown)
+        if (navbarCollapseShown) {
+            new bootstrap.Collapse(document.getElementsByClassName("navbar-collapse")[0]).hide()
+        }
+    }))
 
     // Respond to click on a link-tile-tab button by finding the correct TAB and switching/showing it
     // (These link-tile-tab's also have media-page for creating the Menu, but these handled from the listener on that class)
@@ -103,4 +101,5 @@ document.querySelectorAll("a.nav-link").forEach(el => el.addEventListener("click
             queryMediaInfo(paramData);
         }
     }));
+})
 

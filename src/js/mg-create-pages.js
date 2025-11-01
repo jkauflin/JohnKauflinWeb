@@ -70,10 +70,10 @@ thumbnailContainer.addEventListener("click", function (event) {
     // Check for specific classes
     if (event.target && event.target.classList.contains(MediaFilterRequestClass)) {
         // If click on a Filter Request (like Next or Prev), query the data and build the thumbnail display
-        //console.log(">>> FilterRequest data-category = "+event.target.getAttribute('data-category'))
+        //console.log(">>> FilterRequest data-category  = "+event.target.getAttribute('data-category'))
         //console.log(">>> FilterRequest data-startDate = "+event.target.getAttribute('data-startDate'))
         //console.log(">>> FilterRequest data-searchStr = "+event.target.getAttribute('data-searchStr'))
-        //console.log(">>> FilterRequest data-menuItem = "+event.target.getAttribute('data-menuItem'))
+        //console.log(">>> FilterRequest data-menuItem  = "+event.target.getAttribute('data-menuItem'))
 
         let paramData = {
             MediaFilterMediaType: mediaType, 
@@ -109,21 +109,22 @@ function cleanInputStr(inStr) {
     return inStr.replace(regexNonAlphaNumericSpaceChars, '');
 }
     
-function executeFilter() {
+function executeFilter(inStartDate) {
     mediaFilterSearchStr.value = cleanInputStr(mediaFilterSearchStr.value)
     //console.log(">>> Execute Filter mediaFilterMediaType = "+mediaType)
     //console.log(">>> Execute Filter mediaFilterCategory = "+mediaFilterCategory.value)
     //console.log(">>> Filter mediaFilterStartDate = "+mediaFilterStartDate.value)
+    //console.log(">>> Filter          inStartDate = "+inStartDate)
     //console.log(">>> Filter mediaFilterSearchStr = "+mediaFilterSearchStr.value)
-    //console.log(">>> Filter mediaFilterMenuItem = "+mediaFilterMenuItem.value)
-    //console.log(">>> Filter mediaFilterAlbumTag = "+mediaFilterAlbumTag.value)
 
     let paramData = {
         MediaFilterMediaType: mediaType, 
         getMenu: false,
         MediaFilterCategory:  mediaFilterCategory.value,
-        MediaFilterStartDate: mediaFilterStartDate.value,
+        MediaFilterStartDate: inStartDate,
         MediaFilterSearchStr: mediaFilterSearchStr.value}
+
+        //MediaFilterStartDate: mediaFilterStartDate.value,
 
     queryMediaInfo(paramData);
     // After query has retreived data, it will kick off the display page create
@@ -265,13 +266,14 @@ export function updateAdminMessage(displayMessage) {
         mediaFilterStartDate = document.createElement("input")
         mediaFilterStartDate.classList.add('form-control','shadow-none')
         mediaFilterStartDate.setAttribute('type',"date")
-        //mediaFilterStartDate.value = mediaInfo.startDate
+        mediaFilterStartDate.value = mediaInfo.startDate
         //const currDate = new Date().toISOString().split('T')[0]
         //mediaFilterStartDate.value = currDate
         tCol1.appendChild(mediaFilterStartDate);
         tRow.appendChild(tCol1)
         mediaFilterStartDate.addEventListener("change", function () {
-            executeFilter()
+            // Explicitly tell the executeFilter to use the start date when it is set by user
+            executeFilter(mediaFilterStartDate.value)
         });
 
         let tCol2 = document.createElement("div")
@@ -573,11 +575,13 @@ export function updateAdminMessage(displayMessage) {
                 });
             }
 
+            /*
             if (displayStartDate != "") {
                 let spanStartDate = document.createElement("span")
                 spanStartDate.innerHTML = "<b>"+displayStartDate+"</b>"
                 thumbnailRow1Col1.appendChild(spanStartDate)
             }
+            */
         }
 
         // Add the Menu or Album name as row 0 (if it is non-blank)

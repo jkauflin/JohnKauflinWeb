@@ -251,6 +251,12 @@ namespace JohnKauflinWeb.Function
             string searchStr = paramData.ContainsKey("MediaFilterSearchStr") ? (paramData["MediaFilterSearchStr"]?.ToString().ToLower() ?? "") : "";
             //bool getMenu = paramData.ContainsKey("getMenu") ? Convert.ToBoolean(paramData["getMenu"]) : false;
 
+            if (albumKey != "")
+            {
+                category = "ALL";
+                menuItem = "";
+            }
+
             int maxRows = 150;
             if (paramData.ContainsKey("maxRows"))
             {
@@ -277,9 +283,9 @@ namespace JohnKauflinWeb.Function
                 }
             }
 
-            log.LogWarning("-------------------------------------------------------------------------------------------------------------------------------------------");
-            log.LogWarning($">>> Filter params: MediaTypeId: {mediaTypeId}, Category: {category}, StartDate: {startDate}, maxRows: {maxRows}");
-            log.LogWarning($">>> Filter params: menuItem: {menuItem}, albumKey: {albumKey}, searchStr: {searchStr}");
+            //log.LogWarning("-------------------------------------------------------------------------------------------------------------------------------------------");
+            //log.LogWarning($">>> Filter params: MediaTypeId: {mediaTypeId}, Category: {category}, StartDate: {startDate}, maxRows: {maxRows}");
+            //log.LogWarning($">>> Filter params: menuItem: {menuItem}, albumKey: {albumKey}, searchStr: {searchStr}");
 
             //-------------------------------------------------------------------------------------------------------------------------------------
             // Build query to get MediaInfo records based on filter parameters
@@ -327,7 +333,7 @@ namespace JohnKauflinWeb.Function
                 sql += " ORDER BY c.TakenDateTime ";
             }
 
-            log.LogWarning($"*** maxRows: {maxRows}, SQL: {sql}");
+            //log.LogWarning($"*** maxRows: {maxRows}, SQL: {sql}");
 
             var queryDef = new QueryDefinition(sql)
                 .WithParameter("@maxRows", maxRows)

@@ -1,5 +1,5 @@
 /*==============================================================================
-(C) Copyright 2023,2024 John J Kauflin, All rights reserved.
+(C) Copyright 2023 John J Kauflin, All rights reserved.
 --------------------------------------------------------------------------------
 DESCRIPTION:
 --------------------------------------------------------------------------------
@@ -8,13 +8,14 @@ Modification History
 --------------------------------------------------------------------------------
 2024-03-29 JJK  Migrating to Azure SWA, blob storage, Cosmos DB with GraphQL
                 for queries.  Also, removing Admin functions to make this just
-                the presentation functions with no edit0
-2024-04-27 JJK  Adding editMode stuff from the old version for Admin
+                the presentation functions with no edit
 2024-06-28 JJK  Fixed menuFilter to only show menu items for selected Category,
                 and fixed people filter to ignore case
 2024-08-11 JJK  Added mg-people to get people list
+2025-11-01 JJK  Added logic for admin update
 ================================================================================*/
-import {mediaInfo,mediaType,getMenu,
+import {empty} from './util.js';
+import {mediaInfo,mediaType,
     queryCategory,querySearchStr,queryMenuItem,queryAlbumKey,
     categoryList,menuFilter,peopleList,
     contentDesc,
@@ -31,7 +32,6 @@ import {displayElementInLightbox} from './mg-lightbox.js'
 import {playlistSongClass,audioPrevClass,audioNextClass,audioPlayer,setAudioListeners,
         emptyPlaylist,incrementPlaylistIndex,addSongToPlaylist,initSong} from './mg-audio-playlist.js'
 import {setPeopleListeners} from './mg-people.js'
-        
 
 const MediaFilterRequestClass = "MediaFilterRequest";
 const imgThumbnailClass = "img-thumbnail-jjk"  // Want my own thumbnail formatting instead of bootstrap border
@@ -45,13 +45,13 @@ var editRow1 = document.createElement("div")
 var mediaAdminMessage
 var mediaCategorySelect
 var mediaMenuSelect
+var mediaPeopleInput
+var mediaPeopleSelect
 var mediaPeopleList
 
 var mediaFilterCategory
 var mediaFilterStartDate
 var mediaFilterSearchStr
-//var mediaFilterMenuItem
-//var mediaFilterAlbumTag
 
 var mediaDetailFilename
 var mediaDetailTitle
@@ -65,21 +65,9 @@ var mediaDetailDescription
 // NEW ones
 var mediaDetailVideoList
 
-
 var currIndex = 0
 var currSelectAll = false
 var editMode = true
-
-
-// Remove all child nodes from an element
-export function empty(node) {
-    // Could just set the innerHTML to null, but they say removing the children is faster
-    // and better for removing any associated events
-    //node.innerHTML = "";
-    while (node.firstChild) {
-        node.removeChild(node.firstChild)
-    }
-}
 
 // Set the container and class for the contextmenu
 // >>>>> should I try to "pull" the container and class from CreatePages module?
@@ -94,41 +82,40 @@ thumbnailContainer.addEventListener("click", function (event) {
 
     // Check for specific classes
     if (event.target && event.target.classList.contains(MediaFilterRequestClass)) {
-            // If click on a Filter Request (like Next or Prev), query the data and build the thumbnail display
-            //console.log(">>> FilterRequest data-category = "+event.target.getAttribute('data-category'))
-            //console.log(">>> FilterRequest data-startDate = "+event.target.getAttribute('data-startDate'))
-            //console.log(">>> FilterRequest data-searchStr = "+event.target.getAttribute('data-searchStr'))
-            //console.log(">>> FilterRequest data-menuItem = "+event.target.getAttribute('data-menuItem'))
+        // If click on a Filter Request (like Next or Prev), query the data and build the thumbnail display
+        //console.log(">>> FilterRequest data-category  = "+event.target.getAttribute('data-category'))
+        //console.log(">>> FilterRequest data-startDate = "+event.target.getAttribute('data-startDate'))
+        //console.log(">>> FilterRequest data-searchStr = "+event.target.getAttribute('data-searchStr'))
+        //console.log(">>> FilterRequest data-menuItem  = "+event.target.getAttribute('data-menuItem'))
 
-            let paramData = {
-                MediaFilterMediaType: mediaType, 
-                getMenu: false,
-                MediaFilterCategory:  event.target.getAttribute('data-category'),
-                MediaFilterStartDate: event.target.getAttribute('data-startDate'),
-                MediaFilterMenuItem: event.target.getAttribute('data-menuItem'),
-                MediaFilterAlbumKey: event.target.getAttribute('data-albumKey'),
-                MediaFilterSearchStr: event.target.getAttribute('data-searchStr')}
+        let paramData = {
+            MediaFilterMediaType: mediaType, 
+            getMenu: false,
+            MediaFilterCategory:  event.target.getAttribute('data-category'),
+            MediaFilterStartDate: event.target.getAttribute('data-startDate'),
+            MediaFilterMenuItem: event.target.getAttribute('data-menuItem'),
+            MediaFilterAlbumKey: event.target.getAttribute('data-albumKey'),
+            MediaFilterSearchStr: event.target.getAttribute('data-searchStr')}
 
-            queryMediaInfo(paramData);
+        queryMediaInfo(paramData);
 
     } else if (event.target && event.target.classList.contains(imgThumbnailClass)) {
-            event.preventDefault();
-            // If clicking on a Thumbnail, bring up in Lightbox or FileDetail (for Edit mode)
-            let index = parseInt(event.target.getAttribute('data-index'))
-            if (typeof index !== "undefined" && index !== null) {
-                //displayElementInLightbox(index)
-                displayFileDetail(index)
-            }
-
+        event.preventDefault();
+        // If clicking on a Thumbnail, bring up in Lightbox or FileDetail (for Edit mode)
+        let index = parseInt(event.target.getAttribute('data-index'))
+        if (typeof index !== "undefined" && index !== null) {
+            //displayElementInLightbox(index)
+            displayFileDetail(index)
+        }
     } else if (event.target && event.target.classList.contains(thumbCheckboxClass)) {
             // Thumbnail card checkbox
             //console.log("Clicked on image checkbox")
             let index = parseInt(event.target.getAttribute('data-index'))
             if (typeof index !== "undefined" && index !== null) {
-                if (mediaInfo.fileList[index].Selected) {
-                    mediaInfo.fileList[index].Selected = false
+                if (mediaInfo.fileList[index].selected) {
+                    mediaInfo.fileList[index].selected = false
                 } else {
-                    mediaInfo.fileList[index].Selected = true
+                    mediaInfo.fileList[index].selected = true
 
                     if (editMode) {
                         displayFileDetail(index)
@@ -139,52 +126,53 @@ thumbnailContainer.addEventListener("click", function (event) {
 })
 
 
-    //-------------------------------------------------------------------------------------------------------
-    // Respond to Filter requests
-    //-------------------------------------------------------------------------------------------------------
-    function executeFilter() {
-        mediaFilterSearchStr.value = cleanInputStr(mediaFilterSearchStr.value)
-        //console.log(">>> Execute Filter mediaFilterMediaType = "+mediaType)
-        //console.log(">>> Execute Filter mediaFilterCategory = "+mediaFilterCategory.value)
-        //console.log(">>> Filter mediaFilterStartDate = "+mediaFilterStartDate.value)
-        //console.log(">>> Filter mediaFilterSearchStr = "+mediaFilterSearchStr.value)
-        //console.log(">>> Filter mediaFilterMenuItem = "+mediaFilterMenuItem.value)
-        //console.log(">>> Filter mediaFilterAlbumTag = "+mediaFilterAlbumTag.value)
-
-        let paramData = {
-            MediaFilterMediaType: mediaType, 
-            getMenu: false,
-            MediaFilterCategory:  mediaFilterCategory.value,
-            MediaFilterStartDate: mediaFilterStartDate.value,
-            MediaFilterSearchStr: mediaFilterSearchStr.value}
-
-        queryMediaInfo(paramData);
-        // After query has retreived data, it will kick off the display page create
-    }
-
-    var nonAlphaNumericSpaceCharsStr = "[\x01-\x1F\x21-\x2F\x3A-\x40\x5B-\x60\x7B-\x7F]";
-    // "g" global so it does more than 1 substitution
-    var regexNonAlphaNumericSpaceChars = new RegExp(nonAlphaNumericSpaceCharsStr, "g");
-    function cleanInputStr(inStr) {
-        // Remove all NON-alphanumeric or space characters
-        return inStr.replace(regexNonAlphaNumericSpaceChars, '');
-    }
+//-------------------------------------------------------------------------------------------------------
+// Respond to Filter requests
+//-------------------------------------------------------------------------------------------------------
+var nonAlphaNumericSpaceCharsStr = "[\x01-\x1F\x21-\x2F\x3A-\x40\x5B-\x60\x7B-\x7F]";
+// "g" global so it does more than 1 substitution
+var regexNonAlphaNumericSpaceChars = new RegExp(nonAlphaNumericSpaceCharsStr, "g");
+function cleanInputStr(inStr) {
+    // Remove all NON-alphanumeric or space characters
+    return inStr.replace(regexNonAlphaNumericSpaceChars, '');
+}
     
-    //------------------------------------------------------------------------------------------------------------
-    // Dynamically create the DOM elements to add to the Media Page div (either regular display or EDIT mode)
-    //------------------------------------------------------------------------------------------------------------
-    export function createMediaPage() {
-        //console.log("$$$$ in the createMediaPage")
-        empty(filterContainer)
-        empty(thumbnailContainer)
-        empty(editRow1)
+function executeFilter(inStartDate) {
+    mediaFilterSearchStr.value = cleanInputStr(mediaFilterSearchStr.value)
+    //console.log(">>> Execute Filter mediaFilterMediaType = "+mediaType)
+    //console.log(">>> Execute Filter mediaFilterCategory = "+mediaFilterCategory.value)
+    //console.log(">>> Filter mediaFilterStartDate = "+mediaFilterStartDate.value)
+    //console.log(">>> Filter          inStartDate = "+inStartDate)
+    //console.log(">>> Filter mediaFilterSearchStr = "+mediaFilterSearchStr.value)
 
-        if (getMenu) {
-            buildMenuElements(mediaType)
-            buildAlbumMenuElements(mediaType)
-        }
-        buildFilterElements(mediaType)
-        mediaPageContainer.appendChild(filterContainer);
+    let paramData = {
+        MediaFilterMediaType: mediaType, 
+        getMenu: false,
+        MediaFilterCategory:  mediaFilterCategory.value,
+        MediaFilterStartDate: inStartDate,
+        MediaFilterSearchStr: mediaFilterSearchStr.value}
+
+    queryMediaInfo(paramData);
+    // After query has retreived data, it will kick off the display page create
+}
+
+//------------------------------------------------------------------------------------------------------------
+// Dynamically create the DOM elements to add to the Media Page div (either regular display or EDIT mode)
+//------------------------------------------------------------------------------------------------------------
+export function createMediaPage(getMenu) {
+    //console.log("$$$$ in the createMediaPage")
+    empty(filterContainer)
+    empty(thumbnailContainer)
+    empty(editRow1)
+
+    if (getMenu) {
+        buildMenuElements(mediaType)
+        buildAlbumMenuElements(mediaType)
+    }
+    buildFilterElements(mediaType)
+
+    mediaPageContainer.appendChild(filterContainer);
+    //mediaPageContainer.appendChild(thumbnailContainer);
 
             // Create Row and columns
             editRow1.classList.add('row')
@@ -230,7 +218,7 @@ thumbnailContainer.addEventListener("click", function (event) {
                 }
                 // Loop through the current file list and set all to Selected
                 for (let index in mediaInfo.fileList) {
-                    mediaInfo.fileList[index].Selected = currSelectAll
+                    mediaInfo.fileList[index].selected = currSelectAll
                 }        
                 //displayFileDetail(currIndex) <<<<< can't select the 1st one because that will turn off the selected for all the rest
                 displayCurrFileList()
@@ -387,21 +375,21 @@ thumbnailContainer.addEventListener("click", function (event) {
                 // update to selected objects in adminFileList
                 for (let index in mediaInfo.fileList) {
                     let fi = mediaInfo.fileList[index]
-                    if (fi.Selected) {
+                    if (fi.selected) {
                         if (mediaDetailTitle.value != "") {
-                            fi.Title = mediaDetailTitle.value
+                            fi.title = mediaDetailTitle.value
                         }
                         if (mediaDetailTaken.value != "") {
-                            fi.TakenDateTime = mediaDetailTaken.value
+                            fi.takenDateTime = mediaDetailTaken.value
                         }
-                        fi.CategoryTags = mediaCategorySelect.value
+                        fi.categoryTags = mediaCategorySelect.value
                         mediaDetailCategoryTags.value = mediaCategorySelect.value
-                        fi.MenuTags = mediaMenuSelect.value
+                        fi.menuTags = mediaMenuSelect.value
                         mediaDetailMenuTags.value = mediaMenuSelect.value
-                        fi.AlbumTags = mediaDetailAlbumTags.value
-                        fi.People = mediaPeopleList.value
+                        fi.albumTags = mediaDetailAlbumTags.value
+                        fi.people = mediaPeopleList.value
                         mediaDetailPeopleList.value = mediaPeopleList.value
-                        fi.Description = mediaDetailDescription.value
+                        fi.description = mediaDetailDescription.value
                     }
                 }
             });
@@ -460,7 +448,7 @@ thumbnailContainer.addEventListener("click", function (event) {
             mediaDetailDescription.classList.add('form-control','py-1','mb-1','shadow-none')
             mediaDetailDescription.setAttribute('rows', "6")
             mediaDetailDescription.setAttribute('placeholder', "Description")
-            //mediaDetailDescription.value = fi.Description
+            //mediaDetailDescription.value = fi.description
             editRow1Col3.appendChild(mediaDetailDescription)
 
             // Admin Message
@@ -473,15 +461,15 @@ thumbnailContainer.addEventListener("click", function (event) {
 
             mediaPageContainer.appendChild(editRow1);
 
-            
-        displayCurrFileList()
-    }
 
-    export function updateAdminMessage(displayMessage) {
-        if (mediaAdminMessage != null) {
-            mediaAdminMessage.textContent = displayMessage
-        }
+    displayCurrFileList()
+}
+
+export function updateAdminMessage(displayMessage) {
+    if (mediaAdminMessage != null) {
+        mediaAdminMessage.textContent = displayMessage
     }
+}
 
     //------------------------------------------------------------------------------------------------------------
     // Create a collapsible menu from a directory structure
@@ -594,10 +582,13 @@ thumbnailContainer.addEventListener("click", function (event) {
         mediaFilterStartDate.classList.add('form-control','shadow-none')
         mediaFilterStartDate.setAttribute('type',"date")
         mediaFilterStartDate.value = mediaInfo.startDate
+        //const currDate = new Date().toISOString().split('T')[0]
+        //mediaFilterStartDate.value = currDate
         tCol1.appendChild(mediaFilterStartDate);
         tRow.appendChild(tCol1)
         mediaFilterStartDate.addEventListener("change", function () {
-            executeFilter()
+            // Explicitly tell the executeFilter to use the start date when it is set by user
+            executeFilter(mediaFilterStartDate.value)
         });
 
         let tCol2 = document.createElement("div")
@@ -689,16 +680,16 @@ thumbnailContainer.addEventListener("click", function (event) {
                 cardCheckbox.id = 'cb' + index
                 cardCheckbox.setAttribute('type', 'checkbox')
                 cardCheckbox.setAttribute('data-index', index)
-                cardCheckbox.checked = fi.Selected
+                cardCheckbox.checked = fi.selected
                 cardCheckboxDiv.appendChild(cardCheckbox)
 
                 let cbLabel = document.createElement("label")
                 cbLabel.classList.add('form-check-label')
                 cbLabel.setAttribute('for',cardCheckbox.id)
-                if (fi.Title.length > titleMax) {
-                    cbLabel.textContent = fi.Title.substring(0,titleMax)
+                if (fi.title.length > titleMax) {
+                    cbLabel.textContent = fi.title.substring(0,titleMax)
                 } else {
-                    cbLabel.textContent = fi.Title
+                    cbLabel.textContent = fi.title
                 }
                 cardCheckboxDiv.appendChild(cbLabel)
 
@@ -737,14 +728,23 @@ thumbnailContainer.addEventListener("click", function (event) {
                 }
                 thumbnailRow2Col1.appendChild(thumb)
 
+                // *** For Testing ***
+                //let videoLabel = document.createElement("label")
+                //videoLabel.classList.add('mx-1')
+                //videoLabel.textContent = fi.name.substring(0,20) + " " + fi.takenDateTime
+                //thumb.appendChild(videoLabel)
+                //thumb.appendChild(img)
+
+                thumbnailRow2Col1.appendChild(thumb)
+
             } else if (mediaType == 2) {
                 if (!editMode) {
                     let videoLabel = document.createElement("label")
                     videoLabel.classList.add('mx-1')
-                    if (fi.Title.length > titleMax) {
-                        videoLabel.textContent = fi.Title.substring(0,titleMax)
+                    if (fi.title.length > titleMax) {
+                        videoLabel.textContent = fi.title.substring(0,titleMax)
                     } else {
-                        videoLabel.textContent = fi.Title
+                        videoLabel.textContent = fi.title
                     }
                     thumb.appendChild(videoLabel)
                 }
@@ -752,13 +752,13 @@ thumbnailContainer.addEventListener("click", function (event) {
                 let iframe = document.createElement("iframe")
                 iframe.classList.add('m-1')
                 // Use the embed link for iframe (without https so it can be run locally for testing)
-                iframe.setAttribute('src', "//www.youtube.com/embed/" + fi.Name)
-                //iframe.setAttribute('src', "https://youtube.be/" + fi.Name)
-                //youtu.be/
+                iframe.setAttribute('src', "//www.youtube.com/embed/" + fi.name)
                 iframe.setAttribute('allowfullscreen', true)
 
-                iframe.style.width = "230px";
-                iframe.style.height = "140px";
+                //iframe.style.width = "230px";
+                iframe.style.width = "310px";
+                //iframe.style.height = "140px";
+                iframe.style.height = "220px";
 
                 thumb.appendChild(iframe)
                 thumbnailRow2Col1.appendChild(thumb)
@@ -785,7 +785,7 @@ thumbnailContainer.addEventListener("click", function (event) {
             } else if (mediaType == 4) {
                 // DOCS
                     
-                //console.log("PDF file = " + fi.Name + ", filePath = " + filePath);
+                //console.log("PDF file = " + fi.name + ", filePath = " + filePath);
                 docFiles = true
                 let a = document.createElement("a")
                 a.href = getFilePath(index)
@@ -864,13 +864,14 @@ thumbnailContainer.addEventListener("click", function (event) {
             buttonMax = 4
         }
 
+        let displayStartDate = ""
         if (mediaInfo.filterList != null) {
             let buttonColor = 'btn-primary'
             for (let index in mediaInfo.filterList) {
+                let FilterRec = mediaInfo.filterList[index]
                 if (index > buttonMax) {
                     continue
                 }
-                let FilterRec = mediaInfo.filterList[index]
 
                 buttonColor = 'btn-primary'
                 if (FilterRec.filterName == 'Winter') {
@@ -923,6 +924,14 @@ thumbnailContainer.addEventListener("click", function (event) {
                     window.scrollTo(0, 0)
                 });
             }
+
+            /*
+            if (displayStartDate != "") {
+                let spanStartDate = document.createElement("span")
+                spanStartDate.innerHTML = "<b>"+displayStartDate+"</b>"
+                thumbnailRow1Col1.appendChild(spanStartDate)
+            }
+            */
         }
 
         // Add the Menu or Album name as row 0 (if it is non-blank)
@@ -957,15 +966,15 @@ thumbnailContainer.addEventListener("click", function (event) {
         // Get the correct image from the file list, and set the values of the screen components
         let fi = mediaInfo.fileList[index]
 
-        mediaDetailFilename.textContent = fi.Name;
-        mediaDetailTitle.value = fi.Title
-        mediaDetailTaken.value = fi.TakenDateTime
-        mediaDetailCategoryTags.value = fi.CategoryTags
-        mediaDetailMenuTags.value = fi.MenuTags
-        mediaDetailAlbumTags.value = fi.AlbumTags
-        mediaDetailPeopleList.value = fi.People
-        mediaPeopleList.value = fi.People
-        mediaDetailDescription.value = fi.Description
+        mediaDetailFilename.textContent = fi.name;
+        mediaDetailTitle.value = fi.title
+        mediaDetailTaken.value = fi.takenDateTime
+        mediaDetailCategoryTags.value = fi.categoryTags
+        mediaDetailMenuTags.value = fi.menuTags
+        mediaDetailAlbumTags.value = fi.albumTags
+        mediaDetailPeopleList.value = fi.people
+        mediaPeopleList.value = fi.people
+        mediaDetailDescription.value = fi.description
 
         // Set only the selected file in the thumbnail list
         /*

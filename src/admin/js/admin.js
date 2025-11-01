@@ -43,15 +43,17 @@
  *                  metadata on pictures.  
  * 2025-10-24 JJK   Converting data-api to api function calls (and update to
  *                  Bootstrap v5.3.8)
+ * 2025-11-01 JJK   Pulling in new mediagallery code from public and 
+ *                  re-adding update logic
  *============================================================================*/
-import {mediaType,setMediaType,queryMediaInfo} from './mg-data-repository.js'
 import {} from './genv.js';
+import {} from './mediagallery.js';
 
-const MediaPageLinkClass = "media-page";
- 
 // Keep track of the state of the navbar collapse (shown or hidden)
-var navbarCollapseShownAdmin = false;
+var navbarCollapseShown = false
+
 document.addEventListener('DOMContentLoaded', () => {
+
     var collapsibleNavbar = document.getElementsByClassName("navbar-collapse")[0]
     collapsibleNavbar.addEventListener('hidden.bs.collapse', function () {
         navbarCollapseShown = false
@@ -70,36 +72,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Respond to click on a link-tile-tab button by finding the correct TAB and switching/showing it
     // (These link-tile-tab's also have media-page for creating the Menu, but these handled from the listener on that class)
-    document.querySelectorAll(".link-tile-tab").forEach(el => el.addEventListener("click", function (event) {
-        setMediaType(event.target.getAttribute('data-MediaType'))
-        //console.log("link-tile-tab click, mediaType = " + mediaType)
+    document.querySelectorAll(".link-tile-tab-solar").forEach(el => el.addEventListener("click", function (event) {
+        //console.log("link-tile-tab-solar click ")
 
         // Get the target tab based on the the MediaType specified, and use the new Bootstrap v5.2 js for showing the tab
         // the link ('a') with the correct MediaType, within the ".navbar-nav" list
-        let targetTabElement = document.querySelector(`.navbar-nav a[data-MediaType="${mediaType}"]`);
+        let targetTabElement = document.querySelector(`.navbar-nav a[href="#SolarPage"]`);
 
         // If the target tab element is found, create a Tab object and call the show() method
         if (typeof targetTabElement !== "undefined" && targetTabElement !== null) {
             bootstrap.Tab.getOrCreateInstance(targetTabElement).show();
         }
 
-    }));
-
-    // Respond to click on a media-page link tab by dynamically building the menu display
-    document.querySelectorAll("."+MediaPageLinkClass).forEach(el => el.addEventListener("click", function (event) {
-        setMediaType(event.target.getAttribute('data-MediaType'))
-        //console.log("media-page click, mediaType = " + mediaType)
-
-        if (typeof mediaType !== "undefined" && mediaType !== null) {
-            // >>>>>>>>>>>>>>>>>>>>>>>> this is the START of things <<<<<<<<<<<<<<<<<<<
-            let paramData = {
-                MediaFilterMediaType: mediaType, 
-                getMenu: true,
-                MediaFilterCategory: "DEFAULT",
-                MediaFilterStartDate: "DEFAULT"}
-    
-            queryMediaInfo(paramData);
-        }
-    }));
+        querySolarMetrics()
+    }))
 })
-

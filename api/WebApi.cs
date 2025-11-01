@@ -124,7 +124,7 @@ namespace JohnKauflinWeb.Function
                 return new BadRequestObjectResult("Unauthorized call - User does not have the correct Admin role");
             }
 
-            log.LogInformation($">>> User is authorized - userName: {userName}");
+            //log.LogInformation($">>> User is authorized - userName: {userName}");
 
             //------------------------------------------------------------------------------------------------------------------
             // Parse the JSON payload content from the Request BODY into a C# object, and process the MediaInfo array to
@@ -162,11 +162,14 @@ namespace JohnKauflinWeb.Function
                     else
                     {
                         // If not a particular file, check for "selected" files to update
-                        if (!item.Selected)
+                        if (!item.selected)
                         {
                             continue;
                         }
                     }
+
+
+                    // >>>>>>>> update to use parameters
 
                     // Get the existing document from Cosmos DB (by the main unique "id")
                     var queryText = $"SELECT * FROM c WHERE c.id = \"{item.id}\" ";
@@ -176,22 +179,20 @@ namespace JohnKauflinWeb.Function
                         var response = await feed.ReadNextAsync();
                         foreach (var mediaInfo in response)
                         {
-                            //log.LogInformation($"Found item id: {mediaInfo.id}  Name: {mediaInfo.Name}");
-
-                            mediaInfo.TakenDateTime = DateTime.Parse(item.TakenDateTime);
+                            mediaInfo.TakenDateTime = DateTime.Parse(item.takenDateTime);
                             mediaInfo.TakenFileTime = int.Parse(mediaInfo.TakenDateTime.ToString("yyyyMMddHH"));
-                            mediaInfo.CategoryTags = item.CategoryTags;
-                            mediaInfo.MenuTags = item.MenuTags;
-                            mediaInfo.AlbumTags = item.AlbumTags;
-                            mediaInfo.Title = item.Title;
-                            mediaInfo.Description = item.Description;
-                            mediaInfo.People = item.People;
+                            mediaInfo.CategoryTags = item.categoryTags;
+                            mediaInfo.MenuTags = item.menuTags;
+                            mediaInfo.AlbumTags = item.albumTags;
+                            mediaInfo.Title = item.title;
+                            mediaInfo.Description = item.description;
+                            mediaInfo.People = item.people;
                             mediaInfo.SearchStr = mediaInfo.CategoryTags.ToLower() + " " +
                                     mediaInfo.MenuTags.ToLower() + " " +
                                     mediaInfo.Title.ToLower() + " " +
                                     mediaInfo.Description.ToLower() + " " +
                                     mediaInfo.People.ToLower();
-                            await container.UpsertItemAsync(mediaInfo, new PartitionKey(mediaInfo.MediaTypeId));
+                            //await container.UpsertItemAsync(mediaInfo, new PartitionKey(mediaInfo.MediaTypeId));
                             updCnt++;
                         }
                     }
@@ -474,7 +475,7 @@ namespace JohnKauflinWeb.Function
                 return new BadRequestObjectResult("Unauthorized call - User does not have the correct Admin role");
             }
 
-            log.LogInformation($">>> User is authorized - userName: {userName}");
+            //log.LogInformation($">>> User is authorized - userName: {userName}");
 
             //------------------------------------------------------------------------------------------------------------------
             // Parse the JSON payload content from the Request BODY into a string
@@ -686,7 +687,7 @@ namespace JohnKauflinWeb.Function
                 return new BadRequestObjectResult("Unauthorized call - User does not have the correct Admin role");
             }
 
-            log.LogInformation($">>> User is authorized - userName: {userName}");
+            //log.LogInformation($">>> User is authorized - userName: {userName}");
 
             //------------------------------------------------------------------------------------------------------------------
             // Parse the JSON payload content from the Request BODY into a string

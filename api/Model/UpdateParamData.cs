@@ -21,16 +21,16 @@ namespace JohnKauflinWeb.Function.Model
     public class Item
     {
         public string id { get; set; }                      // make it a GUID (not Name)
-        public string Name { get; set; }                    // name of the file
-        public string TakenDateTime { get; set; }         
-        public string CategoryTags { get; set; }
-        public string MenuTags { get; set; }
-        public string AlbumTags { get; set; }
-        public string Title { get; set; }
-        public string Description { get; set; }
-        public string People { get; set; }              
-        public bool ToBeProcessed { get; set; }
-        public bool Selected { get; set; }
+        public string name { get; set; }                    // name of the file
+        public string takenDateTime { get; set; }         
+        public string categoryTags { get; set; }
+        public string menuTags { get; set; }
+        public string albumTags { get; set; }
+        public string title { get; set; }
+        public string description { get; set; }
+        public string people { get; set; }              
+        public bool toBeProcessed { get; set; }
+        public bool selected { get; set; }
 
         public override string ToString()
         {

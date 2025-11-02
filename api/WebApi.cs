@@ -168,12 +168,11 @@ namespace JohnKauflinWeb.Function
                         }
                     }
 
-
-                    // >>>>>>>> update to use parameters
-
-                    // Get the existing document from Cosmos DB (by the main unique "id")
-                    var queryText = $"SELECT * FROM c WHERE c.id = \"{item.id}\" ";
-                    var feed = container.GetItemQueryIterator<MediaInfo>(queryText);
+                    // Build SQL query - Get the existing document from Cosmos DB (by the main unique "id")
+                    var sql = "SELECT * FROM c WHERE c.id = @id ";
+                    var queryDef = new QueryDefinition(sql)
+                        .WithParameter("@id", item.id);
+                    var feed = container.GetItemQueryIterator<MediaInfo>(queryDef);
                     while (feed.HasMoreResults)
                     {
                         var response = await feed.ReadNextAsync();

@@ -12,8 +12,7 @@ import {mediaInfo,mediaType,mediaTypeDesc,setMediaType,
 } from './mg-data-repository.js'
 import {setPeopleListenersDetail} from './mg-people.js'
 
-
-const mediaModal = new bootstrap.Modal(document.getElementById('MediaModal'))
+var mediaModal
 var mediaDetailTitle
 var mediaDetailTaken
 var mediaDetailCategoryTags
@@ -22,28 +21,15 @@ var mediaDetailAlbumTags
 var mediaPeopleList
 var mediaDetailDescription
 var updateMessageDisplay
-
 var listenClass = ""
-export function setContextMenuListeners(listenContainer, inClass) {
-    listenClass = inClass
-    //-------------------------------------------------------------------------------------------------------------------
-    // Listen for context menu requests in the container
-    //-------------------------------------------------------------------------------------------------------------------
-    listenContainer.addEventListener('contextmenu', (event) => {
-        event.preventDefault()
-        displayImgContextMenu(event)
-    })
-}
-
 var editMode = true
 
-function displayImgContextMenu(event) {
-    let index = parseInt(event.target.getAttribute('data-index'))
-    if (typeof index !== "undefined" && index !== null) {
-        displayModalDetail(index)
-        mediaModal.show()
-    }
-}
+var beingHeldDown = false
+var holdDownStartMs = 0
+var holdDownDuration = 900
+
+document.addEventListener('DOMContentLoaded', () => {
+    mediaModal = new bootstrap.Modal(document.getElementById('MediaModal'))
 
     document.addEventListener('touchstart', (event) => {
         holdDownStart(event)
@@ -64,10 +50,26 @@ function displayImgContextMenu(event) {
             holdDownEnd(event)
         }
     })
+})
 
-    var beingHeldDown = false
-    var holdDownStartMs = 0
-    var holdDownDuration = 900
+export function setContextMenuListeners(listenContainer, inClass) {
+    listenClass = inClass
+    //-------------------------------------------------------------------------------------------------------------------
+    // Listen for context menu requests in the container
+    //-------------------------------------------------------------------------------------------------------------------
+    listenContainer.addEventListener('contextmenu', (event) => {
+        event.preventDefault()
+        displayImgContextMenu(event)
+    })
+}
+
+function displayImgContextMenu(event) {
+    let index = parseInt(event.target.getAttribute('data-index'))
+    if (typeof index !== "undefined" && index !== null) {
+        displayModalDetail(index)
+        mediaModal.show()
+    }
+}
 
     function holdDownStart(event) {
         //console.log("HOLD DOWN $$$ Start")
@@ -111,8 +113,7 @@ function displayModalDetail(index) {
         // >>> work out "Share" concepts - what do I need to store in the DB?
 
         let mediaModalTitle = document.getElementById("MediaModalTitle")
-        mediaModalTitle.textContent = fi.Name;
-
+        mediaModalTitle.textContent = fi.name;
 
         let mediaModalBody = document.getElementById("MediaModalBody")
         empty(mediaModalBody)
@@ -175,17 +176,19 @@ function displayModalDetail(index) {
         rowCol1.textContent = "Title"
         let rowCol2 = document.createElement("div");
         rowCol2.classList.add('col-sm')
-            // Title
-            mediaDetailTitle = document.createElement("input")
-            mediaDetailTitle.classList.add('form-control','py-1','mb-1','shadow-none')
-            mediaDetailTitle.setAttribute('type', "text")
-            //mediaDetailTitle.setAttribute('placeholder', "Title")
-            if (editMode) {
-                mediaDetailTitle.disabled = false
-            } else {
-                mediaDetailTitle.disabled = true
-            }
-            mediaDetailTitle.value = fi.Title
+
+        // Title
+        mediaDetailTitle = document.createElement("input")
+        mediaDetailTitle.classList.add('form-control','py-1','mb-1','shadow-none')
+        mediaDetailTitle.setAttribute('type', "text")
+        //mediaDetailTitle.setAttribute('placeholder', "Title")
+        if (editMode) {
+            mediaDetailTitle.disabled = false
+        } else {
+            mediaDetailTitle.disabled = true
+        }
+        mediaDetailTitle.value = fi.title
+        
         rowCol2.appendChild(mediaDetailTitle)
         row.appendChild(rowCol1)
         row.appendChild(rowCol2)
@@ -198,17 +201,18 @@ function displayModalDetail(index) {
         rowCol1.textContent = "Taken"
         rowCol2 = document.createElement("div");
         rowCol2.classList.add('col-sm')
-            // Taken
-            mediaDetailTaken = document.createElement("input")
-            mediaDetailTaken.classList.add('form-control','py-1','mb-1','shadow-none')
-            mediaDetailTaken.setAttribute('type', "text")
-            //mediaDetailTaken.setAttribute('placeholder', "Taken DateTime")
-            if (editMode) {
-                mediaDetailTaken.disabled = false
-            } else {
-                mediaDetailTaken.disabled = true
-            }
-            mediaDetailTaken.value = fi.TakenDateTime
+        
+        // Taken
+        mediaDetailTaken = document.createElement("input")
+        mediaDetailTaken.classList.add('form-control','py-1','mb-1','shadow-none')
+        mediaDetailTaken.setAttribute('type', "text")
+        //mediaDetailTaken.setAttribute('placeholder', "Taken DateTime")
+        if (editMode) {
+            mediaDetailTaken.disabled = false
+        } else {
+            mediaDetailTaken.disabled = true
+        }
+        mediaDetailTaken.value = fi.takenDateTime
         rowCol2.appendChild(mediaDetailTaken)
         row.appendChild(rowCol1)
         row.appendChild(rowCol2)
@@ -232,7 +236,7 @@ function displayModalDetail(index) {
             } else {
                 mediaDetailCategoryTags.disabled = true
             }
-            mediaDetailCategoryTags.value = fi.CategoryTags
+            mediaDetailCategoryTags.value = fi.categoryTags
         rowCol2.appendChild(mediaDetailCategoryTags)
         row.appendChild(rowCol1)
         row.appendChild(rowCol2)
@@ -256,7 +260,7 @@ function displayModalDetail(index) {
             } else {
                 mediaDetailMenuTags.disabled = true
             }
-            mediaDetailMenuTags.value = fi.MenuTags
+            mediaDetailMenuTags.value = fi.menuTags
         rowCol2.appendChild(mediaDetailMenuTags)
         row.appendChild(rowCol1)
         row.appendChild(rowCol2)
@@ -280,7 +284,7 @@ function displayModalDetail(index) {
             } else {
                 mediaDetailAlbumTags.disabled = true
             }
-            mediaDetailAlbumTags.value = fi.AlbumTags
+            mediaDetailAlbumTags.value = fi.albumTags
         rowCol2.appendChild(mediaDetailAlbumTags)
         row.appendChild(rowCol1)
         row.appendChild(rowCol2)
@@ -301,7 +305,7 @@ function displayModalDetail(index) {
         mediaPeopleList.classList.add('form-control','shadow-none','py-1')
         mediaPeopleList.setAttribute('type',"text")
         mediaPeopleList.setAttribute('placeholder',"People list")
-        mediaPeopleList.value = fi.People
+        mediaPeopleList.value = fi.people
         let peopleButton = document.createElement("button")
         peopleButton.classList.add('btn','btn-danger','btn-sm','float-start','shadow-none','me-2','my-1')
         peopleButton.setAttribute('type',"button")
@@ -311,7 +315,6 @@ function displayModalDetail(index) {
         rowCol2.appendChild(peopleButton)
         setPeopleListenersDetail(peopleButton,mediaPeopleList)
         rowCol2.appendChild(mediaPeopleList);
-
 
         row.appendChild(rowCol1)
         row.appendChild(rowCol2)
@@ -331,13 +334,13 @@ function displayModalDetail(index) {
             editSaveButton.textContent = "Update"
             rowCol1.appendChild(editSaveButton)
             editSaveButton.addEventListener("click", function () {
-                fi.Title = mediaDetailTitle.value
-                fi.TakenDateTime = mediaDetailTaken.value
-                fi.CategoryTags = mediaDetailCategoryTags.value
-                fi.MenuTags = mediaDetailMenuTags.value
-                fi.AlbumTags = mediaDetailAlbumTags.value
-                fi.People = mediaPeopleList.value
-                fi.Description = mediaDetailDescription.value
+                fi.title = mediaDetailTitle.value
+                fi.takenDateTime = mediaDetailTaken.value
+                fi.categoryTags = mediaDetailCategoryTags.value
+                fi.menuTags = mediaDetailMenuTags.value
+                fi.albumTags = mediaDetailAlbumTags.value
+                fi.people = mediaPeopleList.value
+                fi.description = mediaDetailDescription.value
                 updateMediaInfo(index)
                 //mediaModal.hide()
             });
@@ -372,7 +375,7 @@ function displayModalDetail(index) {
         rowCol2 = document.createElement("div");
         rowCol2.classList.add('col-sm')
             // Description
-            let mediaDetailDescription = document.createElement("textarea")
+            mediaDetailDescription = document.createElement("textarea")
             //mediaDetailDescription.id = "MediaDetailDescription"
             mediaDetailDescription.classList.add('form-control','py-1','my-1','shadow-none')
             mediaDetailDescription.setAttribute('rows', "6")
@@ -382,7 +385,7 @@ function displayModalDetail(index) {
             } else {
                 mediaDetailDescription.disabled = true
             }
-            mediaDetailDescription.value = fi.Description
+            mediaDetailDescription.value = fi.description
         rowCol2.appendChild(mediaDetailDescription)
         row.appendChild(rowCol1)
         row.appendChild(rowCol2)

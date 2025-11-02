@@ -333,53 +333,6 @@ export async function queryMediaAlbum(paramData) {
 
 
 //------------------------------------------------------------------------------------------------------------
-// Query the database for people data and store in js variables
-//------------------------------------------------------------------------------------------------------------
-export async function queryPeopleInfo() {
-    /*
-    if (peopleList.length > 0) {
-        return
-    }
-
-    let gql = `query {
-            mpeoples 
-            {
-                items {
-                    PeopleName
-                }
-            }
-        }`
-
-    const apiQuery = {
-        query: gql,
-        variables: {
-        }
-    }
-
-    const endpoint = "/data-api/graphql";
-    const response = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(apiQuery)
-    });
-    const result = await response.json();
-    if (result.errors != null) {
-        console.log("Error: "+result.errors[0].message);
-        console.table(result.errors);
-    } else {
-
-        if (result.data.mpeoples != null) {
-            result.data.mpeoples.items.forEach((peep) => {
-                peopleList.push(peep.PeopleName)
-            })
-        }
-
-    }
-    */
-}
-
-
-//------------------------------------------------------------------------------------------------------------
 // Update the media info in the database table (Batch)
 //------------------------------------------------------------------------------------------------------------
 export async function updateMediaInfo(inIndex) {

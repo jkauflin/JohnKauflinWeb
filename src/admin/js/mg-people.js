@@ -7,18 +7,68 @@ Modification History
 2024-08-09 JJK  Initial version - pop-up for People lookup
 ================================================================================*/
 
-const peopleModal = new bootstrap.Modal(document.getElementById('PeopleModal'))
-
-var PeopleInput = document.getElementById("PeopleInput")
-var PeopleSelect = document.getElementById("PeopleSelect")
-var PeopleReplaceButton = document.getElementById("PeopleReplaceButton")
-var PeopleAppendButton = document.getElementById("PeopleAppendButton")
-var PeopleInputList = document.getElementById("PeopleInputList")
-var PeopleSaveButton = document.getElementById("PeopleSaveButton")
+var peopleModal
+var PeopleInput
+var PeopleSelect
+var PeopleReplaceButton
+var PeopleAppendButton
+var PeopleInputList
+var PeopleSaveButton
 
 var peopleList = []
 var peopleSaveList
-var peopleSaveListDetail
+var peopleSaveListDetail //????????????????????????????????????????????????????????????
+
+document.addEventListener('DOMContentLoaded', () => {
+    peopleModal = new bootstrap.Modal(document.getElementById('PeopleModal'))
+    PeopleInput = document.getElementById("PeopleInput")
+    PeopleSelect = document.getElementById("PeopleSelect")
+    PeopleReplaceButton = document.getElementById("PeopleReplaceButton")
+    PeopleAppendButton = document.getElementById("PeopleAppendButton")
+    PeopleInputList = document.getElementById("PeopleInputList")
+    PeopleSaveButton = document.getElementById("PeopleSaveButton")
+
+    PeopleInput.addEventListener("keyup", function(event) {
+        let peopleInputVal = ""
+        if (PeopleInput.value != null) {
+            peopleInputVal = PeopleInput.value.toUpperCase()
+        }
+
+        // Remove all options
+        for (let i = (PeopleSelect.options.length-1); i > -1; i--) {
+            PeopleSelect.options.remove(i)
+        }
+
+        // Add the ones that match the input value
+        for (let index in peopleList) {
+            if (peopleInputVal != "") {
+                if (peopleList[index].toUpperCase().indexOf(peopleInputVal) > -1) {
+                    PeopleSelect.options[PeopleSelect.options.length] = new Option(peopleList[index], index)
+                }
+            } else {
+                PeopleSelect.options[PeopleSelect.options.length] = new Option(peopleList[index], index)
+            }
+        }
+    })
+
+    PeopleReplaceButton.addEventListener("click", function () {
+        PeopleInputList.value = peopleList[PeopleSelect.value]
+    })
+
+    PeopleAppendButton.addEventListener("click", function () {
+        if (PeopleInputList.value) {
+            PeopleInputList.value = PeopleInputList.value + ',' + peopleList[PeopleSelect.value]
+        } else {
+            PeopleInputList = peopleList[PeopleSelect.value]
+        }
+    })
+
+    PeopleSaveButton.addEventListener("click", function () {
+        peopleSaveList.value = PeopleInputList.value
+        peopleSaveListDetail.value = PeopleInputList.value
+        peopleModal.hide()
+    })
+})
 
 export function setPeopleListeners(peopleButton, inPeopleList) {
     peopleSaveList = inPeopleList
@@ -64,49 +114,5 @@ async function queryPeopleInfo() {
         }
         peopleModal.show()
     }
-
 }
-
-// https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_js_dropdown_filter
-
-PeopleInput.addEventListener("keyup", function(event) {
-    let peopleInputVal = ""
-    if (PeopleInput.value != null) {
-        peopleInputVal = PeopleInput.value.toUpperCase()
-    }
-
-    // Remove all options
-    for (let i = (PeopleSelect.options.length-1); i > -1; i--) {
-        PeopleSelect.options.remove(i)
-    }
-
-    // Add the ones that match the input value
-    for (let index in peopleList) {
-        if (peopleInputVal != "") {
-            if (peopleList[index].toUpperCase().indexOf(peopleInputVal) > -1) {
-                PeopleSelect.options[PeopleSelect.options.length] = new Option(peopleList[index], index)
-            }
-        } else {
-            PeopleSelect.options[PeopleSelect.options.length] = new Option(peopleList[index], index)
-        }
-    }
-})
-
-PeopleReplaceButton.addEventListener("click", function () {
-    PeopleInputList.value = peopleList[PeopleSelect.value]
-})
-
-PeopleAppendButton.addEventListener("click", function () {
-    if (PeopleInputList.value) {
-        PeopleInputList.value = PeopleInputList.value + ',' + peopleList[PeopleSelect.value]
-    } else {
-        PeopleInputList = peopleList[PeopleSelect.value]
-    }
-})
-
-PeopleSaveButton.addEventListener("click", function () {
-    peopleSaveList.value = PeopleInputList.value
-    peopleSaveListDetail.value = PeopleInputList.value
-    peopleModal.hide()
-})
 

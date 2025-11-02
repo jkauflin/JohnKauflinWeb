@@ -37,10 +37,10 @@ const MediaFilterRequestClass = "MediaFilterRequest";
 const imgThumbnailClass = "img-thumbnail-jjk"  // Want my own thumbnail formatting instead of bootstrap border
 const thumbCheckboxClass = "thumb-checkbox"
 
-var mediaPageContainer = document.getElementById("MediaPage");
-var filterContainer = document.createElement("div")
-var thumbnailContainer = document.createElement("div")
-var editRow1 = document.createElement("div")
+var mediaPageContainer
+var filterContainer
+var thumbnailContainer
+var editRow1
 
 var mediaAdminMessage
 var mediaCategorySelect
@@ -69,45 +69,51 @@ var currIndex = 0
 var currSelectAll = false
 var editMode = true
 
-// Set the container and class for the contextmenu
-// >>>>> should I try to "pull" the container and class from CreatePages module?
-setContextMenuListeners(thumbnailContainer, imgThumbnailClass)
-setAudioListeners(thumbnailContainer)
+document.addEventListener('DOMContentLoaded', () => {
+    mediaPageContainer = document.getElementById("MediaPage");
+    filterContainer = document.createElement("div")
+    thumbnailContainer = document.createElement("div")
+    editRow1 = document.createElement("div")
 
-//-------------------------------------------------------------------------------------------------------
-// Listen for clicks in containers
-//-------------------------------------------------------------------------------------------------------
-thumbnailContainer.addEventListener("click", function (event) {
-    //console.log("thumbnailContainer click, classList = "+event.target.classList)
+    // Set the container and class for the contextmenu
+    // >>>>> should I try to "pull" the container and class from CreatePages module?
+    setContextMenuListeners(thumbnailContainer, imgThumbnailClass)
+    setAudioListeners(thumbnailContainer)
 
-    // Check for specific classes
-    if (event.target && event.target.classList.contains(MediaFilterRequestClass)) {
-        // If click on a Filter Request (like Next or Prev), query the data and build the thumbnail display
-        //console.log(">>> FilterRequest data-category  = "+event.target.getAttribute('data-category'))
-        //console.log(">>> FilterRequest data-startDate = "+event.target.getAttribute('data-startDate'))
-        //console.log(">>> FilterRequest data-searchStr = "+event.target.getAttribute('data-searchStr'))
-        //console.log(">>> FilterRequest data-menuItem  = "+event.target.getAttribute('data-menuItem'))
+    //-------------------------------------------------------------------------------------------------------
+    // Listen for clicks in containers
+    //-------------------------------------------------------------------------------------------------------
+    thumbnailContainer.addEventListener("click", function (event) {
+        //console.log("thumbnailContainer click, classList = "+event.target.classList)
 
-        let paramData = {
-            MediaFilterMediaType: mediaType, 
-            getMenu: false,
-            MediaFilterCategory:  event.target.getAttribute('data-category'),
-            MediaFilterStartDate: event.target.getAttribute('data-startDate'),
-            MediaFilterMenuItem: event.target.getAttribute('data-menuItem'),
-            MediaFilterAlbumKey: event.target.getAttribute('data-albumKey'),
-            MediaFilterSearchStr: event.target.getAttribute('data-searchStr')}
+        // Check for specific classes
+        if (event.target && event.target.classList.contains(MediaFilterRequestClass)) {
+            // If click on a Filter Request (like Next or Prev), query the data and build the thumbnail display
+            //console.log(">>> FilterRequest data-category  = "+event.target.getAttribute('data-category'))
+            //console.log(">>> FilterRequest data-startDate = "+event.target.getAttribute('data-startDate'))
+            //console.log(">>> FilterRequest data-searchStr = "+event.target.getAttribute('data-searchStr'))
+            //console.log(">>> FilterRequest data-menuItem  = "+event.target.getAttribute('data-menuItem'))
 
-        queryMediaInfo(paramData);
+            let paramData = {
+                MediaFilterMediaType: mediaType, 
+                getMenu: false,
+                MediaFilterCategory:  event.target.getAttribute('data-category'),
+                MediaFilterStartDate: event.target.getAttribute('data-startDate'),
+                MediaFilterMenuItem: event.target.getAttribute('data-menuItem'),
+                MediaFilterAlbumKey: event.target.getAttribute('data-albumKey'),
+                MediaFilterSearchStr: event.target.getAttribute('data-searchStr')}
 
-    } else if (event.target && event.target.classList.contains(imgThumbnailClass)) {
-        event.preventDefault();
-        // If clicking on a Thumbnail, bring up in Lightbox or FileDetail (for Edit mode)
-        let index = parseInt(event.target.getAttribute('data-index'))
-        if (typeof index !== "undefined" && index !== null) {
-            //displayElementInLightbox(index)
-            displayFileDetail(index)
-        }
-    } else if (event.target && event.target.classList.contains(thumbCheckboxClass)) {
+            queryMediaInfo(paramData);
+
+        } else if (event.target && event.target.classList.contains(imgThumbnailClass)) {
+            event.preventDefault();
+            // If clicking on a Thumbnail, bring up in Lightbox or FileDetail (for Edit mode)
+            let index = parseInt(event.target.getAttribute('data-index'))
+            if (typeof index !== "undefined" && index !== null) {
+                //displayElementInLightbox(index)
+                displayFileDetail(index)
+            }
+        } else if (event.target && event.target.classList.contains(thumbCheckboxClass)) {
             // Thumbnail card checkbox
             //console.log("Clicked on image checkbox")
             let index = parseInt(event.target.getAttribute('data-index'))
@@ -116,15 +122,14 @@ thumbnailContainer.addEventListener("click", function (event) {
                     mediaInfo.fileList[index].selected = false
                 } else {
                     mediaInfo.fileList[index].selected = true
-
                     if (editMode) {
                         displayFileDetail(index)
                     }
                 }
             }
-    } 
+        } 
+    })
 })
-
 
 //-------------------------------------------------------------------------------------------------------
 // Respond to Filter requests
@@ -461,7 +466,6 @@ export function createMediaPage(getMenu) {
 
             mediaPageContainer.appendChild(editRow1);
 
-
     displayCurrFileList()
 }
 
@@ -482,7 +486,6 @@ export function updateAdminMessage(displayMessage) {
         filterRow1.classList.add('row','mt-2')
         let filterRow1Col1 = document.createElement("div")
         filterRow1Col1.classList.add('col-5')
-
 
         let menuButton = document.createElement("button")
         menuButton.classList.add('btn','btn-primary','btn-sm','float-start')

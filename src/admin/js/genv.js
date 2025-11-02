@@ -32,137 +32,214 @@ Modification History
 2025-07-23 JJK  Implemented commandRequestSwitch to allow for commands to be sent
 2025-10-30 JJK  Commented out queryGenvMetrics until I can get it converted to
                 Function API
+2025-11-02 JJK  Checking functions
 ================================================================================*/
 
 import {empty,showLoadingSpinner,checkFetchResponse,convertUTCDateToLocalDate,
     formatDate,addDays,addHours,getDateInt,getDateDayInt,getHoursInt,daysFromDate} from './util.js';
 
-const dailyTempCanvas = document.getElementById("DailyTempCanvas")
+var dailyTempCanvas
 var dailyTempChart = null
-var metricsStartDate = document.getElementById("MetricsStartDate")
-var startHour = document.getElementById("StartHour")
-var stopHour = document.getElementById("StopHour")
-var getMetricsButton = document.getElementById("GetMetricsButton")
-var getMetricsButtonHTML = '<i class="fa fa-area-chart me-1"></i> Get Metrics'
-getMetricsButton.innerHTML = getMetricsButtonHTML
-getMetricsButton.addEventListener("click", queryGenvMetrics);
-
-var currDT = new Date()
-metricsStartDate.value = currDT.toISOString().split('T')[0];
-startHour.value = 0
-stopHour.value = 24
+var metricsStartDate
+var startHour
+var stopHour
+var getMetricsButton
+var getMetricsButtonHTML
 
 // GenvMonitor elements
-var updId = document.getElementById("updId")
-var configId = document.getElementById("configId")
-var configDesc = document.getElementById("configDesc")
-var notes = document.getElementById("notes")
-var daysToGerm = document.getElementById("daysToGerm")
-var daysToBloom = document.getElementById("daysToBloom")
-var germinationStart = document.getElementById("germinationStart")
-var plantingDate = document.getElementById("plantingDate")
-var harvestDate = document.getElementById("harvestDate")
-var cureDate = document.getElementById("cureDate")
-var productionDate = document.getElementById("productionDate")
-var targetTemperature = document.getElementById("targetTemperature")
-var currTemperature = document.getElementById("currTemperature")
-var airInterval = document.getElementById("airInterval")
-var airDuration = document.getElementById("airDuration")
-var heatInterval = document.getElementById("heatInterval")
-var heatDuration = document.getElementById("heatDuration")
-var lightDuration =  document.getElementById("lightDuration")
-var waterInterval = document.getElementById("waterInterval")
-var waterDuration = document.getElementById("waterDuration")
-var lastWaterTs = document.getElementById("lastWaterTs")
-var lastWaterSecs = document.getElementById("lastWaterSecs")
-var logMetricInterval = document.getElementById("logMetricInterval")
+var updId
+var configId
+var configDesc
+var notes
+var daysToGerm
+var daysToBloom
+var germinationStart
+var plantingDate
+var harvestDate
+var cureDate
+var productionDate
+var targetTemperature
+var currTemperature
+var airInterval
+var airDuration
+var heatInterval
+var heatDuration
+var lightDuration
+var waterInterval
+var waterDuration
+var lastWaterTs
+var lastWaterSecs
+var logMetricInterval
 
-var lastUpdateTs = document.getElementById("lastUpdateTs")
-var messageDisplay = document.getElementById("MessageDisplay")
-var imgDisplay = document.getElementById("ImgDisplay")
-var waterSeconds = document.getElementById("waterSeconds")
+var lastUpdateTs
+var messageDisplay
+var imgDisplay
+var waterSeconds
 
-var s0day = document.getElementById("s0day")
-var s0waterDuration = document.getElementById("s0waterDuration")
-var s0waterInterval = document.getElementById("s0waterInterval")
-var s1day = document.getElementById("s1day")
-var s1waterDuration = document.getElementById("s1waterDuration")
-var s1waterInterval = document.getElementById("s1waterInterval")
-var s2day = document.getElementById("s2day")
-var s2waterDuration = document.getElementById("s2waterDuration")
-var s2waterInterval = document.getElementById("s2waterInterval")
-var s3day = document.getElementById("s3day")
-var s3waterDuration = document.getElementById("s3waterDuration")
-var s3waterInterval = document.getElementById("s3waterInterval")
-var s4day = document.getElementById("s4day")
-var s4waterDuration = document.getElementById("s4waterDuration")
-var s4waterInterval = document.getElementById("s4waterInterval")
-var s5day = document.getElementById("s5day")
-var s5waterDuration = document.getElementById("s5waterDuration")
-var s5waterInterval = document.getElementById("s5waterInterval")
-var s6day = document.getElementById("s6day")
-var s6waterDuration = document.getElementById("s6waterDuration")
-var s6waterInterval = document.getElementById("s6waterInterval")
+var s0day
+var s0waterDuration
+var s0waterInterval
+var s1day
+var s1waterDuration
+var s1waterInterval
+var s2day
+var s2waterDuration
+var s2waterInterval
+var s3day
+var s3waterDuration
+var s3waterInterval
+var s4day
+var s4waterDuration
+var s4waterInterval
+var s5day
+var s5waterDuration
+var s5waterInterval
+var s6day
+var s6waterDuration
+var s6waterInterval
 
-var GenvFormData = document.getElementById("GenvFormData")
-const GenvConfigHistoryModal = new bootstrap.Modal(document.getElementById('GenvConfigHistoryModal'))
+var GenvFormData
+var GenvConfigHistoryModal
 
-var getDataButton = document.getElementById("GetDataButton")
-var updateButton = document.getElementById("UpdateButton")
-var waterButton = document.getElementById("WaterButton")
-var GetSelfieButton = document.getElementById("GetSelfieButton")
-var GenvTabButton = document.getElementById("GenvTabButton")
-var GetHistoryButton = document.getElementById("GetHistoryButton")
-var TakeSelfieButton = document.getElementById("TakeSelfieButton")
-var RebootButton = document.getElementById("RebootButton")
-var RequestsButton = document.getElementById("RequestsButton")
-var currDay = document.getElementById("currDay")
+var getDataButton
+var updateButton
+var waterButton
+var GetSelfieButton
+var GenvTabButton
+var GetHistoryButton
+var TakeSelfieButton
+var RebootButton
+var RequestsButton
+var currDay
 
-var loggingSwitch = document.getElementById("loggingSwitch")
-var imagesSwitch = document.getElementById("imagesSwitch")
-var commandRequestSwitch = document.getElementById("commandRequestSwitch")
-loggingSwitch.checked = false;
-imagesSwitch.checked = false;
-commandRequestSwitch.checked = false;
+var loggingSwitch
+var imagesSwitch
+var commandRequestSwitch
+    
+document.addEventListener('DOMContentLoaded', () => {
+    dailyTempCanvas = document.getElementById("DailyTempCanvas")
+    dailyTempChart = null
+    metricsStartDate = document.getElementById("MetricsStartDate")
+    startHour = document.getElementById("StartHour")
+    stopHour = document.getElementById("StopHour")
+    getMetricsButton = document.getElementById("GetMetricsButton")
+    getMetricsButtonHTML = '<i class="fa fa-area-chart me-1"></i> Get Metrics'
+    getMetricsButton.innerHTML = getMetricsButtonHTML
+    getMetricsButton.addEventListener("click", queryGenvMetrics);
 
+    var currDT = new Date()
+    metricsStartDate.value = currDT.toISOString().split('T')[0];
+    startHour.value = 0
+    stopHour.value = 24
 
-//=================================================================================================================
-// Bind events
-getDataButton.addEventListener("click", _lookup);
-updateButton.addEventListener("click", updateGenvConfig);
-waterButton.addEventListener("click", _water);
-GetSelfieButton.addEventListener("click", _getSelfie);
-TakeSelfieButton.addEventListener("click", takeSelfie);
-RebootButton.addEventListener("click", requestReboot);
-RequestsButton.addEventListener("click", getRequests);
+    // GenvMonitor elements
+    updId = document.getElementById("updId")
+    configId = document.getElementById("configId")
+    configDesc = document.getElementById("configDesc")
+    notes = document.getElementById("notes")
+    daysToGerm = document.getElementById("daysToGerm")
+    daysToBloom = document.getElementById("daysToBloom")
+    germinationStart = document.getElementById("germinationStart")
+    plantingDate = document.getElementById("plantingDate")
+    harvestDate = document.getElementById("harvestDate")
+    cureDate = document.getElementById("cureDate")
+    productionDate = document.getElementById("productionDate")
+    targetTemperature = document.getElementById("targetTemperature")
+    currTemperature = document.getElementById("currTemperature")
+    airInterval = document.getElementById("airInterval")
+    airDuration = document.getElementById("airDuration")
+    heatInterval = document.getElementById("heatInterval")
+    heatDuration = document.getElementById("heatDuration")
+    lightDuration =  document.getElementById("lightDuration")
+    waterInterval = document.getElementById("waterInterval")
+    waterDuration = document.getElementById("waterDuration")
+    lastWaterTs = document.getElementById("lastWaterTs")
+    lastWaterSecs = document.getElementById("lastWaterSecs")
+    logMetricInterval = document.getElementById("logMetricInterval")
 
-GenvTabButton.addEventListener("click", function () {
-    let targetTabElement = document.querySelector(`.navbar-nav a[href="#GenvPage"]`);
-    if (typeof targetTabElement !== "undefined" && targetTabElement !== null) {
-        bootstrap.Tab.getOrCreateInstance(targetTabElement).show();
-    }
-});
+    lastUpdateTs = document.getElementById("lastUpdateTs")
+    messageDisplay = document.getElementById("MessageDisplay")
+    imgDisplay = document.getElementById("ImgDisplay")
+    waterSeconds = document.getElementById("waterSeconds")
 
-GetHistoryButton.addEventListener("click",  getGenvConfigHistory);
+    s0day = document.getElementById("s0day")
+    s0waterDuration = document.getElementById("s0waterDuration")
+    s0waterInterval = document.getElementById("s0waterInterval")
+    s1day = document.getElementById("s1day")
+    s1waterDuration = document.getElementById("s1waterDuration")
+    s1waterInterval = document.getElementById("s1waterInterval")
+    s2day = document.getElementById("s2day")
+    s2waterDuration = document.getElementById("s2waterDuration")
+    s2waterInterval = document.getElementById("s2waterInterval")
+    s3day = document.getElementById("s3day")
+    s3waterDuration = document.getElementById("s3waterDuration")
+    s3waterInterval = document.getElementById("s3waterInterval")
+    s4day = document.getElementById("s4day")
+    s4waterDuration = document.getElementById("s4waterDuration")
+    s4waterInterval = document.getElementById("s4waterInterval")
+    s5day = document.getElementById("s5day")
+    s5waterDuration = document.getElementById("s5waterDuration")
+    s5waterInterval = document.getElementById("s5waterInterval")
+    s6day = document.getElementById("s6day")
+    s6waterDuration = document.getElementById("s6waterDuration")
+    s6waterInterval = document.getElementById("s6waterInterval")
 
+    GenvFormData = document.getElementById("GenvFormData")
+    GenvConfigHistoryModal = new bootstrap.Modal(document.getElementById('GenvConfigHistoryModal'))
 
-// Respond to any clicks in the document and check for specific classes to respond to
-// (Do it dynamically because elements with classes will be added to the DOM dynamically)
-document.body.addEventListener('click', function (event) {
-    //console.log("event.target.classList = "+event.target.classList)
-    // Check for specific classes
-    if (event.target && event.target.classList.contains("GenvConfigHistoryLookup")) {
-        event.preventDefault();
-        let genvConfigId = event.target.dataset.configId
-        getGenvConfig(genvConfigId)
-        GenvConfigHistoryModal.hide();
-    }
+    getDataButton = document.getElementById("GetDataButton")
+    updateButton = document.getElementById("UpdateButton")
+    waterButton = document.getElementById("WaterButton")
+    GetSelfieButton = document.getElementById("GetSelfieButton")
+    GenvTabButton = document.getElementById("GenvTabButton")
+    GetHistoryButton = document.getElementById("GetHistoryButton")
+    TakeSelfieButton = document.getElementById("TakeSelfieButton")
+    RebootButton = document.getElementById("RebootButton")
+    RequestsButton = document.getElementById("RequestsButton")
+    currDay = document.getElementById("currDay")
+
+    loggingSwitch = document.getElementById("loggingSwitch")
+    imagesSwitch = document.getElementById("imagesSwitch")
+    commandRequestSwitch = document.getElementById("commandRequestSwitch")
+    loggingSwitch.checked = false;
+    imagesSwitch.checked = false;
+    commandRequestSwitch.checked = false;
+
+    getDataButton.addEventListener("click", _lookup);
+    updateButton.addEventListener("click", updateGenvConfig);
+    waterButton.addEventListener("click", _water);
+    GetSelfieButton.addEventListener("click", _getSelfie);
+    TakeSelfieButton.addEventListener("click", takeSelfie);
+    RebootButton.addEventListener("click", requestReboot);
+    RequestsButton.addEventListener("click", getRequests);
+
+    GenvTabButton.addEventListener("click", function () {
+        let targetTabElement = document.querySelector(`.navbar-nav a[href="#GenvPage"]`);
+        if (typeof targetTabElement !== "undefined" && targetTabElement !== null) {
+            bootstrap.Tab.getOrCreateInstance(targetTabElement).show();
+        }
+    });
+
+    GetHistoryButton.addEventListener("click",  getGenvConfigHistory);
+
+    // Respond to any clicks in the document and check for specific classes to respond to
+    // (Do it dynamically because elements with classes will be added to the DOM dynamically)
+    document.body.addEventListener('click', function (event) {
+        //console.log("event.target.classList = "+event.target.classList)
+        // Check for specific classes
+        if (event.target && event.target.classList.contains("GenvConfigHistoryLookup")) {
+            event.preventDefault();
+            let genvConfigId = event.target.dataset.configId
+            getGenvConfig(genvConfigId)
+            GenvConfigHistoryModal.hide();
+        }
+    })
+
+    _lookup()
 })
-
 
  //=================================================================================================================
  // Module methods
-await _lookup()
 async function _lookup(event) {
     showLoadingSpinner(messageDisplay)
     // Just default to get the last record when page loads

@@ -349,7 +349,8 @@ var mediaTypeData = [
             ]
         },
         {
-            CategoryName: "ALL"
+            CategoryName: "ALL",
+            Menu: []
         },
         {
             CategoryName: "2 John E Kauflin",

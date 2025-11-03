@@ -113,7 +113,6 @@ namespace JohnKauflinWeb.Function
             }
         }
 
-
         [Function("UpdateMediaInfo")]
         public async Task<IActionResult> UpdateMediaInfo(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequestData req)
@@ -191,7 +190,7 @@ namespace JohnKauflinWeb.Function
                                     mediaInfo.Title.ToLower() + " " +
                                     mediaInfo.Description.ToLower() + " " +
                                     mediaInfo.People.ToLower();
-                            //await container.UpsertItemAsync(mediaInfo, new PartitionKey(mediaInfo.MediaTypeId));
+                            await container.UpsertItemAsync(mediaInfo, new PartitionKey(mediaInfo.MediaTypeId));
                             updCnt++;
                         }
                     }

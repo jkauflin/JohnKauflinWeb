@@ -32,6 +32,8 @@ import {createMediaPage,displayCurrFileList,updateAdminMessage} from './mg-creat
 import {mediaAlbumMenuCanvasId,buildAlbumMenuElements} from './mg-album.js'
 import {setMenuList} from './mg-menu.js';
 import {setAlbumList,getAlbumName} from './mg-album.js';
+import {updateMessage} from './mg-contextmenu.js';
+
 export let mediaInfo = {
     menuList: [],
     filterList: [],
@@ -51,7 +53,7 @@ export var categoryList = []
 let defaultCategory = "1 John J Kauflin"
 
 export var menuFilter = []
-export var peopleList = []
+//export var peopleList = []
 
 // Look into using environment variables for this (like secrets for Azure credentials)
 let photosUri = "https://jjkwebstorage.blob.core.windows.net/photos/"

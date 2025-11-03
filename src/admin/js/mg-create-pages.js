@@ -14,11 +14,10 @@ Modification History
 2024-08-11 JJK  Added mg-people to get people list
 2025-11-01 JJK  Added logic for admin update
 ================================================================================*/
-import {empty} from './util.js';
+import {empty,showLoadingSpinner} from './util.js';
 import {mediaInfo,mediaType,
     queryCategory,querySearchStr,queryMenuItem,queryAlbumKey,
-    categoryList,menuFilter,peopleList,
-    contentDesc,
+    categoryList,menuFilter,contentDesc,
     queryMediaInfo,
     getFilePath,getFileName,
     updateMediaInfo,

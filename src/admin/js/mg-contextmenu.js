@@ -7,8 +7,9 @@ Modification History
 2023-09-01 JJK  Initial version - moved contextmenu components to this module
 ================================================================================*/
 import {empty} from './util.js';
-import {mediaInfo,mediaType,mediaTypeDesc,setMediaType,
-    peopleList,getFilePath,getFileName,updateMediaInfo
+import {mediaInfo,getFilePath,getFileName,updateMediaInfo
+//    mediaType,mediaTypeDesc,setMediaType,
+//    peopleList,
 } from './mg-data-repository.js'
 import {setPeopleListenersDetail} from './mg-people.js'
 

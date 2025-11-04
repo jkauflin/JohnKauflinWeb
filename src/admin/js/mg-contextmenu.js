@@ -5,15 +5,17 @@ DESCRIPTION:
 --------------------------------------------------------------------------------
 Modification History
 2023-09-01 JJK  Initial version - moved contextmenu components to this module
+2025-11-04 JJK  Updated display elements (dedicated modal is already in index)
 ================================================================================*/
 import {empty} from './util.js';
-import {mediaInfo,getFilePath,getFileName,updateMediaInfo
-//    mediaType,mediaTypeDesc,setMediaType,
-//    peopleList,
-} from './mg-data-repository.js'
+import {mediaInfo,getFilePath,getFileName,updateMediaInfo} from './mg-data-repository.js'
 import {setPeopleListenersDetail} from './mg-people.js'
+import {albumList} from './mg-album.js'
 
 var mediaModal
+var mediaModalTitle
+var mediaModalBody
+
 var mediaDetailTitle
 var mediaDetailTaken
 var mediaDetailCategoryTags
@@ -31,6 +33,8 @@ var holdDownDuration = 900
 
 document.addEventListener('DOMContentLoaded', () => {
     mediaModal = new bootstrap.Modal(document.getElementById('MediaModal'))
+    mediaModalTitle = document.getElementById("MediaModalTitle")
+    mediaModalBody = document.getElementById("MediaModalBody")
 
     document.addEventListener('touchstart', (event) => {
         holdDownStart(event)
@@ -52,6 +56,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     })
 })
+
+export function updateMessage(displayMessage) {
+    if (updateMessageDisplay != null) {
+        updateMessageDisplay.textContent = displayMessage
+    }
+}
 
 export function setContextMenuListeners(listenContainer, inClass) {
     listenClass = inClass
@@ -108,233 +118,263 @@ function displayImgContextMenu(event) {
 // Display file information in Medial Modal popup
 //-------------------------------------------------------------------------------------------------------
 function displayModalDetail(index) {
-        
+    // Get the media info information for the selected index from the file list        
     let fi = mediaInfo.fileList[index]
 
-        // >>> work out "Share" concepts - what do I need to store in the DB?
+    // >>> work out "Share" concepts - what do I need to store in the DB?
+    // (if using this as the general context menu - like for the Public display - get an option in the
+    //  context menu for "sharing" a link so someone can click and come to the website and see the photo)
 
-        let mediaModalTitle = document.getElementById("MediaModalTitle")
-        mediaModalTitle.textContent = fi.name;
+    mediaModalTitle.textContent = fi.name;
+    empty(mediaModalBody)
 
-        let mediaModalBody = document.getElementById("MediaModalBody")
-        empty(mediaModalBody)
+    let topRow = document.createElement("div");
+    topRow.classList.add('row')
 
-        let topRow = document.createElement("div");
-        topRow.classList.add('row')
+    let col1 = document.createElement("div");
+    col1.classList.add('col-sm-4')
+    let img = document.createElement("img");
+    img.setAttribute('onerror', "this.onerror=null; this.remove()")
+    img.classList.add('img-fluid','rounded')
+    img.src = getFilePath(index,"Smaller")
+    img.setAttribute('data-index', index)
+    col1.appendChild(img)
 
-        let col1 = document.createElement("div");
-        col1.classList.add('col-sm-4')
-        let img = document.createElement("img");
-        img.setAttribute('onerror', "this.onerror=null; this.remove()")
-        img.classList.add('img-fluid','rounded')
-        img.src = getFilePath(index,"Smaller")
-        img.setAttribute('data-index', index)
-        /*
-        if (window.innerHeight > window.innerWidth) {
-            // Portrait
-            let tempWidth = window.innerWidth - 100
-            img.style.maxWidth = tempWidth + "px"
+    let itemList = document.createElement("ul")
+    itemList.classList.add("list-group","mt-3")
+    let a = document.createElement("a")
+    a.setAttribute('href', getFilePath(index,"",true))
+    a.classList.add("list-group-item","list-group-item-action")
+    a.target = '_blank'
+    a.textContent = "Open FULL image in new tab"
+    itemList.appendChild(a)
+    a = document.createElement("a")
+    a.setAttribute('href', getFilePath(index,"",true))
+    a.download = getFileName(index)
+    a.classList.add("list-group-item","list-group-item-action")
+    a.textContent = "Save (Download) FULL image"
+    itemList.appendChild(a)
+    /*
+    a = document.createElement("a")
+    a.setAttribute('href', "#")
+    a.classList.add("list-group-item","list-group-item-action")
+    a.textContent = "Share..."
+    itemList.appendChild(a)
+    */
+    col1.appendChild(itemList)
+
+    //----------------------------------------------------------------------------------
+    // File detail fields in Col 2
+    //----------------------------------------------------------------------------------
+    let col2 = document.createElement("div");
+    col2.classList.add('col-sm')
+
+    let row = document.createElement("div");
+    row.classList.add('row')
+    let rowCol1 = document.createElement("div");
+    rowCol1.classList.add('col-sm-2')
+    rowCol1.textContent = "Title"
+    let rowCol2 = document.createElement("div");
+    rowCol2.classList.add('col-sm')
+
+    // Title
+    mediaDetailTitle = document.createElement("input")
+    mediaDetailTitle.classList.add('form-control','py-1','mb-1','shadow-none')
+    mediaDetailTitle.setAttribute('type', "text")
+    //mediaDetailTitle.setAttribute('placeholder', "Title")
+    if (editMode) {
+        mediaDetailTitle.disabled = false
+    } else {
+        mediaDetailTitle.disabled = true
+    }
+    mediaDetailTitle.value = fi.title
+        
+    rowCol2.appendChild(mediaDetailTitle)
+    row.appendChild(rowCol1)
+    row.appendChild(rowCol2)
+    col2.appendChild(row)
+
+    row = document.createElement("div");
+    row.classList.add('row')
+    rowCol1 = document.createElement("div");
+    rowCol1.classList.add('col-sm-2')
+    rowCol1.textContent = "Taken"
+    rowCol2 = document.createElement("div");
+    rowCol2.classList.add('col-sm')
+        
+    // Taken
+    mediaDetailTaken = document.createElement("input")
+    mediaDetailTaken.classList.add('form-control','py-1','mb-1','shadow-none')
+    mediaDetailTaken.setAttribute('type', "text")
+    //mediaDetailTaken.setAttribute('placeholder', "Taken DateTime")
+    if (editMode) {
+        mediaDetailTaken.disabled = false
+    } else {
+        mediaDetailTaken.disabled = true
+    }
+    mediaDetailTaken.value = fi.takenDateTime
+    rowCol2.appendChild(mediaDetailTaken)
+    row.appendChild(rowCol1)
+    row.appendChild(rowCol2)
+    col2.appendChild(row)
+
+    row = document.createElement("div");
+    row.classList.add('row')
+    rowCol1 = document.createElement("div");
+    rowCol1.classList.add('col-sm-2')
+    rowCol1.textContent = "Category tags"
+    rowCol2 = document.createElement("div");
+    rowCol2.classList.add('col-sm')
+    // Category Tags
+    mediaDetailCategoryTags = document.createElement("input")
+    //mediaDetailCategoryTags.id = "MediaDetailCategoryTags"
+    mediaDetailCategoryTags.classList.add('form-control','py-1','mb-1','shadow-none')
+    mediaDetailCategoryTags.setAttribute('type', "text")
+    //mediaDetailCategoryTags.setAttribute('placeholder', "Category tags")
+    if (editMode) {
+        mediaDetailCategoryTags.disabled = false
+    } else {
+        mediaDetailCategoryTags.disabled = true
+    }
+    mediaDetailCategoryTags.value = fi.categoryTags
+    rowCol2.appendChild(mediaDetailCategoryTags)
+    row.appendChild(rowCol1)
+    row.appendChild(rowCol2)
+    col2.appendChild(row)
+
+    row = document.createElement("div");
+    row.classList.add('row')
+    rowCol1 = document.createElement("div");
+    rowCol1.classList.add('col-sm-2')
+    rowCol1.textContent = "Menu tags"
+    rowCol2 = document.createElement("div");
+    rowCol2.classList.add('col-sm')
+    // Menu Tags
+    mediaDetailMenuTags = document.createElement("input")
+    //mediaDetailMenuTags.id = "MediaDetailMenuTags"
+    mediaDetailMenuTags.classList.add('form-control','py-1','mb-1','shadow-none')
+    mediaDetailMenuTags.setAttribute('type', "text")
+    mediaDetailMenuTags.setAttribute('placeholder', "Menu tags")
+    if (editMode) {
+        mediaDetailMenuTags.disabled = false
+    } else {
+        mediaDetailMenuTags.disabled = true
+    }
+    mediaDetailMenuTags.value = fi.menuTags
+    rowCol2.appendChild(mediaDetailMenuTags)
+    row.appendChild(rowCol1)
+    row.appendChild(rowCol2)
+    col2.appendChild(row)
+
+
+    row = document.createElement("div");
+    row.classList.add('row')
+    rowCol1 = document.createElement("div");
+    rowCol1.classList.add('col-sm-2')
+    rowCol1.textContent = "Album tags"
+    rowCol2 = document.createElement("div");
+    rowCol2.classList.add('col-sm')
+    // Album Tags
+    mediaDetailAlbumTags = document.createElement("input")
+    //mediaDetailAlbumTags.id = "MediaDetailAlbumTags"
+    mediaDetailAlbumTags.classList.add('form-control','py-1','mb-1','shadow-none')
+    mediaDetailAlbumTags.setAttribute('type', "text")
+    //mediaDetailAlbumTags.setAttribute('placeholder', "Album tags")
+    if (editMode) {
+        mediaDetailAlbumTags.disabled = false
+    } else {
+        mediaDetailAlbumTags.disabled = true
+    }
+    mediaDetailAlbumTags.value = fi.albumTags
+    rowCol2.appendChild(mediaDetailAlbumTags)
+
+    var mediaAlbumSelect = document.createElement("select")
+    //mediaAlbumSelect.classList.add('form-select','float-start','shadow-none','mt-2','py-1')
+    mediaAlbumSelect.classList.add('form-select','float-start','shadow-none')
+    for (let index in albumList) {
+        if (index == 1) {
+            mediaAlbumSelect.options[mediaAlbumSelect.options.length] = new Option(albumList[index].albumKey, albumList[index].albumName, true, true)
         } else {
-            // Landscape
-            let tempHeight = window.innerHeight - 100  // 350
-            img.style.maxHeight = tempHeight + "px"
+            mediaAlbumSelect.options[mediaAlbumSelect.options.length] = new Option(albumList[index].albumKey, albumList[index].albumName)
+        }
+    }
+    // When the Category changes, set the menuFilter menu items for that Category
+    mediaAlbumSelect.addEventListener("change", function () {
+        /*()
+        // set menuFilter array based on selected CategoryName
+        setMenuFilter(mediaAlbumSelect.value)
+        // Clear the menu options and re-load from current menuFilter
+        mediaMenuSelect.options.length = 0
+        for (let index in menuFilter) {
+            mediaMenuSelect.options[mediaMenuSelect.options.length] = new Option(menuFilter[index], menuFilter[index])
         }
         */
-        col1.appendChild(img)
-        let itemList = document.createElement("ul")
-        itemList.classList.add("list-group","mt-3")
-        let a = document.createElement("a")
-        a.setAttribute('href', getFilePath(index,"",true))
-        a.classList.add("list-group-item","list-group-item-action")
-        a.target = '_blank'
-        a.textContent = "Open FULL image in new tab"
-        itemList.appendChild(a)
-        a = document.createElement("a")
-        a.setAttribute('href', getFilePath(index,"",true))
-        a.download = getFileName(index)
-        a.classList.add("list-group-item","list-group-item-action")
-        a.textContent = "Save (Download) FULL image"
-        itemList.appendChild(a)
-        /*
-        a = document.createElement("a")
-        a.setAttribute('href', "#")
-        a.classList.add("list-group-item","list-group-item-action")
-        a.textContent = "Share..."
-        itemList.appendChild(a)
-        */
-        col1.appendChild(itemList)
+        mediaDetailAlbumTags.value = mediaAlbumSelect.value
+    })
+    //editRow1Col3.appendChild(mediaAlbumSelect);
+    
+    // >>>>> Create a drop-down for Album Tags based on the albumList from mg-album
+    for (let index in albumList) {
+        //console.log(">>> albumList["+index+"].albumKey = "+albumList[index].albumKey+", name = "+albumList[index].albumName)
+    }
+/*
+    "id": "1",
+    "MediaAlbumId": 1,
+    "AlbumKey": "AL1",
+    "AlbumName": "EA",
+    "AlbumDesc": "Good times
+*/
+    rowCol2.appendChild(mediaAlbumSelect)
 
-        //----------------------------------------------------------------------------------
-        // File detail fields in Col 2
-        //----------------------------------------------------------------------------------
-        let col2 = document.createElement("div");
-        col2.classList.add('col-sm')
 
-        let row = document.createElement("div");
-        row.classList.add('row')
-        let rowCol1 = document.createElement("div");
-        rowCol1.classList.add('col-sm-2')
-        rowCol1.textContent = "Title"
-        let rowCol2 = document.createElement("div");
-        rowCol2.classList.add('col-sm')
+    row.appendChild(rowCol1)
+    row.appendChild(rowCol2)
+    col2.appendChild(row)
 
-        // Title
-        mediaDetailTitle = document.createElement("input")
-        mediaDetailTitle.classList.add('form-control','py-1','mb-1','shadow-none')
-        mediaDetailTitle.setAttribute('type', "text")
-        //mediaDetailTitle.setAttribute('placeholder', "Title")
-        if (editMode) {
-            mediaDetailTitle.disabled = false
-        } else {
-            mediaDetailTitle.disabled = true
-        }
-        mediaDetailTitle.value = fi.title
-        
-        rowCol2.appendChild(mediaDetailTitle)
-        row.appendChild(rowCol1)
-        row.appendChild(rowCol2)
-        col2.appendChild(row)
+    row = document.createElement("div");
+    row.classList.add('row')
+    rowCol1 = document.createElement("div");
+    rowCol1.classList.add('col-sm-2')
+    rowCol1.textContent = "People"
+    rowCol2 = document.createElement("div");
+    rowCol2.classList.add('col-sm')
 
-        row = document.createElement("div");
-        row.classList.add('row')
-        rowCol1 = document.createElement("div");
-        rowCol1.classList.add('col-sm-2')
-        rowCol1.textContent = "Taken"
-        rowCol2 = document.createElement("div");
-        rowCol2.classList.add('col-sm')
-        
-        // Taken
-        mediaDetailTaken = document.createElement("input")
-        mediaDetailTaken.classList.add('form-control','py-1','mb-1','shadow-none')
-        mediaDetailTaken.setAttribute('type', "text")
-        //mediaDetailTaken.setAttribute('placeholder', "Taken DateTime")
-        if (editMode) {
-            mediaDetailTaken.disabled = false
-        } else {
-            mediaDetailTaken.disabled = true
-        }
-        mediaDetailTaken.value = fi.takenDateTime
-        rowCol2.appendChild(mediaDetailTaken)
-        row.appendChild(rowCol1)
-        row.appendChild(rowCol2)
-        col2.appendChild(row)
+    //-------------------------------------------------------------------------------------------------------------
+    // *** People list ***
+    //-------------------------------------------------------------------------------------------------------------
+    mediaPeopleList = document.createElement("input")
+    mediaPeopleList.classList.add('form-control','shadow-none','py-1')
+    mediaPeopleList.setAttribute('type',"text")
+    mediaPeopleList.setAttribute('placeholder',"People list")
+    mediaPeopleList.value = fi.people
+    let peopleButton = document.createElement("button")
+    peopleButton.classList.add('btn','btn-danger','btn-sm','float-start','shadow-none','me-2','my-1')
+    peopleButton.setAttribute('type',"button")
+    peopleButton.setAttribute('role',"button")
+    peopleButton.textContent = "People"
 
-        row = document.createElement("div");
-        row.classList.add('row')
-        rowCol1 = document.createElement("div");
-        rowCol1.classList.add('col-sm-2')
-        rowCol1.textContent = "Category tags"
-        rowCol2 = document.createElement("div");
-        rowCol2.classList.add('col-sm')
-            // Category Tags
-            mediaDetailCategoryTags = document.createElement("input")
-            //mediaDetailCategoryTags.id = "MediaDetailCategoryTags"
-            mediaDetailCategoryTags.classList.add('form-control','py-1','mb-1','shadow-none')
-            mediaDetailCategoryTags.setAttribute('type', "text")
-            //mediaDetailCategoryTags.setAttribute('placeholder', "Category tags")
-            if (editMode) {
-                mediaDetailCategoryTags.disabled = false
-            } else {
-                mediaDetailCategoryTags.disabled = true
-            }
-            mediaDetailCategoryTags.value = fi.categoryTags
-        rowCol2.appendChild(mediaDetailCategoryTags)
-        row.appendChild(rowCol1)
-        row.appendChild(rowCol2)
-        col2.appendChild(row)
+    rowCol2.appendChild(peopleButton)
+    setPeopleListenersDetail(peopleButton,mediaPeopleList)
+    rowCol2.appendChild(mediaPeopleList);
 
-        row = document.createElement("div");
-        row.classList.add('row')
-        rowCol1 = document.createElement("div");
-        rowCol1.classList.add('col-sm-2')
-        rowCol1.textContent = "Menu tags"
-        rowCol2 = document.createElement("div");
-        rowCol2.classList.add('col-sm')
-            // Menu Tags
-            mediaDetailMenuTags = document.createElement("input")
-            //mediaDetailMenuTags.id = "MediaDetailMenuTags"
-            mediaDetailMenuTags.classList.add('form-control','py-1','mb-1','shadow-none')
-            mediaDetailMenuTags.setAttribute('type', "text")
-            mediaDetailMenuTags.setAttribute('placeholder', "Menu tags")
-            if (editMode) {
-                mediaDetailMenuTags.disabled = false
-            } else {
-                mediaDetailMenuTags.disabled = true
-            }
-            mediaDetailMenuTags.value = fi.menuTags
-        rowCol2.appendChild(mediaDetailMenuTags)
-        row.appendChild(rowCol1)
-        row.appendChild(rowCol2)
-        col2.appendChild(row)
+    row.appendChild(rowCol1)
+    row.appendChild(rowCol2)
+    col2.appendChild(row)
 
-        row = document.createElement("div");
-        row.classList.add('row')
-        rowCol1 = document.createElement("div");
-        rowCol1.classList.add('col-sm-2')
-        rowCol1.textContent = "Album tags"
-        rowCol2 = document.createElement("div");
-        rowCol2.classList.add('col-sm')
-            // Album Tags
-            mediaDetailAlbumTags = document.createElement("input")
-            //mediaDetailAlbumTags.id = "MediaDetailAlbumTags"
-            mediaDetailAlbumTags.classList.add('form-control','py-1','mb-1','shadow-none')
-            mediaDetailAlbumTags.setAttribute('type', "text")
-            //mediaDetailAlbumTags.setAttribute('placeholder', "Album tags")
-            if (editMode) {
-                mediaDetailAlbumTags.disabled = false
-            } else {
-                mediaDetailAlbumTags.disabled = true
-            }
-            mediaDetailAlbumTags.value = fi.albumTags
-        rowCol2.appendChild(mediaDetailAlbumTags)
-        row.appendChild(rowCol1)
-        row.appendChild(rowCol2)
-        col2.appendChild(row)
-
-        row = document.createElement("div");
-        row.classList.add('row')
-        rowCol1 = document.createElement("div");
-        rowCol1.classList.add('col-sm-2')
-        rowCol1.textContent = "People"
-        rowCol2 = document.createElement("div");
-        rowCol2.classList.add('col-sm')
-
-        //-------------------------------------------------------------------------------------------------------------
-        // *** People list ***
-        //-------------------------------------------------------------------------------------------------------------
-        mediaPeopleList = document.createElement("input")
-        mediaPeopleList.classList.add('form-control','shadow-none','py-1')
-        mediaPeopleList.setAttribute('type',"text")
-        mediaPeopleList.setAttribute('placeholder',"People list")
-        mediaPeopleList.value = fi.people
-        let peopleButton = document.createElement("button")
-        peopleButton.classList.add('btn','btn-danger','btn-sm','float-start','shadow-none','me-2','my-1')
-        peopleButton.setAttribute('type',"button")
-        peopleButton.setAttribute('role',"button")
-        peopleButton.textContent = "People"
-
-        rowCol2.appendChild(peopleButton)
-        setPeopleListenersDetail(peopleButton,mediaPeopleList)
-        rowCol2.appendChild(mediaPeopleList);
-
-        row.appendChild(rowCol1)
-        row.appendChild(rowCol2)
-        col2.appendChild(row)
-
-        row = document.createElement("div");
-        row.classList.add('row')
-        rowCol1 = document.createElement("div");
-        rowCol1.classList.add('col-sm-2')
-        rowCol1.textContent = "Description"
-        // Add a SAVE button under the Description label
-        if (editMode) {
-            let editSaveButton = document.createElement("button")
-            editSaveButton.classList.add('btn','btn-success','btn-sm','float-start','shadow-none','mt-3','me-2','mb-3')
-            editSaveButton.setAttribute('type',"button")
-            editSaveButton.setAttribute('role',"button")
-            editSaveButton.textContent = "Update"
-            rowCol1.appendChild(editSaveButton)
-            editSaveButton.addEventListener("click", function () {
+    row = document.createElement("div");
+    row.classList.add('row')
+    rowCol1 = document.createElement("div");
+    rowCol1.classList.add('col-sm-2')
+    rowCol1.textContent = "Description"
+    // Add a SAVE button under the Description label
+    if (editMode) {
+        let editSaveButton = document.createElement("button")
+        editSaveButton.classList.add('btn','btn-success','btn-sm','float-start','shadow-none','mt-3','me-2','mb-3')
+        editSaveButton.setAttribute('type',"button")
+        editSaveButton.setAttribute('role',"button")
+        editSaveButton.textContent = "Update"
+        rowCol1.appendChild(editSaveButton)
+        editSaveButton.addEventListener("click", function () {
                 fi.title = mediaDetailTitle.value
                 fi.takenDateTime = mediaDetailTaken.value
                 fi.categoryTags = mediaDetailCategoryTags.value
@@ -344,10 +384,11 @@ function displayModalDetail(index) {
                 fi.description = mediaDetailDescription.value
                 updateMediaInfo(index)
                 //mediaModal.hide()
-            });
-        }
-            // Prev
-            let detailPrevButton = document.createElement("button")
+        })
+    }
+    
+    // Prev
+    let detailPrevButton = document.createElement("button")
             //detailPrevButton.id = "MediaAdminSelectAllButton"
             detailPrevButton.classList.add('btn','btn-warning','btn-sm','float-start','shadow-none','me-2','my-0')
             detailPrevButton.setAttribute('type',"button")
@@ -358,9 +399,9 @@ function displayModalDetail(index) {
                 if (index > 0) {
                     displayModalDetail(index-1)
                 }            
-            });
-            // Next
-            let detailNextButton = document.createElement("button")
+            })
+    // Next
+    let detailNextButton = document.createElement("button")
             //detailNextButton.id = "MediaAdminGetNewButton"
             detailNextButton.classList.add('btn','btn-info','btn-sm','float-start','shadow-none','me-2','my-1')
             detailNextButton.setAttribute('type',"button")
@@ -373,8 +414,8 @@ function displayModalDetail(index) {
                 }            
             });
         
-        rowCol2 = document.createElement("div");
-        rowCol2.classList.add('col-sm')
+    rowCol2 = document.createElement("div");
+    rowCol2.classList.add('col-sm')
             // Description
             mediaDetailDescription = document.createElement("textarea")
             //mediaDetailDescription.id = "MediaDetailDescription"
@@ -387,12 +428,12 @@ function displayModalDetail(index) {
                 mediaDetailDescription.disabled = true
             }
             mediaDetailDescription.value = fi.description
-        rowCol2.appendChild(mediaDetailDescription)
-        row.appendChild(rowCol1)
-        row.appendChild(rowCol2)
-        col2.appendChild(row)
+    rowCol2.appendChild(mediaDetailDescription)
+    row.appendChild(rowCol1)
+    row.appendChild(rowCol2)
+    col2.appendChild(row)
 
-        if (editMode) {
+    if (editMode) {
             row = document.createElement("div");
             row.classList.add('row')
             rowCol1 = document.createElement("div");
@@ -406,15 +447,10 @@ function displayModalDetail(index) {
             row.appendChild(rowCol1)
             row.appendChild(rowCol2)
             col2.appendChild(row)
-        }
-
-        topRow.appendChild(col1)
-        topRow.appendChild(col2)
-        mediaModalBody.appendChild(topRow)
-}
-
-export function updateMessage(displayMessage) {
-    if (updateMessageDisplay != null) {
-        updateMessageDisplay.textContent = displayMessage
     }
+
+    topRow.appendChild(col1)
+    topRow.appendChild(col2)
+    mediaModalBody.appendChild(topRow)
 }
+

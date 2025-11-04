@@ -15,11 +15,34 @@ import {mediaInfo,mediaType,mediaTypeDesc,setMediaType,
 } from './mg-data-repository.js'
 
 export const MediaAlbumMenuRequestClass = "MediaAlbumMenuRequest"
-export const mediaAlbumMenuCanvasId = "#MediaAlbumMenuCanvas"
-var albumList = []
-var mediaAlbumMenuCanvas = bootstrap.Offcanvas.getOrCreateInstance(mediaAlbumMenuCanvasId)
-let MediaOffcanvasAlbumMenuId = "MediaOffcanvasAlbumMenu"
-export var menuAlbumContainer = document.getElementById(MediaOffcanvasAlbumMenuId)
+export const mediaAlbumMenuCanvasId = "MediaAlbumMenuCanvas"
+export var albumList = []
+var mediaAlbumMenuCanvas
+var MediaOffcanvasAlbumMenuId = "MediaOffcanvasAlbumMenu"
+export var menuAlbumContainer
+var mediaAlbumMenuCanvasLabel
+
+document.addEventListener('DOMContentLoaded', () => {
+    //mediaAlbumMenuCanvas = bootstrap.Offcanvas.getOrCreateInstance(mediaAlbumMenuCanvasId)
+    mediaAlbumMenuCanvas = bootstrap.Offcanvas.getOrCreateInstance(document.getElementById(mediaAlbumMenuCanvasId))
+    mediaAlbumMenuCanvasLabel = document.getElementById("MediaAlbumMenuCanvasLabel")
+
+    menuAlbumContainer = document.getElementById(MediaOffcanvasAlbumMenuId)
+    menuAlbumContainer.addEventListener("click", function (event) {
+        if (event.target && event.target.classList.contains(MediaAlbumMenuRequestClass)) {
+            // If click on a album item, query the data and build the thumbnail display
+            let paramData = {
+                MediaFilterMediaType: mediaType, 
+                getMenu: false,
+                MediaFilterAlbumKey:  event.target.getAttribute('data-albumKey'),
+                MediaFilterAlbumName:  event.target.getAttribute('data-albumName')
+            }
+
+            queryMediaInfo(paramData);
+            hideMediaAlbumMenuCanvas()
+        }
+    })
+})
 
 export function setAlbumList(inAlbumList) {
     albumList = inAlbumList
@@ -28,21 +51,6 @@ export function setAlbumList(inAlbumList) {
 export function hideMediaAlbumMenuCanvas() {
     mediaAlbumMenuCanvas.hide();
 }
-
-menuAlbumContainer.addEventListener("click", function (event) {
-    if (event.target && event.target.classList.contains(MediaAlbumMenuRequestClass)) {
-        // If click on a album item, query the data and build the thumbnail display
-        let paramData = {
-            MediaFilterMediaType: mediaType, 
-            getMenu: false,
-            MediaFilterAlbumKey:  event.target.getAttribute('data-albumKey'),
-            MediaFilterAlbumName:  event.target.getAttribute('data-albumName')
-        }
-
-        queryMediaInfo(paramData);
-        hideMediaAlbumMenuCanvas()
-    }
-})
 
 export function getAlbumName(inAlbumKey) {
     let retAlbumName = ""
@@ -58,7 +66,6 @@ export function getAlbumName(inAlbumKey) {
 // Create a collapsible menu in an offcanvas pop-out using menu list data
 //------------------------------------------------------------------------------------------------------------
 export function buildAlbumMenuElements(mediaType) {
-    let mediaAlbumMenuCanvasLabel = document.getElementById("MediaAlbumMenuCanvasLabel")
     mediaAlbumMenuCanvasLabel.textContent = mediaTypeDesc + " Albums"
 
     if (menuAlbumContainer != null) {

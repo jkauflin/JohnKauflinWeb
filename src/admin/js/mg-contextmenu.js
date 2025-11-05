@@ -126,8 +126,11 @@ function displayModalDetail(index) {
     //  context menu for "sharing" a link so someone can click and come to the website and see the photo)
 
     mediaModalTitle.textContent = fi.name;
+
+/*
     empty(mediaModalBody)
 
+    
     let topRow = document.createElement("div");
     topRow.classList.add('row')
 
@@ -154,13 +157,7 @@ function displayModalDetail(index) {
     a.classList.add("list-group-item","list-group-item-action")
     a.textContent = "Save (Download) FULL image"
     itemList.appendChild(a)
-    /*
-    a = document.createElement("a")
-    a.setAttribute('href', "#")
-    a.classList.add("list-group-item","list-group-item-action")
-    a.textContent = "Share..."
-    itemList.appendChild(a)
-    */
+
     col1.appendChild(itemList)
 
     //----------------------------------------------------------------------------------
@@ -288,19 +285,19 @@ function displayModalDetail(index) {
     mediaDetailAlbumTags.value = fi.albumTags
     rowCol2.appendChild(mediaDetailAlbumTags)
 
+
     var mediaAlbumSelect = document.createElement("select")
     //mediaAlbumSelect.classList.add('form-select','float-start','shadow-none','mt-2','py-1')
     mediaAlbumSelect.classList.add('form-select','float-start','shadow-none')
     for (let index in albumList) {
         if (index == 1) {
-            mediaAlbumSelect.options[mediaAlbumSelect.options.length] = new Option(albumList[index].albumKey, albumList[index].albumName, true, true)
+            mediaAlbumSelect.options[mediaAlbumSelect.options.length] = new Option(albumList[index].albumKey+" "+albumList[index].albumName, albumList[index].albumKey, true, true)
         } else {
-            mediaAlbumSelect.options[mediaAlbumSelect.options.length] = new Option(albumList[index].albumKey, albumList[index].albumName)
+            mediaAlbumSelect.options[mediaAlbumSelect.options.length] = new Option(albumList[index].albumKey+" "+albumList[index].albumName, albumList[index].albumKey)
         }
     }
     // When the Category changes, set the menuFilter menu items for that Category
     mediaAlbumSelect.addEventListener("change", function () {
-        /*()
         // set menuFilter array based on selected CategoryName
         setMenuFilter(mediaAlbumSelect.value)
         // Clear the menu options and re-load from current menuFilter
@@ -308,7 +305,6 @@ function displayModalDetail(index) {
         for (let index in menuFilter) {
             mediaMenuSelect.options[mediaMenuSelect.options.length] = new Option(menuFilter[index], menuFilter[index])
         }
-        */
         mediaDetailAlbumTags.value = mediaAlbumSelect.value
     })
     //editRow1Col3.appendChild(mediaAlbumSelect);
@@ -317,13 +313,6 @@ function displayModalDetail(index) {
     for (let index in albumList) {
         //console.log(">>> albumList["+index+"].albumKey = "+albumList[index].albumKey+", name = "+albumList[index].albumName)
     }
-/*
-    "id": "1",
-    "MediaAlbumId": 1,
-    "AlbumKey": "AL1",
-    "AlbumName": "EA",
-    "AlbumDesc": "Good times
-*/
     rowCol2.appendChild(mediaAlbumSelect)
 
 
@@ -452,5 +441,15 @@ function displayModalDetail(index) {
     topRow.appendChild(col1)
     topRow.appendChild(col2)
     mediaModalBody.appendChild(topRow)
+    */
+/*
+    "id": "1",
+    "MediaAlbumId": 1,
+    "AlbumKey": "AL1",
+    "AlbumName": "EA",
+    "AlbumDesc": "Good times
+*/
+
+
 }
 

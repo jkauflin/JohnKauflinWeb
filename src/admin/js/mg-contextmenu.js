@@ -55,7 +55,161 @@ document.addEventListener('DOMContentLoaded', () => {
             holdDownEnd(event)
         }
     })
+
+    UpdateOwnerForm.addEventListener('submit', (event) => {
+        let formValid = UpdateOwnerForm.checkValidity()
+        event.preventDefault()
+        event.stopPropagation()
+        UpdateOwnerMessageDisplay.textContent = ""
+        if (!formValid) {
+            UpdateOwnerMessageDisplay.textContent = "Form inputs are NOT valid"
+        } else {
+            updateOwner()
+        }
+        UpdateOwnerForm.classList.add('was-validated')
+    })
+
 })
+
+export function formatUpdateOwner(parcelId,ownerId,saleDate="") {
+    if (hoaRec.property.parcel_ID != parcelId) {
+        console.error("Parcel ID not found in current hoaRec, id = "+parcelId)
+         messageDisplay.textContent = `Parcel ID not found in current hoaRec, id = ${parcelId}`
+        return        
+    }
+
+    let ownerRec = null
+    let salesRec = null
+
+    if (ownerId == "NEW") {
+        // Get the current owner rec
+        for (let index in hoaRec.ownersList) {
+            if (hoaRec.ownersList[index].currentOwner == 1) {
+                ownerRec = hoaRec.ownersList[index]
+            }
+        }
+
+        // get the Sales record for this parcel (if new and saledt passed)
+        if (saleDate != "") {
+            for (let index in hoaRec.salesList) {
+                //if (hoaRec.property.parcel_ID == parcelId && hoaRec.salesList[index].saleDate == saleDate) {
+                if (hoaRec.property.parcel_ID == parcelId && hoaRec.salesList[index].saledt == saleDate) {
+                    salesRec = hoaRec.salesList[index]
+                }
+            }
+        }
+    } else {
+        // Find the correct owner rec
+        for (let index in hoaRec.ownersList) {
+            if (hoaRec.property.parcel_ID == parcelId && hoaRec.ownersList[index].ownerID == ownerId) {
+                ownerRec = hoaRec.ownersList[index]
+            }
+        }
+    }
+    if (ownerRec == null) {
+        console.error("Owner ID not found in current hoaRec, id = "+ownerId)
+        messageDisplay.textContent = `Owner ID not found in current hoaRec, id = ${ownerId}`
+        return        
+    }
+
+    updParcel_ID.value = hoaRec.property.parcel_ID
+    updParcelLocation.textContent = hoaRec.property.parcel_Location
+    updOwnerID.value = ownerRec.id
+    updCurrentOwner.checked = ownerRec.currentOwner
+    updOwner_Name1.value = ownerRec.owner_Name1
+    updOwner_Name2.value = ownerRec.owner_Name2
+    updDatePurchased.value = standardizeDate(ownerRec.datePurchased)
+    updMailing_Name.value = ownerRec.mailing_Name
+    updAlternateMailing.checked = ownerRec.alternateMailing
+    updAlt_Address_Line1.value = ownerRec.alt_Address_Line1
+    updAlt_Address_Line2.value = ownerRec.alt_Address_Line2
+    updAlt_City.value = ownerRec.alt_City
+    updAlt_State.value = ownerRec.alt_State
+    updAlt_Zip.value = ownerRec.alt_Zip
+    updOwner_Phone.value = ownerRec.owner_Phone
+    updEmailAddr.value = ownerRec.emailAddr
+    updEmailAddr2.value = ownerRec.emailAddr2
+    updComments.value = ownerRec.comments
+    updLastChangedTs.value = ownerRec.lastChangedTs
+    updLastChangedBy.value = ownerRec.lastChangedBy
+
+    // If creating a NEW owner, override values from the sale rec
+    if (ownerId == "NEW") {
+        updOwnerID.value = createNewOwnerIdStr
+        if (salesRec != null) {
+            updOwner_Name1.value = salesRec.ownernamE1
+            updOwner_Name2.value = ""
+            updDatePurchased.value = standardizeDate(salesRec.saledt)
+            // 2025-09-17 JJK - Problem is the values in Sales record from the County are inconsistent
+            //   sometimes the mailing name is the new owner, but sometimes it is the old owner
+            //   *** So, just use the Owner Name field for now ***
+            //updMailing_Name.value = salesRec.mailingnamE1 + " " + salesRec.mailingnamE2
+            updMailing_Name.value = salesRec.ownernamE1
+
+            // Clear out values for NEW owner
+            updAlternateMailing.checked = 0;
+            updAlt_Address_Line1.value = ""
+            updAlt_Address_Line2.value = ""
+            updAlt_City.value = ""
+            updAlt_State.value = ""
+            updAlt_Zip.value = ""
+            updOwner_Phone.value = ""
+            updEmailAddr.value = ""
+            updEmailAddr2.value = ""
+            updComments.value = ""
+            updLastChangedTs.value = ""
+            updLastChangedBy.value = ""
+        }
+    }
+
+    OwnerUpdateModal.show()
+}
+
+// Handle the file upload backend server call
+async function updateOwner() {
+    UpdateOwnerMessageDisplay.textContent = "Updating Owner..."
+
+    let newOwner = false
+    if (updOwnerID.value == createNewOwnerIdStr) {
+        newOwner = true
+    }
+
+    try {
+        const response = await fetch("/api/UpdateOwner", {
+            method: "POST",
+            body: new FormData(UpdateOwnerForm)
+        })
+        await checkFetchResponse(response)
+        // Success
+        let ownerRec = await response.json();
+        OwnerUpdateModal.hide()
+        if (newOwner) {
+            await getHoaRec(ownerRec.parcel_ID)
+            messageDisplay.textContent = "New Owner created sucessfully"
+        } else {
+            // Replace the record in the owners list
+            let ownerFound = false
+            for (let index in hoaRec.ownersList) {
+                if (hoaRec.property.parcel_ID == ownerRec.parcel_ID && hoaRec.ownersList[index].ownerID == ownerRec.ownerID) {
+                    ownerFound = true
+                    hoaRec.ownersList[index] = ownerRec
+                }
+            }
+            if (!ownerFound) {
+                console.error("Owner ID not found in current hoaRec, id = "+ownerRec.ownerId)
+                messageDisplay.textContent = "Owner ID not found in current hoaRec, id = "+ownerRec.ownerId
+                return        
+            }
+            // Display the updated owner record
+            messageDisplay.textContent = "Owner updated sucessfully"
+            displayDetailOwners()
+        }
+    } catch (err) {
+        console.error(err)
+        UpdateOwnerMessageDisplay.textContent = `Error in Fetch: ${err.message}`
+    }
+}
+
 
 export function updateMessage(displayMessage) {
     if (updateMessageDisplay != null) {

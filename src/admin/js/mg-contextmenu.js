@@ -5,7 +5,7 @@ DESCRIPTION:
 --------------------------------------------------------------------------------
 Modification History
 2023-09-01 JJK  Initial version - moved contextmenu components to this module
-2025-11-04 JJK  Updated display elements (dedicated modal is already in index)
+2025-11-04 JJK  Updated display elements (dedicated modal is already in index.html)
 ================================================================================*/
 import {empty} from './util.js';
 import {mediaInfo,getFilePath,getFileName,updateMediaInfo} from './mg-data-repository.js'
@@ -56,8 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     })
 
-    UpdateOwnerForm.addEventListener('submit', (event) => {
-        let formValid = UpdateOwnerForm.checkValidity()
+    UpdateMediaForm.addEventListener('submit', (event) => {
+        let formValid = UpdateMediaForm.checkValidity()
         event.preventDefault()
         event.stopPropagation()
         UpdateOwnerMessageDisplay.textContent = ""
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             updateOwner()
         }
-        UpdateOwnerForm.classList.add('was-validated')
+        UpdateMediaForm.classList.add('was-validated')
     })
 
 })
@@ -177,7 +177,7 @@ async function updateOwner() {
     try {
         const response = await fetch("/api/UpdateOwner", {
             method: "POST",
-            body: new FormData(UpdateOwnerForm)
+            body: new FormData(UpdateMediaForm)
         })
         await checkFetchResponse(response)
         // Success
@@ -297,6 +297,8 @@ function displayModalDetail(index) {
     img.setAttribute('data-index', index)
     col1.appendChild(img)
 
+
+    
     let itemList = document.createElement("ul")
     itemList.classList.add("list-group","mt-3")
     let a = document.createElement("a")

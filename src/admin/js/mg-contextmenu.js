@@ -298,6 +298,7 @@ function displayModalDetail(index) {
     col1.appendChild(img)
 
 
+
     
     let itemList = document.createElement("ul")
     itemList.classList.add("list-group","mt-3")
@@ -307,6 +308,7 @@ function displayModalDetail(index) {
     a.target = '_blank'
     a.textContent = "Open FULL image in new tab"
     itemList.appendChild(a)
+
     a = document.createElement("a")
     a.setAttribute('href', getFilePath(index,"",true))
     a.download = getFileName(index)

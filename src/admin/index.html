@@ -520,46 +520,84 @@
 
                         <img id="UpdateImg" class="img-fluid rounded" onerror="this.onerror=null; this.remove()" width="95%" src="" data-index=""/>
 
-
 							<input id="updParcel_ID" name="Parcel_ID" type="text" readonly hidden>
-							<div id="updParcelLocation" class="mb-2">
-								Parcel Location
-							</div>
-							<div class="form-floating">
-								<input  id="updOwnerID" name="OwnerID" type="text" class="form-control shadow-none" readonly />
-								<label for="updOwnerID">Owner Id</label>
-                        	</div>
-							<div class="mb-2">
-								<input id="updCurrentOwner" name="CurrentOwner" class="form-check-input shadow-none" type="checkbox" disabled />
-								<label for="updCurrentOwner" class="form-label">Current Owner</label>
+
+							<div class="mb-2 form-floating">
+								<input  id="updTitle" name="Title" type="text" class="form-control shadow-none" />
+								<label for="updTitle">Title</label>
 							</div>
 							<div class="mb-2 form-floating">
-								<input  id="updOwner_Name1" name="Owner_Name1" type="text" class="form-control  shadow-none" maxlength="50" required />
-								<label for="updOwner_Name1">Owner Name1</label>
-								<div class="invalid-feedback">
-									Owner Name1 is required
-								</div>
+								<input  id="updTitle" name="Title" type="text" class="form-control shadow-none" />
+								<label for="updTitle">Taken DateTime</label>
+							</div>
+							<div class="mb-2 form-floating">
+								<input  id="updCategoryTags" name="CategoryTags" type="text" class="form-control shadow-none" />
+								<label for="updCategoryTags">Category tags</label>
+							</div>
+							<div class="mb-2 form-floating">
+								<input  id="updMenuTags" name="MenuTags" type="text" class="form-control shadow-none" />
+								<label for="updMenuTags">Menu tags</label>
+							</div>
+							<div class="mb-2 form-floating">
+								<input  id="updAlbumTags" name="AlbumTags" type="text" class="form-control shadow-none" />
+								<label for="updAlbumTags">Album tags</label>
 							</div>
 					</div>
+    <!--
+    var mediaAlbumSelect = document.createElement("select")
+    //mediaAlbumSelect.classList.add('form-select','float-start','shadow-none','mt-2','py-1')
+    mediaAlbumSelect.classList.add('form-select','float-start','shadow-none')
+    for (let index in albumList) {
+        if (index == 1) {
+            mediaAlbumSelect.options[mediaAlbumSelect.options.length] = new Option(albumList[index].albumKey+" "+albumList[index].albumName, albumList[index].albumKey, true, true)
+        } else {
+            mediaAlbumSelect.options[mediaAlbumSelect.options.length] = new Option(albumList[index].albumKey+" "+albumList[index].albumName, albumList[index].albumKey)
+        }
+    }
+    // When the Category changes, set the menuFilter menu items for that Category
+    mediaAlbumSelect.addEventListener("change", function () {
+        // set menuFilter array based on selected CategoryName
+        setMenuFilter(mediaAlbumSelect.value)
+        // Clear the menu options and re-load from current menuFilter
+        mediaMenuSelect.options.length = 0
+        for (let index in menuFilter) {
+            mediaMenuSelect.options[mediaMenuSelect.options.length] = new Option(menuFilter[index], menuFilter[index])
+        }
+        mediaDetailAlbumTags.value = mediaAlbumSelect.value
+    })
+    //editRow1Col3.appendChild(mediaAlbumSelect);
+    
+    // >>>>> Create a drop-down for Album Tags based on the albumList from mg-album
+    for (let index in albumList) {
+        //console.log(">>> albumList["+index+"].albumKey = "+albumList[index].albumKey+", name = "+albumList[index].albumName)
+    }
+    rowCol2.appendChild(mediaAlbumSelect)
+    -->
 
 					<div class="col-md-4"><!-- Col 2 -->
-							<button type="submit" class="btn btn-success  shadow-none">
-								<i class="fa fa-floppy-o me-1"></i> Save Owner
-							</button>
+                        <button type="submit" class="btn btn-success  shadow-none">
+							<i class="fa fa-floppy-o me-1"></i> Save Media Info
+						</button>
 							<div id="UpdateOwnerMessageDisplay" class="m-2"></div>
 
-							<div class="mb-2">
-								<input id="updAlternateMailing" name="AlternateMailing" class="form-check-input shadow-none" type="checkbox" />
-								<label for="updAlternateMailing">Alternate Mailing</label>
+                            <div class="mb-2 form-floating">
+								<input  id="updPeopleList" name="PeopleList" type="text" class="form-control shadow-none" />
+								<label for="updPeopleList">People</label>
 							</div>
-							<div class="mb-2 form-floating">
-								<input  id="updAlt_Address_Line1" name="Alt_Address_Line1" type="text" class="form-control shadow-none" />
-								<label for="updAlt_Address_Line1">Address Line1</label>
+                            <div class="mb-2 form-floating">
+								<input  id="updDescription" name="Description" type="textarea" class="form-control shadow-none" rows="6" />
+								<label for="updDescription">People</label>
 							</div>
+
+                        <button type="submit" class="btn btn-success  shadow-none">
+							<i class="fa fa-floppy-o me-1"></i> Prev
+						</button>
+                        <button type="submit" class="btn btn-success  shadow-none">
+							<i class="fa fa-floppy-o me-1"></i> Next
+						</button>
 					</div>
 
 					<div class="col-md-4"><!-- Col 3 -->
-
                             <div class="input-group">
                                 <input type="text" class="form-control" placeholder="Choose or type a value" id="myInput">
                                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -571,8 +609,8 @@
                                     <li><a class="dropdown-item" href="#" onclick="setValue('Option 3')">Option 3</a></li>
                                 </ul>
                             </div>
-
 					</div>
+                    
 				</div>
 			</form>
 

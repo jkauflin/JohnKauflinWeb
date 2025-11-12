@@ -16,14 +16,15 @@ var mediaModal
 var mediaModalTitle
 var mediaModalBody
 
-var mediaDetailTitle
-var mediaDetailTaken
-var mediaDetailCategoryTags
-var mediaDetailMenuTags
-var mediaDetailAlbumTags
-var mediaPeopleList
-var mediaDetailDescription
-var updateMessageDisplay
+var updImg
+var updTitle
+var updTakenDateTime
+var updCategoryTags
+var updMenuTags
+var updAlbumTags
+var updPeople
+var updDescription
+var updMessageDisplay
 var listenClass = ""
 var editMode = true
 
@@ -35,6 +36,17 @@ document.addEventListener('DOMContentLoaded', () => {
     mediaModal = new bootstrap.Modal(document.getElementById('MediaModal'))
     mediaModalTitle = document.getElementById("MediaModalTitle")
     mediaModalBody = document.getElementById("MediaModalBody")
+
+    updImg = document.getElementById("updImg")
+    //updImg = document.getElementById("updImg")
+    updTitle = document.getElementById("updTitle")
+    updTakenDateTime = document.getElementById("updTakenDateTime")
+    updCategoryTags = document.getElementById("updCategoryTags")
+    updMenuTags = document.getElementById("updMenuTags")
+    updAlbumTags = document.getElementById("updAlbumTags")
+    updPeople = document.getElementById("updPeople")
+    updDescription = document.getElementById("updDescription")
+    updMessageDisplay = document.getElementById("updMessageDisplay")
 
     document.addEventListener('touchstart', (event) => {
         holdDownStart(event)
@@ -212,8 +224,8 @@ async function updateOwner() {
 
 
 export function updateMessage(displayMessage) {
-    if (updateMessageDisplay != null) {
-        updateMessageDisplay.textContent = displayMessage
+    if (updMessageDisplay != null) {
+        updMessageDisplay.textContent = displayMessage
     }
 }
 
@@ -281,9 +293,21 @@ function displayModalDetail(index) {
 
     mediaModalTitle.textContent = fi.name;
 
+    updImg.src = getFilePath(index,"Smaller")
+    updImg.dataset.index = index
+    //updImg.setAttribute('data-index', index)
+    updTitle.value = fi.title
+    updTakenDateTime.value = fi.takenDateTime
+    updCategoryTags.value = fi.categoryTags
+    updMenuTags.value = fi.menuTags
+    updAlbumTags.value = fi.albumTags
+    updPeople.value = fi.people
+    updDescription.value = fi.description
+    updMessageDisplay.value = ""
+
+
 /*
     empty(mediaModalBody)
-
     
     let topRow = document.createElement("div");
     topRow.classList.add('row')
@@ -298,8 +322,6 @@ function displayModalDetail(index) {
     col1.appendChild(img)
 
 
-
-    
     let itemList = document.createElement("ul")
     itemList.classList.add("list-group","mt-3")
     let a = document.createElement("a")

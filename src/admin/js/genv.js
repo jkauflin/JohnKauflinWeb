@@ -36,7 +36,7 @@ Modification History
 ================================================================================*/
 
 import {empty,showLoadingSpinner,checkFetchResponse,convertUTCDateToLocalDate,
-    formatDate,addDays,addHours,getDateInt,getDateDayInt,getHoursInt,daysFromDate} from './util.js';
+    formatDate,getDateInt,getDateDayInt,getHoursInt,daysFromDate} from './util.js';
 
 var dailyTempCanvas
 var dailyTempChart = null

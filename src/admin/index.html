@@ -517,11 +517,18 @@
             <form id="UpdateMediaForm" class="needs-validation" novalidate>
 				<div class="row">			
 					<div class="col-md-4"><!-- Col 1 -->
+                        <img id="updImg" class="img-fluid rounded mb-2" width="95%" data-index="" src="" />
+                        <button type="submit" class="btn btn-warning  shadow-none">
+							<i class="fa fa-chevron-left me-1"></i> Prev
+						</button>
+                        <button type="submit" class="btn btn-info  shadow-none">
+							<i class="fa fa-chevron-right me-1"></i> Next
+						</button>
+                        <button type="submit" class="btn btn-success  shadow-none">
+							<i class="fa fa-floppy-o me-1"></i> Save Media Info
+						</button>
+							<div id="updMessageDisplay" class="m-2"></div>
 
-                        <img id="updImg" class="img-fluid rounded" width="95%" data-index="" src="" />
-                        <!--
-                        <img id="updImg" class="img-fluid rounded" onerror="this.onerror=null; this.remove()" width="95%" src="" data-index="" />
-                        -->
 
 					</div>
     <!--
@@ -581,25 +588,14 @@
 								<input  id="updPeople" type="text" class="form-control shadow-none" />
 								<label for="updPeople">People</label>
 							</div>
-                            <div class="mb-2 form-floating">
-								<textarea  id="updDescription" class="form-control shadow-none" style="height: 185px"></textarea>
-								<label for="updDescription">Description</label>
-							</div>
-
 					</div>
 
 					<div class="col-md-4"><!-- Col 3 -->
-                        <button type="submit" class="btn btn-success  shadow-none">
-							<i class="fa fa-floppy-o me-1"></i> Prev
-						</button>
-                        <button type="submit" class="btn btn-success  shadow-none">
-							<i class="fa fa-floppy-o me-1"></i> Next
-						</button>
-                        <button type="submit" class="btn btn-success  shadow-none">
-							<i class="fa fa-floppy-o me-1"></i> Save Media Info
-						</button>
-							<div id="updMessageDisplay" class="m-2"></div>
 
+                            <div class="mb-2 form-floating">
+								<textarea  id="updDescription" class="form-control shadow-none" style="height: 250px"></textarea>
+								<label for="updDescription">Description</label>
+							</div>
 
                             <div class="input-group">
                                 <input type="text" class="form-control" placeholder="Choose or type a value" id="myInput">

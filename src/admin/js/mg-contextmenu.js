@@ -83,6 +83,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 })
 
+  function setValue(val) {
+    document.getElementById("myInput").value = val;
+  }
+
+
 export function formatUpdateOwner(parcelId,ownerId,saleDate="") {
     if (hoaRec.property.parcel_ID != parcelId) {
         console.error("Parcel ID not found in current hoaRec, id = "+parcelId)

@@ -517,18 +517,17 @@
             <form id="UpdateMediaForm" class="needs-validation" novalidate>
 				<div class="row">			
 					<div class="col-md-4"><!-- Col 1 -->
-                        <img id="updImg" class="img-fluid rounded mb-2" width="95%" data-index="" src="" />
-                        <button type="submit" class="btn btn-warning  shadow-none">
+                        <img id="updImg" class="img-fluid rounded" width="95%" data-index="" src="" />
+                        <button type="submit" class="btn btn-warning shadow-none mt-2">
 							<i class="fa fa-chevron-left me-1"></i> Prev
 						</button>
-                        <button type="submit" class="btn btn-info  shadow-none">
+                        <button type="submit" class="btn btn-info shadow-none mt-2">
 							<i class="fa fa-chevron-right me-1"></i> Next
 						</button>
-                        <button type="submit" class="btn btn-success  shadow-none">
+                        <button type="submit" class="btn btn-success shadow-none mt-2">
 							<i class="fa fa-floppy-o me-1"></i> Save Media Info
 						</button>
-							<div id="updMessageDisplay" class="m-2"></div>
-
+						<div id="updMessageDisplay" class="m-2"></div>
 
 					</div>
     <!--
@@ -563,39 +562,44 @@
     -->
 
 					<div class="col-md-4"><!-- Col 2 -->
-							<div class="mb-2 form-floating">
-								<input  id="updTitle" type="text" class="form-control shadow-none" />
-								<label for="updTitle">Title</label>
-							</div>
-							<div class="mb-2 form-floating">
-								<input  id="updTakenDateTime" type="text" class="form-control shadow-none" />
-								<label for="updTakenDateTime">Taken DateTime</label>
-							</div>
-							<div class="mb-2 form-floating">
-								<input  id="updCategoryTags" type="text" class="form-control shadow-none" />
-								<label for="updCategoryTags">Category tags</label>
-							</div>
-							<div class="mb-2 form-floating">
-								<input  id="updMenuTags" type="text" class="form-control shadow-none" />
-								<label for="updMenuTags">Menu tags</label>
-							</div>
-							<div class="mb-2 form-floating">
-								<input  id="updAlbumTags" type="text" class="form-control shadow-none" />
-								<label for="updAlbumTags">Album tags</label>
-							</div>
+						<div class="mb-2 form-floating">
+							<input  id="updTitle" type="text" class="form-control shadow-none" />
+							<label for="updTitle">Title</label>
+						</div>
+						<div class="mb-2 form-floating">
+							<input  id="updTakenDateTime" type="text" class="form-control shadow-none" />
+							<label for="updTakenDateTime">Taken DateTime</label>
+						</div>
+						<div class="mb-2 form-floating">
+							<input  id="updCategoryTags" type="text" class="form-control shadow-none" />
+							<label for="updCategoryTags">Category tags</label>
+						</div>
+						<div class="mb-2 form-floating">
+							<input  id="updMenuTags" type="text" class="form-control shadow-none" />
+							<label for="updMenuTags">Menu tags</label>
+						</div>
+						<div class="mb-2 form-floating">
+                            <div class="input-group">
+							    <input  id="updAlbumTags" type="text" class="form-control shadow-none" placeholder="Albums" />
+                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    Albums
+                                </button>
+                                <ul id="albumOptions" class="dropdown-menu dropdown-menu-end">
+                                </ul>
+                            </div>
+						</div>
 
-                            <div class="mb-2 form-floating">
-								<input  id="updPeople" type="text" class="form-control shadow-none" />
-								<label for="updPeople">People</label>
-							</div>
+                        <div class="mb-2 form-floating">
+							<input  id="updPeople" type="text" class="form-control shadow-none" />
+							<label for="updPeople">People</label>
+						</div>
 					</div>
 
 					<div class="col-md-4"><!-- Col 3 -->
-
-                            <div class="mb-2 form-floating">
-								<textarea  id="updDescription" class="form-control shadow-none" style="height: 250px"></textarea>
-								<label for="updDescription">Description</label>
-							</div>
+                        <div class="mb-2 form-floating">
+							<textarea  id="updDescription" class="form-control shadow-none" style="height: 250px"></textarea>
+							<label for="updDescription">Description</label>
+						</div>
 
                             <div class="input-group">
                                 <input type="text" class="form-control" placeholder="Choose or type a value" id="myInput">

@@ -44,6 +44,18 @@ document.addEventListener('DOMContentLoaded', () => {
     })
 })
 
+
+async function loadAlbumsFromServer() {
+    // ...fetch/build albumList...
+    albumList = /* result array */
+    // notify listeners
+    document.dispatchEvent(new CustomEvent('albums-loaded'))
+}
+
+// call your loader at init time
+loadAlbumsFromServer()
+
+
 export function setAlbumList(inAlbumList) {
     albumList = inAlbumList
 }
@@ -92,6 +104,8 @@ export function buildAlbumMenuElements(mediaType) {
         menuAlbumContainer.appendChild(itemList)
 
         /*
+            >>>>> if needing to do a more complex accordian menu in future <<<<<
+
             let menuId = MediaOffcanvasAlbumMenuId
             let accordionId = menuId + "AccordianContainer";
             let accordianContainer = document.createElement("div")

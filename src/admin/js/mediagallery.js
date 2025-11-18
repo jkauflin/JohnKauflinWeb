@@ -160,7 +160,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }));
 
-
     // If there is a data-dir parameter, build and display the page
     var paramName = 'albumKey';
     // Look for parameters on the url
@@ -191,7 +190,6 @@ document.addEventListener('DOMContentLoaded', () => {
             bootstrap.Tab.getOrCreateInstance(targetTabElement).show();
         }
     }
-
 })
 
 

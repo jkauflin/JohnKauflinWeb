@@ -88,7 +88,36 @@
     </div><!-- end of Home tab -->
 
     <div class="tab-pane" id="MediaPage">
+        <div id="MediaPageFilterContainer">
+            <div class="row mt-2">
+                <div class="col-5">
+                    <button id="MediaMenuBtn" class="btn btn-primary btn-sm float-start" type="button" role="button" data-bs-toggle="offcanvas" data-bs-target="#MediaMenuCanvas">
+                        <i class="fa fa-chevron-right"></i> Menu
+                    </button>
+                    <button id="MediaAlbumBtn" class="btn btn-success btn-sm ms-2 float-start" type="button" role="button" data-bs-toggle="offcanvas" data-bs-target="#MediaAlbumMenuCanvas">
+                        <i class="fa fa-chevron-right"></i> Albums
+                    </button>
+                </div>
+                <div class="col">
+                    <select id="MediaFilterCategory" class="form-select float-start shadow-none"></select>
+                </div>
+                <div class="col-1"></div>
+            </div>
+
+            <div class="row mt-2">
+                <div class="col-3 d-none d-sm-block"><h5 id="MediaContentDesc"></h5></div>
+                <div class="col">
+                    <div class="row">
+                        <div class="col-5"><input id="MediaFilterStartDate" class="form-control shadow-none" type="date" /></div>
+                        <div class="col-7"><input id="MediaFilterSearchStr" class="form-control shadow-none" type="text" placeholder="Search string" /></div>
+                    </div>
+                </div>
+                <div class="col-2 d-none d-sm-block"><h6 class="float-end"></h6></div>
+            </div>
+        </div>
+
         <div id="MediaPageMessage"></div>
+        <div id="MediaPageThumbnailContainer"></div>
     </div><!-- end of Media -->
 
 
@@ -486,7 +515,7 @@
 </div>
 
 
-<div class="offcanvas offcanvas-start" tabindex="-1" id="MediaMenuCanvas" aria-labelledby="MediaMenuCanvasLabel">
+<div class="offcanvas offcanvas-start" tabindex="-1" id="MediaMenuCanvas">
     <div class="offcanvas-header">
       <h5 class="offcanvas-title" id="MediaMenuCanvasLabel">Menu</h5>
       <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -495,7 +524,8 @@
         <div id="MediaOffcanvasMenu"></div>
     </div>
 </div>
-<div class="offcanvas offcanvas-start" tabindex="-1" id="MediaAlbumMenuCanvas" aria-labelledby="MediaAlbumMenuCanvasLabel">
+
+<div class="offcanvas offcanvas-start" tabindex="-1" id="MediaAlbumMenuCanvas">
     <div class="offcanvas-header">
       <h5 class="offcanvas-title" id="MediaAlbumMenuCanvasLabel">Albums</h5>
       <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -612,6 +642,7 @@
                                     <li><a class="dropdown-item" href="#" onclick="setValue('Option 3')">Option 3</a></li>
                                 </ul>
                             </div>
+                            
 					</div>
                     
 				</div>

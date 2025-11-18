@@ -41,6 +41,7 @@
  * 2024-05-02 JJK   Adding function to support solar metrics and charts
  * 2025-10-24 JJK   Converting data-api to api function calls (and update to
  *                  Bootstrap v5.3.8)
+ * 2025-11-17 JJK   Moving update functions back into the main web
  *============================================================================*/
 
 import {querySolarMetrics} from './solarMetrics.js';

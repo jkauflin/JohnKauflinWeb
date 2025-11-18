@@ -12,12 +12,41 @@ import {mediaInfo,mediaType,mediaTypeDesc,setMediaType,
     getFilePath,getFileName
 } from './mg-data-repository.js'
 
-export const MediaMenuRequestClass = "MediaMenuRequest"
-export const mediaMenuCanvasId = "#MediaMenuCanvas"
 var menuList = []
-var mediaMenuCanvas = bootstrap.Offcanvas.getOrCreateInstance(mediaMenuCanvasId)
-let MediaOffcanvasMenuId = "MediaOffcanvasMenu"
-export var menuContainer = document.getElementById(MediaOffcanvasMenuId)
+var mediaMenuCanvas
+var mediaMenuCanvasLabel
+const MediaOffcanvasMenuId = "MediaOffcanvasMenu"
+export const MediaMenuRequestClass = "MediaMenuRequest"
+export const mediaMenuCanvasId = "MediaMenuCanvas"
+export var menuContainer
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Get the element reference and pass it to Bootstrap
+    const mediaMenuEl = document.getElementById(mediaMenuCanvasId)
+    if (mediaMenuEl) {
+        mediaMenuCanvas = bootstrap.Offcanvas.getOrCreateInstance(mediaMenuEl)
+    } else {
+        console.warn('Media menu element not found:', mediaMenuCanvasId)
+    }
+
+    menuContainer = document.getElementById(MediaOffcanvasMenuId)
+    mediaMenuCanvasLabel = document.getElementById("MediaMenuCanvasLabel")
+
+    menuContainer.addEventListener("click", function (event) {
+        if (event.target && event.target.classList.contains(MediaMenuRequestClass)) {
+        // If click on a menu item, query the data and build the thumbnail display
+        let paramData = {
+            MediaFilterMediaType: mediaType, 
+            getMenu: false,
+            MediaFilterCategory:  event.target.getAttribute('data-category'),
+            MediaFilterMenuItem:  event.target.getAttribute('data-menuItem'),
+            MediaFilterStartDate: event.target.getAttribute('data-startDate')}
+
+            queryMediaInfo(paramData);
+            hideMediaMenuCanvas()
+        }
+    })
+})
 
 export function setMenuList(inMenuList) {
     menuList = inMenuList
@@ -26,21 +55,6 @@ export function setMenuList(inMenuList) {
 export function hideMediaMenuCanvas() {
     mediaMenuCanvas.hide();
 }
-
-menuContainer.addEventListener("click", function (event) {
-    if (event.target && event.target.classList.contains(MediaMenuRequestClass)) {
-    // If click on a menu item, query the data and build the thumbnail display
-    let paramData = {
-        MediaFilterMediaType: mediaType, 
-        getMenu: false,
-        MediaFilterCategory:  event.target.getAttribute('data-category'),
-        MediaFilterMenuItem:  event.target.getAttribute('data-menuItem'),
-        MediaFilterStartDate: event.target.getAttribute('data-startDate')}
-
-        queryMediaInfo(paramData);
-        hideMediaMenuCanvas()
-    }
-})
 
 //------------------------------------------------------------------------------------------------------------
 // Create a collapsible menu in an offcanvas pop-out using menu list data

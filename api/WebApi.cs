@@ -65,7 +65,12 @@ namespace JohnKauflinWeb.Function
                 // paramData is a JSON object with filter params
                 var paramData = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>(body);
                 var mediaInfoList = await dbCommon.GetMediaInfoDB(paramData);
-                return new OkObjectResult(mediaInfoList);
+                MediaInfoColl mediaInfoColl = new MediaInfoColl
+                {
+                    MediaInfoList = mediaInfoList,
+                    isAdmin = authCheck.UserAuthorizedForRole(req, userAdminRole, out string userName)
+                };
+                return new OkObjectResult(mediaInfoColl);
             }
             catch (Exception ex)
             {

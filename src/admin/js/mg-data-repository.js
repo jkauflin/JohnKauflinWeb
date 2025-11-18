@@ -25,24 +25,25 @@ Modification History
 2025-10-24 JJK  Refactored to use new function API endpoint instead of data-api
 2025-10-30 JJK  Adjusting logic for media queries
 2025-11-01 JJK  Re-adding admin update functions
+2025-11-15 JJK  Moving filter elements here from mg-create-pages.js
 ================================================================================*/
 
 import {empty,showLoadingSpinner,checkFetchResponse,addDays,getDateInt} from './util.js';
-import {createMediaPage,displayCurrFileList,updateAdminMessage} from './mg-create-pages.js';
 import {mediaAlbumMenuCanvasId,buildAlbumMenuElements} from './mg-album.js'
-import {setMenuList} from './mg-menu.js';
+import {setMenuList,buildMenuElements,mediaMenuCanvasId} from './mg-menu.js';
 import {setAlbumList,getAlbumName} from './mg-album.js';
 import {updateMessage} from './mg-contextmenu.js';
+import {createMediaPage,displayCurrFileList,updateAdminMessage} from './mg-create-pages.js';
 
-export let mediaInfo = {
+export var mediaInfo = {
     menuList: [],
     filterList: [],
     fileList: [],
     startDate: "",
     menuOrAlbumName: ""}
-export let mediaType = 1
-export let mediaTypeDesc = "Photos"
-export let contentDesc = ""
+export var mediaType = 1
+export var mediaTypeDesc = "Photos"
+export var contentDesc = ""
 
 export var queryCategory = ""
 export var querySearchStr = ""
@@ -60,9 +61,25 @@ let photosUri = "https://jjkwebstorage.blob.core.windows.net/photos/"
 let thumbsUri = "https://jjkwebstorage.blob.core.windows.net/thumbs/"
 let musicUri = "https://jjkwebstorage.blob.core.windows.net/music/"
 
+var MediaPageFilterContainer
 var MediaPageMessage
+var MediaPageThumbnailContainer
+var mediaFilterCategory
+var mediaFilterStartDate
+var mediaFilterSearchStr
+var contentDescEl
+var albumBtn
+
 document.addEventListener('DOMContentLoaded', () => {
+    MediaPageFilterContainer = document.getElementById("MediaPageFilterContainer")
     MediaPageMessage = document.getElementById("MediaPageMessage")
+    MediaPageThumbnailContainer = document.getElementById("MediaPageThumbnailContainer")
+
+    mediaFilterCategory = document.getElementById('MediaFilterCategory')
+    mediaFilterStartDate = document.getElementById('MediaFilterStartDate')
+    mediaFilterSearchStr = document.getElementById('MediaFilterSearchStr')
+    contentDescEl = document.getElementById('MediaContentDesc')
+    albumBtn = document.getElementById('MediaAlbumBtn')
 })
 
 export function setMediaType(inMediaType) {
@@ -101,7 +118,7 @@ export function getFileName(index) {
 // Query the database for menu and file information and store in js variables
 //------------------------------------------------------------------------------------------------------------
 export async function queryMediaInfo(paramData) {
-    //console.log(">>>>> in the QueryMediaInfo, paramData.MediaFilterMediaType = "+paramData.MediaFilterMediaType)
+    console.log(">>>>> in the QueryMediaInfo, paramData.MediaFilterMediaType = "+paramData.MediaFilterMediaType)
     //console.log("--------------------------------------------------------------------")
     //console.log("$$$$$ in the QueryMediaInfo, mediaType = "+mediaType)
 
@@ -273,7 +290,13 @@ export async function queryMediaInfo(paramData) {
 
             // Save the menu lists
             setMenuList(mediaInfo.menuList)
+            buildMenuElements(mediaType)
+            queryMediaAlbum(paramData)
         }
+
+        // Moved from create-pages
+        buildFilterElements()
+        
 
         // Save the parameters from the laste query
         queryCategory = paramData.MediaFilterCategory
@@ -295,12 +318,8 @@ export async function queryMediaInfo(paramData) {
         }
 
         contentDesc = mediaTypeDesc + " - " + queryCategory
-        createMediaPage(paramData.getMenu)
+        createMediaPage()
         MediaPageMessage.textContent = ""
-
-        if (paramData.getMenu) {
-            queryMediaAlbum(paramData)
-        }
 
     } catch (err) {
         console.error(err)
@@ -308,6 +327,79 @@ export async function queryMediaInfo(paramData) {
     }
     
 } // queryMediaInfo
+
+function executeFilter(inStartDate) {
+    //mediaFilterSearchStr.value = cleanInputStr(mediaFilterSearchStr.value)
+    mediaFilterSearchStr.value = mediaFilterSearchStr.value
+    //console.log(">>> Execute Filter mediaFilterMediaType = "+mediaType)
+    //console.log(">>> Execute Filter mediaFilterCategory = "+mediaFilterCategory.value)
+    //console.log(">>> Filter mediaFilterStartDate = "+mediaFilterStartDate.value)
+    //console.log(">>> Filter          inStartDate = "+inStartDate)
+    //console.log(">>> Filter mediaFilterSearchStr = "+mediaFilterSearchStr.value)
+
+    let paramData = {
+        MediaFilterMediaType: mediaType, 
+        getMenu: false,
+        MediaFilterCategory:  mediaFilterCategory.value,
+        MediaFilterStartDate: inStartDate,
+        MediaFilterSearchStr: mediaFilterSearchStr.value}
+
+    queryMediaInfo(paramData);
+}
+
+//------------------------------------------------------------------------------------------------------------
+// Create a collapsible menu from a directory structure
+//------------------------------------------------------------------------------------------------------------
+function buildFilterElements() {
+
+    // Clear existing options
+    mediaFilterCategory.options.length = 0
+
+    // Populate the category select using the same selection logic as before
+    let tempSelected = false
+    for (let index in categoryList) {
+        tempSelected = false
+        if (queryCategory != null && queryCategory != "" && queryCategory != "DEFAULT") {
+            if (categoryList[index] == queryCategory) {
+                tempSelected = true
+            }
+        } else {
+            if (mType == 1) {
+                if (index == 1) {
+                    tempSelected = true
+                }
+            } else {
+                if (index == 0) {
+                    tempSelected = true
+                }
+            }
+        }
+
+        if (tempSelected) {
+            mediaFilterCategory.options[mediaFilterCategory.options.length] = new Option(categoryList[index], categoryList[index], true, true)
+        } else {
+            mediaFilterCategory.options[mediaFilterCategory.options.length] = new Option(categoryList[index], categoryList[index])
+        }
+    }
+
+    // Set initial values
+    mediaFilterStartDate.value = mediaInfo.startDate || ''
+    mediaFilterSearchStr.value = querySearchStr || ''
+
+    // Update content description
+    if (contentDescEl) contentDescEl.textContent = contentDesc
+
+    // Wire up events using element properties to avoid duplicate listeners
+    mediaFilterCategory.onchange = function () { executeFilter() }
+    mediaFilterStartDate.onchange = function () { executeFilter(mediaFilterStartDate.value) }
+    mediaFilterSearchStr.onkeypress = function (event) {
+        if (event.key === 'Enter') {
+            event.preventDefault()
+            executeFilter()
+        }
+    }
+}
+
 
 //------------------------------------------------------------------------------------------------------------
 // Query the database for media album list
@@ -322,7 +414,7 @@ export async function queryMediaAlbum(paramData) {
         await checkFetchResponse(response)
         // Success
         let mediaAlbumList = await response.json()
-        //console.log("mediaAlbumList.length = ",mediaAlbumList.length)
+        console.log("in mg-data-repository queryMediaAlbum, mediaAlbumList.length = ",mediaAlbumList.length)
         setAlbumList(mediaAlbumList)
         buildAlbumMenuElements(mediaType)
 

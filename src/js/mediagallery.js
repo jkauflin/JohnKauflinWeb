@@ -126,7 +126,6 @@ const MediaPageLinkClass = "media-page";
 //=================================================================================================================
 // Bind events
 document.addEventListener('DOMContentLoaded', () => {
-
     // Respond to click on a link-tile-tab button by finding the correct TAB and switching/showing it
     // (These link-tile-tab's also have media-page for creating the Menu, but these handled from the listener on that class)
     document.querySelectorAll(".link-tile-tab").forEach(el => el.addEventListener("click", function (event) {

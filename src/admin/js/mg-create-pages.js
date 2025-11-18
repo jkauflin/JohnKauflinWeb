@@ -14,7 +14,7 @@ Modification History
 2024-08-11 JJK  Added mg-people to get people list
 2025-11-01 JJK  Added logic for admin update
 ================================================================================*/
-import {empty,showLoadingSpinner} from './util.js';
+import {empty} from './util.js';
 import {mediaInfo,mediaType,
     queryCategory,querySearchStr,queryMenuItem,queryAlbumKey,
     categoryList,menuFilter,contentDesc,
@@ -24,10 +24,10 @@ import {mediaInfo,mediaType,
     newVideosMediaInfo,
     setMenuFilter
 } from './mg-data-repository.js'
-import {mediaMenuCanvasId,buildMenuElements} from './mg-menu.js'
+//import {mediaMenuCanvasId,buildMenuElements} from './mg-menu.js'
+const mediaMenuCanvasId = "MediaMenuCanvas"
 import {mediaAlbumMenuCanvasId,buildAlbumMenuElements} from './mg-album.js'
 import {setContextMenuListeners} from './mg-contextmenu.js'
-import {displayElementInLightbox} from './mg-lightbox.js'
 import {playlistSongClass,audioPrevClass,audioNextClass,audioPlayer,setAudioListeners,
         emptyPlaylist,incrementPlaylistIndex,addSongToPlaylist,initSong} from './mg-audio-playlist.js'
 import {setPeopleListeners} from './mg-people.js'
@@ -37,7 +37,7 @@ const imgThumbnailClass = "img-thumbnail-jjk"  // Want my own thumbnail formatti
 const thumbCheckboxClass = "thumb-checkbox"
 
 var mediaPageContainer
-var filterContainer
+//var filterContainer
 var thumbnailContainer
 var editRow1
 
@@ -70,7 +70,7 @@ var editMode = true
 
 document.addEventListener('DOMContentLoaded', () => {
     mediaPageContainer = document.getElementById("MediaPage");
-    filterContainer = document.createElement("div")
+    //filterContainer = document.createElement("div")
     thumbnailContainer = document.createElement("div")
     editRow1 = document.createElement("div")
 
@@ -141,42 +141,32 @@ function cleanInputStr(inStr) {
     return inStr.replace(regexNonAlphaNumericSpaceChars, '');
 }
     
-function executeFilter(inStartDate) {
-    mediaFilterSearchStr.value = cleanInputStr(mediaFilterSearchStr.value)
-    //console.log(">>> Execute Filter mediaFilterMediaType = "+mediaType)
-    //console.log(">>> Execute Filter mediaFilterCategory = "+mediaFilterCategory.value)
-    //console.log(">>> Filter mediaFilterStartDate = "+mediaFilterStartDate.value)
-    //console.log(">>> Filter          inStartDate = "+inStartDate)
-    //console.log(">>> Filter mediaFilterSearchStr = "+mediaFilterSearchStr.value)
-
-    let paramData = {
-        MediaFilterMediaType: mediaType, 
-        getMenu: false,
-        MediaFilterCategory:  mediaFilterCategory.value,
-        MediaFilterStartDate: inStartDate,
-        MediaFilterSearchStr: mediaFilterSearchStr.value}
-
-    queryMediaInfo(paramData);
-    // After query has retreived data, it will kick off the display page create
-}
 
 //------------------------------------------------------------------------------------------------------------
 // Dynamically create the DOM elements to add to the Media Page div (either regular display or EDIT mode)
 //------------------------------------------------------------------------------------------------------------
-export function createMediaPage(getMenu) {
-    //console.log("$$$$ in the createMediaPage")
-    empty(filterContainer)
+//export function createMediaPage(getMenu) {
+export function createMediaPage() {
+    console.log("$$$$ in the createMediaPage")
+
+    //empty(filterContainer)
     empty(thumbnailContainer)
     empty(editRow1)
 
+    /*
     if (getMenu) {
         buildMenuElements(mediaType)
         buildAlbumMenuElements(mediaType)
     }
-    buildFilterElements(mediaType)
+    */
+    //buildFilterElements(mediaType)
 
-    mediaPageContainer.appendChild(filterContainer);
-    //mediaPageContainer.appendChild(thumbnailContainer);
+    //mediaPageContainer.appendChild(filterContainer);
+    
+    mediaFilterCategory = ""
+
+
+    mediaPageContainer.appendChild(thumbnailContainer);
 
             // Create Row and columns
             editRow1.classList.add('row')
@@ -360,6 +350,7 @@ export function createMediaPage(getMenu) {
             peopleButton.setAttribute('role',"button")
             peopleButton.textContent = "People"
             editRow1Col3.appendChild(peopleButton)
+            // Load people
             setPeopleListeners(peopleButton,mediaPeopleList)
             editRow1Col3.appendChild(mediaPeopleList);
 
@@ -474,159 +465,6 @@ export function updateAdminMessage(displayMessage) {
     }
 }
 
-    //------------------------------------------------------------------------------------------------------------
-    // Create a collapsible menu from a directory structure
-    //------------------------------------------------------------------------------------------------------------
-    function buildFilterElements(mediaType) {
-        empty(filterContainer)
-
-        // Row 1
-        let filterRow1 = document.createElement("div")
-        filterRow1.classList.add('row','mt-2')
-        let filterRow1Col1 = document.createElement("div")
-        filterRow1Col1.classList.add('col-5')
-
-        let menuButton = document.createElement("button")
-        menuButton.classList.add('btn','btn-primary','btn-sm','float-start')
-        menuButton.setAttribute('type',"button")
-        menuButton.setAttribute('role',"button")
-        menuButton.setAttribute('data-bs-toggle', "offcanvas")
-        menuButton.setAttribute('data-bs-target', mediaMenuCanvasId)
-        //menuButton.textContent = "Menu"
-        let icon1 = document.createElement("i")
-        icon1.classList.add('fa','fa-chevron-right')
-        icon1.textContent = "Menu"
-        menuButton.appendChild(icon1)
-        filterRow1Col1.appendChild(menuButton)
-
-        let menuButton2 = document.createElement("button")
-        menuButton2.classList.add('btn','btn-success','btn-sm','ms-2','float-start')
-        menuButton2.setAttribute('type',"button")
-        menuButton2.setAttribute('role',"button")
-        menuButton2.setAttribute('data-bs-toggle', "offcanvas")
-        menuButton2.setAttribute('data-bs-target', mediaAlbumMenuCanvasId)
-        //menuButton2.textContent = "Menu"
-        let iconB = document.createElement("i")
-        iconB.classList.add('fa','fa-chevron-right')
-        iconB.textContent = "Albums"
-        menuButton2.appendChild(iconB)
-        // Just display an Albums button for Photos for now (till I figure out Albums for the others)
-        if (mediaType == 1) {
-            filterRow1Col1.appendChild(menuButton2)
-        }
-       
-        filterRow1.appendChild(filterRow1Col1)
-
-        //-----------------------------------------------------------------------------
-        let filterRow1Col2 = document.createElement("div")
-        filterRow1Col2.classList.add('col')
-        // Category
-        mediaFilterCategory = document.createElement("select")
-        mediaFilterCategory.classList.add('form-select','float-start','shadow-none')
-        let tempSelected = false
-        for (let index in categoryList) {
-            tempSelected = false
-            if (queryCategory != null && queryCategory != "" && queryCategory != "DEFAULT") {
-                if (categoryList[index] == queryCategory) {
-                    tempSelected = true
-                }
-            } else {
-                if (mediaType == 1) {
-                    if (index == 1) {
-                        tempSelected = true
-                    }
-                } else {
-                    if (index == 0) {
-                        tempSelected = true
-                    }
-                }
-            }
-
-            if (tempSelected) {
-                mediaFilterCategory.options[mediaFilterCategory.options.length] = new Option(categoryList[index], categoryList[index], true, true)
-            } else {
-                mediaFilterCategory.options[mediaFilterCategory.options.length] = new Option(categoryList[index], categoryList[index])
-            }
-        }
-        filterRow1Col2.appendChild(mediaFilterCategory);
-        mediaFilterCategory.addEventListener("change", function () {
-            executeFilter()
-        });
-        filterRow1.appendChild(filterRow1Col2)
-
-        let filterRow1Col3 = document.createElement("div")
-        filterRow1Col3.classList.add('col-1')
-        filterRow1.appendChild(filterRow1Col3)
-
-        //-----------------------------------------------------------------------------------------------------------------------------
-        // Row 2
-        let filterRow2 = document.createElement("div")
-        filterRow2.classList.add('row','mt-2')
-        let filterRow2Col1 = document.createElement("div")
-        filterRow2Col1.classList.add('col-3','d-none','d-sm-block')
-
-        let header2 = document.createElement("h5")
-        if (contentDesc.length > 40) {
-            header2 = document.createElement("h6")
-        }
-        //header2.textContent = mediaTypeDesc
-        header2.textContent = contentDesc
-        filterRow2Col1.appendChild(header2)
-        filterRow2.appendChild(filterRow2Col1)
-
-        let filterRow2Col2 = document.createElement("div")
-        filterRow2Col2.classList.add('col')
-        let tRow = document.createElement("div")
-        tRow.classList.add('row')
-        let tCol1 = document.createElement("div")
-        tCol1.classList.add('col-5')
-        mediaFilterStartDate = document.createElement("input")
-        mediaFilterStartDate.classList.add('form-control','shadow-none')
-        mediaFilterStartDate.setAttribute('type',"date")
-        mediaFilterStartDate.value = mediaInfo.startDate
-        //const currDate = new Date().toISOString().split('T')[0]
-        //mediaFilterStartDate.value = currDate
-        tCol1.appendChild(mediaFilterStartDate);
-        tRow.appendChild(tCol1)
-        mediaFilterStartDate.addEventListener("change", function () {
-            // Explicitly tell the executeFilter to use the start date when it is set by user
-            executeFilter(mediaFilterStartDate.value)
-        });
-
-        let tCol2 = document.createElement("div")
-        tCol2.classList.add('col-7')
-        mediaFilterSearchStr = document.createElement("input")
-        //mediaFilterSearchStr.id = "MediaFilterSearchStr"
-        mediaFilterSearchStr.classList.add('form-control','shadow-none')
-        mediaFilterSearchStr.setAttribute('type',"text")
-        mediaFilterSearchStr.setAttribute('placeholder',"Search string")
-        mediaFilterSearchStr.value = querySearchStr
-        tCol2.appendChild(mediaFilterSearchStr);
-        tRow.appendChild(tCol2)
-        filterRow2Col2.appendChild(tRow)
-        filterRow2.appendChild(filterRow2Col2)
-        mediaFilterSearchStr.addEventListener("keypress", function(event) {
-            // If the user presses the "Enter" key on the keyboard
-            if (event.key === "Enter") {
-                // Cancel the default action, if needed
-                event.preventDefault();
-                executeFilter()
-            }
-        });
-    
-        let filterRow2Col3 = document.createElement("div")
-        filterRow2Col3.classList.add('col-2','d-none','d-sm-block')
-        let header3 = document.createElement("h6")
-        header3.classList.add('float-end')
-        //header3.textContent = "(Edit Mode)"
-        header3.textContent = ""   // >>>>>>>>>>>>>>>>>>>>>>> use if you need to display something <<<<<<<<<<<<<<<<<<<<<
-        filterRow2Col3.appendChild(header3)
-        filterRow2.appendChild(filterRow2Col3)
-
-        // Add Rows to Filter Container
-        filterContainer.appendChild(filterRow1);
-        filterContainer.appendChild(filterRow2);
-    }
 
     
     //===========================================================================================================

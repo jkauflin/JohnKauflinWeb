@@ -8,7 +8,7 @@ Modification History
 2025-11-04 JJK  Updated display elements (dedicated modal is already in index.html)
 ================================================================================*/
 import {empty} from './util.js';
-import {mediaInfo,getFilePath,getFileName,updateMediaInfo} from './mg-data-repository.js'
+import {isAdmin,mediaInfo,getFilePath,getFileName,updateMediaInfo} from './mg-data-repository.js'
 import {setPeopleListenersDetail} from './mg-people.js'
 import {albumList} from './mg-album.js'
 
@@ -144,6 +144,10 @@ export function setContextMenuListeners(listenContainer, inClass) {
 }
 
 function displayImgContextMenu(event) {
+    if (!isAdmin) {
+        //console.log("Context Menu: Not Admin, ignoring request")
+        return
+    }
     let index = parseInt(event.target.getAttribute('data-index'))
     if (typeof index !== "undefined" && index !== null) {
         displayModalDetail(index)

@@ -106,7 +106,6 @@ export function empty(node) {
     }
 }
 
-
 export function setTD(tdType,value,classStr="") {
     let td = document.createElement("td")
     if (classStr != "") {
@@ -164,7 +163,6 @@ export function formatDate(inDate) {
     }
     return tempDate.getFullYear() + '-' + tempMonth + '-' + tempDay;
 }
-
 
 export function paddy(num, padlen, padchar) {
     var pad_char = typeof padchar !== 'undefined' ? padchar : '0'
@@ -303,17 +301,6 @@ export function daysFromDate(dateStr) {
     return(Difference_In_Days-1)
 }
 
-/*
-export function formatDate(inDate) {
-    var td = inDate;
-    if (td == null) {
-        td = new Date();
-    }
-    let dateStr = td.toISOString()  //2024-01-31T19:37:12.291Z
-    return(dateStr.substring(0,10))
-}
-*/
-
     function urlParam(name) {
         var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
         if (results == null) {
@@ -354,53 +341,3 @@ export function formatDate(inDate) {
         inAmountStr = inAmountStr.replace(regexNonMoneyChars, '');
         return parseFloat(inAmountStr).toFixed(2);
     }
-
-
-    var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    function formatDateMonth(inDate) {
-        var tempDate = inDate;
-        if (tempDate == null) {
-            tempDate = new Date();
-        }
-        return months[tempDate.getMonth()] + ' ' + tempDate.getDate() + ', ' + tempDate.getFullYear();
-    }
-
-
-    // Helper functions for setting UI components from data
-    function setBoolText(inBool) {
-        var tempStr = "NO";
-        if (inBool) {
-            tempStr = "YES";
-        }
-        return tempStr;
-    }
-    //function setCheckboxEdit(checkVal, idName) {
-    function setCheckboxEdit(idName, checkVal) {
-        var tempStr = '';
-        if (checkVal == 1) {
-            tempStr = 'checked=true';
-        }
-        return '<input id="' + idName + '" type="checkbox" ' + tempStr + '>';
-    }
-    function setInputText(idName, textVal, textSize) {
-        return '<input id="' + idName + '" name="' + idName + '" type="text" class="form-control input-sm resetval" value="' + textVal + '" size="' + textSize + '" maxlength="' + textSize + '">';
-    }
-    function setTextArea(idName, textVal, rows) {
-        return '<textarea id="' + idName + '" class="form-control input-sm" rows="' + rows + '">' + textVal + '</textarea>';
-    }
-    function setTextArea2(idName, textVal, rows, cols) {
-        return '<textarea id="' + idName + '" class="form-control input-sm" rows="' + rows + '" cols="' + cols + '">' + textVal + '</textarea>';
-    }
-    function setInputDate(idName, textVal, textSize) {
-        return '<input id="' + idName + '" type="text" class="form-control input-sm Date" value="' + textVal + '" size="' + textSize + '" maxlength="' + textSize + '" placeholder="YYYY-MM-DD">';
-    }
-    function setSelectOption(optVal, displayVal, selected, bg) {
-        var tempStr = '';
-        if (selected) {
-            tempStr = '<option class="' + bg + '" value="' + optVal + '" selected>' + displayVal + '</option>';
-        } else {
-            tempStr = '<option class="' + bg + '" value="' + optVal + '">' + displayVal + '</option>';
-        }
-        return tempStr;
-    }
-

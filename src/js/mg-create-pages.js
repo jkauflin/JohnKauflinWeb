@@ -13,13 +13,25 @@ Modification History
 import {empty} from './util.js';
 import {mediaInfo,mediaType,
     queryCategory,querySearchStr,queryMenuItem,queryAlbumKey,
+    categoryList,contentDesc,
+    queryMediaInfo,
+    getFilePath,getFileName,
+    updateMediaInfo,
+    newVideosMediaInfo
+} from './mg-data-repository.js'
+/*
+import {mediaInfo,mediaType,
+    queryCategory,querySearchStr,queryMenuItem,queryAlbumKey,
     categoryList,
     contentDesc,
     queryMediaInfo,
     getFilePath,getFileName
 } from './mg-data-repository.js'
-import {mediaMenuCanvasId,buildMenuElements} from './mg-menu.js'
+*/
+
 import {mediaAlbumMenuCanvasId,buildAlbumMenuElements} from './mg-album.js'
+import {setContextMenuListeners} from './mg-contextmenu.js'
+//import {mediaMenuCanvasId,buildMenuElements} from './mg-menu.js'
 import {displayElementInLightbox} from './mg-lightbox.js'
 import {playlistSongClass,audioPrevClass,audioNextClass,audioPlayer,setAudioListeners,
         emptyPlaylist,incrementPlaylistIndex,addSongToPlaylist,initSong} from './mg-audio-playlist.js'
@@ -27,9 +39,10 @@ import {playlistSongClass,audioPrevClass,audioNextClass,audioPlayer,setAudioList
 const MediaFilterRequestClass = "MediaFilterRequest";
 const imgThumbnailClass = "img-thumbnail-jjk"  // Want my own thumbnail formatting instead of bootstrap border
 const thumbCheckboxClass = "thumb-checkbox"
+//const mediaMenuCanvasId = "MediaMenuCanvas"
 
 var mediaPageContainer = document.getElementById("MediaPage");
-var filterContainer = document.createElement("div")
+//var filterContainer = document.createElement("div")
 var thumbnailContainer = document.createElement("div")
 var editRow1 = document.createElement("div")
 
@@ -97,6 +110,72 @@ thumbnailContainer.addEventListener("click", function (event) {
     } 
 })
 
+var currIndex = 0
+var currSelectAll = false
+var editMode = true
+
+document.addEventListener('DOMContentLoaded', () => {
+    mediaPageContainer = document.getElementById("MediaPage");
+    //filterContainer = document.createElement("div")
+    thumbnailContainer = document.createElement("div")
+    editRow1 = document.createElement("div")
+
+    // Set the container and class for the contextmenu
+    // >>>>> should I try to "pull" the container and class from CreatePages module?
+    setContextMenuListeners(thumbnailContainer, imgThumbnailClass)
+    setAudioListeners(thumbnailContainer)
+
+    //-------------------------------------------------------------------------------------------------------
+    // Listen for clicks in containers
+    //-------------------------------------------------------------------------------------------------------
+    thumbnailContainer.addEventListener("click", function (event) {
+        //console.log("thumbnailContainer click, classList = "+event.target.classList)
+
+        // Check for specific classes
+        if (event.target && event.target.classList.contains(MediaFilterRequestClass)) {
+            // If click on a Filter Request (like Next or Prev), query the data and build the thumbnail display
+            //console.log(">>> FilterRequest data-category  = "+event.target.getAttribute('data-category'))
+            //console.log(">>> FilterRequest data-startDate = "+event.target.getAttribute('data-startDate'))
+            //console.log(">>> FilterRequest data-searchStr = "+event.target.getAttribute('data-searchStr'))
+            //console.log(">>> FilterRequest data-menuItem  = "+event.target.getAttribute('data-menuItem'))
+
+            let paramData = {
+                MediaFilterMediaType: mediaType, 
+                getMenu: false,
+                MediaFilterCategory:  event.target.getAttribute('data-category'),
+                MediaFilterStartDate: event.target.getAttribute('data-startDate'),
+                MediaFilterMenuItem: event.target.getAttribute('data-menuItem'),
+                MediaFilterAlbumKey: event.target.getAttribute('data-albumKey'),
+                MediaFilterSearchStr: event.target.getAttribute('data-searchStr')}
+
+            queryMediaInfo(paramData);
+
+        } else if (event.target && event.target.classList.contains(imgThumbnailClass)) {
+            event.preventDefault();
+            // If clicking on a Thumbnail, bring up in Lightbox or FileDetail (for Edit mode)
+            let index = parseInt(event.target.getAttribute('data-index'))
+            if (typeof index !== "undefined" && index !== null) {
+                displayElementInLightbox(index)
+                //displayFileDetail(index)
+            }
+        } else if (event.target && event.target.classList.contains(thumbCheckboxClass)) {
+            // Thumbnail card checkbox
+            //console.log("Clicked on image checkbox")
+            let index = parseInt(event.target.getAttribute('data-index'))
+            if (typeof index !== "undefined" && index !== null) {
+                if (mediaInfo.fileList[index].selected) {
+                    mediaInfo.fileList[index].selected = false
+                } else {
+                    mediaInfo.fileList[index].selected = true
+                    if (editMode) {
+                        displayFileDetail(index)
+                    }
+                }
+            }
+        } 
+    })
+})
+
 
 //-------------------------------------------------------------------------------------------------------
 // Respond to Filter requests
@@ -108,7 +187,8 @@ function cleanInputStr(inStr) {
     // Remove all NON-alphanumeric or space characters
     return inStr.replace(regexNonAlphaNumericSpaceChars, '');
 }
-    
+
+/*
 function executeFilter(inStartDate) {
     mediaFilterSearchStr.value = cleanInputStr(mediaFilterSearchStr.value)
     //console.log(">>> Execute Filter mediaFilterMediaType = "+mediaType)
@@ -129,22 +209,26 @@ function executeFilter(inStartDate) {
     queryMediaInfo(paramData);
     // After query has retreived data, it will kick off the display page create
 }
+*/
 
 //------------------------------------------------------------------------------------------------------------
 // Dynamically create the DOM elements to add to the Media Page div (either regular display or EDIT mode)
 //------------------------------------------------------------------------------------------------------------
-export function createMediaPage(getMenu) {
+//export function createMediaPage(getMenu) {
+export function createMediaPage() {
     //console.log("$$$$ in the createMediaPage")
-    empty(filterContainer)
+    //empty(filterContainer)
     empty(thumbnailContainer)
     empty(editRow1)
 
+    /*
     if (getMenu) {
         buildMenuElements(mediaType)
     }
     buildFilterElements(mediaType)
+    */
 
-    mediaPageContainer.appendChild(filterContainer);
+    //mediaPageContainer.appendChild(filterContainer);
     mediaPageContainer.appendChild(thumbnailContainer);
 
     displayCurrFileList()
@@ -159,6 +243,7 @@ export function updateAdminMessage(displayMessage) {
     //------------------------------------------------------------------------------------------------------------
     // Create a collapsible menu from a directory structure
     //------------------------------------------------------------------------------------------------------------
+/*
     function buildFilterElements(mediaType) {
         empty(filterContainer)
 
@@ -310,7 +395,7 @@ export function updateAdminMessage(displayMessage) {
         filterContainer.appendChild(filterRow1);
         filterContainer.appendChild(filterRow2);
     }
-
+*/
     
     //===========================================================================================================
     // Display the current list image thumbnails in the thumbnail container (with appropriate class links)
@@ -538,7 +623,8 @@ export function updateAdminMessage(displayMessage) {
                 button.setAttribute('type',"button")
                 button.setAttribute('role',"button")
                 button.setAttribute('data-MediaType', mediaType)
-                button.setAttribute('data-category', mediaFilterCategory.value)
+                //button.setAttribute('data-category', mediaFilterCategory.value)
+                button.setAttribute('data-category', "")
                 button.setAttribute('data-startDate', FilterRec.startDate)
                 button.setAttribute('data-menuItem', queryMenuItem)
                 button.setAttribute('data-albumKey', queryAlbumKey)
@@ -553,7 +639,8 @@ export function updateAdminMessage(displayMessage) {
                     button2.setAttribute('type',"button")
                     button2.setAttribute('role',"button")
                     button2.setAttribute('data-MediaType', mediaType)
-                    button2.setAttribute('data-category', mediaFilterCategory.value)
+                    //button2.setAttribute('data-category', mediaFilterCategory.value)
+                    button2.setAttribute('data-category', "")
                     button2.setAttribute('data-startDate', FilterRec.startDate)
                     button2.setAttribute('data-menuItem', queryMenuItem)
                     button2.setAttribute('data-albumKey', queryAlbumKey)

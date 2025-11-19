@@ -267,16 +267,15 @@ export function getHoursInt(inDateStr) {
   return(parseInt(formattedDate))
 }
 */
-export function getHoursInt(inDate,startHour=7,numHours=2) {
+//export function getHoursInt(inDate,startHour=7,numHours=2) {
+export function getHoursInt(numHours=2) {
     let td = new Date()
-    if (inDate != null) {
-        td = inDate
-    }
 
-    //td.setHours(td.getHours() + (parseInt(hours)-gmtAdjustment))  // Adjust for GMT time
+    //td.setHours(td.getHours() + (parseInt(numHours)-gmtAdjustment))  // Adjust for GMT time
+    td.setHours(td.getHours() + (parseInt(numHours)))  // Adjust for GMT time
 
     let dateStr = td.toISOString()  //2024-01-31T19:37:12.291Z
-
+    
     //"PointDayTime": 24060011,
 
     // Example usage

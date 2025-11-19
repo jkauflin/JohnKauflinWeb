@@ -51,7 +51,6 @@ import {} from './mediagallery.js';
 var navbarCollapseShown = false
 
 document.addEventListener('DOMContentLoaded', () => {
-
     var collapsibleNavbar = document.getElementsByClassName("navbar-collapse")[0]
     collapsibleNavbar.addEventListener('hidden.bs.collapse', function () {
         navbarCollapseShown = false
@@ -85,8 +84,3 @@ document.addEventListener('DOMContentLoaded', () => {
         querySolarMetrics()
     }))
 })
-
-
-
-
-

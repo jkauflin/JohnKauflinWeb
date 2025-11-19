@@ -286,7 +286,6 @@ export async function queryMediaInfo(paramData) {
         // Moved from create-pages
         buildFilterElements()
 
-
         // Save the parameters from the laste query
         queryCategory = paramData.MediaFilterCategory
         querySearchStr = ""

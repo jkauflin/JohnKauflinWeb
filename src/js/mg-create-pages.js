@@ -19,19 +19,9 @@ import {mediaInfo,mediaType,
     updateMediaInfo,
     newVideosMediaInfo
 } from './mg-data-repository.js'
-/*
-import {mediaInfo,mediaType,
-    queryCategory,querySearchStr,queryMenuItem,queryAlbumKey,
-    categoryList,
-    contentDesc,
-    queryMediaInfo,
-    getFilePath,getFileName
-} from './mg-data-repository.js'
-*/
 
 import {mediaAlbumMenuCanvasId,buildAlbumMenuElements} from './mg-album.js'
 import {setContextMenuListeners} from './mg-contextmenu.js'
-//import {mediaMenuCanvasId,buildMenuElements} from './mg-menu.js'
 import {displayElementInLightbox} from './mg-lightbox.js'
 import {playlistSongClass,audioPrevClass,audioNextClass,audioPlayer,setAudioListeners,
         emptyPlaylist,incrementPlaylistIndex,addSongToPlaylist,initSong} from './mg-audio-playlist.js'
@@ -146,7 +136,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 MediaFilterStartDate: event.target.getAttribute('data-startDate'),
                 MediaFilterMenuItem: event.target.getAttribute('data-menuItem'),
                 MediaFilterAlbumKey: event.target.getAttribute('data-albumKey'),
-                MediaFilterSearchStr: event.target.getAttribute('data-searchStr')}
+                MediaFilterSearchStr: event.target.getAttribute('data-searchStr')
+            }
 
             queryMediaInfo(paramData);
 

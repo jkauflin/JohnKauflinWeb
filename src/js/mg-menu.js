@@ -163,6 +163,3 @@ export function buildMenuElements(mediaType) {
         menuContainer.appendChild(accordianContainer);
     }
 }
-
-
-

@@ -182,50 +182,18 @@ export function paddy(num, padlen, padchar) {
     return (pad + num).slice(-pad.length)
 }
 
-export function addDays(inDate, days) {
-    //let td = new Date(inDate)
-    let td = inDate
+export function addDays(td, days) {
     td.setDate(td.getDate() + (parseInt(days)+1))
-    /*
-    let tempMonth = td.getMonth() + 1
-    let tempDay = td.getDate()
-    let outDate = td.getFullYear() + '-' + paddy(tempMonth,2) + '-' + paddy(tempDay,2)
-    */
-    /*
-    const dateTimeFormatOptions = {
-        //timeZone: "Africa/Accra",
-        //hour12: true,
-        //hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit"
-    };
-    */
-    //return tempDate.toLocaleTimeString("en-US", dateTimeFormatOptions)
-    //return outDate;
-    //return tempDate.toLocaleDateString("en-US", dateTimeFormatOptions)
-    //return td.toLocaleDateString()
     return td.toISOString().substring(0,10)  //2024-01-31T19:37:12.291Z
 }
 
-export function addHours(inDate, hours) {
-  //let td = new Date(inDate)
-  let td = inDate
+export function addHours(td, hours) {
   td.setHours(td.getHours() + (parseInt(hours)-4))  // Adjust for GMT time
   return td.toISOString().substring(0,19)
 }
 
 // Return an integer of the date + hours (2024123101)
 export function getDateInt(inDateStr) {
-    /*
-    let td = new Date()
-    if (inDate != null) {
-        td = inDate
-    }
-    let tempMonth = td.getMonth() + 1
-    let tempDay = td.getDate()
-    let formattedDate = td.getFullYear() + paddy(tempMonth,2) + paddy(tempDay,2) + paddy(td.getHours(),2)
-    */
-
     let formattedDate = "1800-01-01 00:00:00"
     if (inDateStr != null) {
         if (inDateStr.length >= 13) {
@@ -240,16 +208,6 @@ export function getDateInt(inDateStr) {
 
 // Return an integer of the date + hours (2024123101)
 export function getDateDayInt(inDateStr) {
-    /*
-    let td = new Date()
-    if (inDate != null) {
-        td = inDate
-    }
-    let tempMonth = td.getMonth() + 1
-    let tempDay = td.getDate()
-    let formattedDate = td.getFullYear() + paddy(tempMonth,2) + paddy(tempDay,2) + paddy(td.getHours(),2)
-    */
-
     let formattedDate = "1800-01-01 00:00:00"
     if (inDateStr != null) {
         formattedDate = inDateStr.substring(0,4) + inDateStr.substring(5,7) + inDateStr.substring(8,10)
@@ -258,36 +216,12 @@ export function getDateDayInt(inDateStr) {
     return(parseInt(formattedDate))
 }
 
-/*
 export function getHoursInt(inDateStr) {
   let formattedDate = "1800-01-01 00:00:00"
   if (inDateStr != null) {
     formattedDate = inDateStr.substring(2,4) + inDateStr.substring(11,13) + inDateStr.substring(14,16) + inDateStr.substring(17,19)
   }
   return(parseInt(formattedDate))
-}
-*/
-//export function getHoursInt(inDate,startHour=7,numHours=2) {
-export function getHoursInt(numHours=2) {
-    let td = new Date()
-
-    //td.setHours(td.getHours() + (parseInt(numHours)-gmtAdjustment))  // Adjust for GMT time
-    td.setHours(td.getHours() + (parseInt(numHours)))  // Adjust for GMT time
-
-    let dateStr = td.toISOString()  //2024-01-31T19:37:12.291Z
-    
-    //"PointDayTime": 24060011,
-
-    // Example usage
-    //let gmtDate = new Date('2025-01-26T12:00:00Z'); // GMT date
-    //console.log(getESTTime(gmtDate)); // Convert GMT to EST/EDT
-
-
-    let formattedDate = "1800-01-01 00:00:00"
-    if (dateStr != null) {
-        formattedDate = dateStr.substring(2,4) + dateStr.substring(11,13) + dateStr.substring(14,16) + dateStr.substring(17,19)
-    }
-    return(parseInt(formattedDate))
 }
 
 export function daysFromDate(dateStr) {

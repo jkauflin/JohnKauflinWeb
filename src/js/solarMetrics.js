@@ -83,6 +83,7 @@ export async function querySolarMetrics() {
         dayTotalStartBucket: dayTotalStartBucket,
         dayTotalMaxRows: dayTotalMaxRows
     }
+//            string sql = "SELECT TOP @maxRows * FROM c WHERE c.PointDayTime >= @pointDayTime ORDER BY c.PointDayTime ASC";
 
     showLoadingSpinner(pointDateTimeDiv)
     try {

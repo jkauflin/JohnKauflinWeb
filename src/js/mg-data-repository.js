@@ -25,8 +25,7 @@ Modification History
 2025-11-15 JJK  Moving filter elements here from mg-create-pages.js
 ================================================================================*/
 
-//import {empty,showLoadingSpinner,addDays,addHours,getDateInt,getHoursInt} from './util.js';
-import {empty,showLoadingSpinner,checkFetchResponse,addDays,getDateInt} from './util.js';
+import {empty,showLoadingSpinner,checkFetchResponse,addDays} from './util.js';
 import {createMediaPage,displayCurrFileList,updateAdminMessage} from './mg-create-pages.js';
 import {mediaAlbumMenuCanvasId,buildAlbumMenuElements} from './mg-album.js'
 import {setMenuList,buildMenuElements,mediaMenuCanvasId} from './mg-menu.js';
@@ -118,9 +117,7 @@ export function getFileName(index) {
 // Query the database for menu and file information and store in js variables
 //------------------------------------------------------------------------------------------------------------
 export async function queryMediaInfo(paramData) {
-    //console.log(">>>>> in the QueryMediaInfo, paramData.MediaFilterMediaType = "+paramData.MediaFilterMediaType)
-    //console.log("--------------------------------------------------------------------")
-    //console.log("$$$$$ in the QueryMediaInfo, mediaType = "+mediaType)
+    console.log("--------------------------------------------------------------------")
 
     // This is set when tab, tile, or album is clicked, but making sure it get set in the parameter values (for the API calls)
     if (paramData.MediaFilterMediaType != null && paramData.MediaFilterMediaType != '') {
@@ -128,6 +125,8 @@ export async function queryMediaInfo(paramData) {
     } else {
         paramData.MediaFilterMediaType = mediaType.toString()
     }   
+
+    console.log(">>>>> in the QueryMediaInfo, MediaFilterMediaType = "+paramData.MediaFilterMediaType+", mediaType = "+mediaType)
 
     // Load the category list for the selected media type
     let mti = mediaType - 1;
@@ -148,6 +147,7 @@ export async function queryMediaInfo(paramData) {
         if (paramData.MediaFilterStartDate == "DEFAULT") {
             paramData.MediaFilterStartDate = "1800-01-01"
             if (mediaType == 1) {
+                // If Photos, default display to last 60 days
                 paramData.MediaFilterStartDate = addDays(new Date(), -60)
             }
         }
@@ -158,6 +158,7 @@ export async function queryMediaInfo(paramData) {
 	}
     if (paramData.MediaFilterAlbumKey != null && paramData.MediaFilterAlbumKey != '') {
         if (paramData.MediaFilterAlbumName != null && paramData.MediaFilterAlbumName != '') {
+            // how does the AlbumName get set here?
             mediaInfo.menuOrAlbumName = paramData.MediaFilterAlbumName
         }
 	}
@@ -174,7 +175,9 @@ export async function queryMediaInfo(paramData) {
         // Success
         let mediaInfoColl = await response.json()
         isAdmin = mediaInfoColl.isAdmin
-        //console.log("mediaInfoList.length = ",mediaInfoColl.mediaInfoList.length,", isAdmin = ",isAdmin)
+        
+        console.log("mediaInfoList.length = ",mediaInfoColl.mediaInfoList.length,", isAdmin = ",isAdmin)
+        
         mediaInfo.fileList.length = 0
         mediaInfo.fileList = mediaInfoColl.mediaInfoList
         mediaInfo.filterList = []
@@ -182,6 +185,9 @@ export async function queryMediaInfo(paramData) {
         if (mediaInfo.fileList.length > 0) {
             mediaInfo.startDate = mediaInfo.fileList[0].takenDateTime.substring(0,10)
             //console.log(">>> mediaInfo.startDate = "+mediaInfo.startDate)
+
+            // set the start date to the first file's date
+            // and set the LAST for the Next filter
 
             // Set the filter list elements
             let currYear = mediaInfo.startDate.substring(0,4)
@@ -280,11 +286,12 @@ export async function queryMediaInfo(paramData) {
             // Save the menu lists
             setMenuList(mediaInfo.menuList)
             buildMenuElements(mediaType)
+
+            // Moved from create-pages   (see if I just need to call when menu is built)
+            buildFilterElements()
+
             queryMediaAlbum(paramData)
         }
-
-        // Moved from create-pages
-        buildFilterElements()
 
         // Save the parameters from the laste query
         queryCategory = paramData.MediaFilterCategory
@@ -318,12 +325,11 @@ export async function queryMediaInfo(paramData) {
 
 function executeFilter(inStartDate) {
     //mediaFilterSearchStr.value = cleanInputStr(mediaFilterSearchStr.value)
-    mediaFilterSearchStr.value = mediaFilterSearchStr.value
     //console.log(">>> Execute Filter mediaFilterMediaType = "+mediaType)
-    //console.log(">>> Execute Filter mediaFilterCategory = "+mediaFilterCategory.value)
-    //console.log(">>> Filter mediaFilterStartDate = "+mediaFilterStartDate.value)
-    //console.log(">>> Filter          inStartDate = "+inStartDate)
-    //console.log(">>> Filter mediaFilterSearchStr = "+mediaFilterSearchStr.value)
+    console.log(">>> Execute Filter mediaFilterCategory = "+mediaFilterCategory.value)
+    console.log(">>> Filter mediaFilterStartDate = "+mediaFilterStartDate.value)
+    console.log(">>> Filter          inStartDate = "+inStartDate)
+    console.log(">>> Filter mediaFilterSearchStr = "+mediaFilterSearchStr.value)
 
     let paramData = {
         MediaFilterMediaType: mediaType, 
@@ -339,6 +345,7 @@ function executeFilter(inStartDate) {
 // Create a collapsible menu from a directory structure
 //------------------------------------------------------------------------------------------------------------
 function buildFilterElements() {
+    console.log(">>> buildFilterElements in data-repository.js, mediaType = "+mediaType)
 
     // Clear existing options
     mediaFilterCategory.options.length = 0
@@ -512,7 +519,6 @@ export function setMenuFilter(categoryName) {
         }
     }
 }
-
 
 
 var mediaTypeData = [

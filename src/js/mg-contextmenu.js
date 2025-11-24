@@ -51,12 +51,14 @@ document.addEventListener('DOMContentLoaded', () => {
     albumOptions = document.getElementById("albumOptions")
 
     // Populate album options dropdown only when albumList is available.
+    /*
     if (Array.isArray(albumList) && albumList.length) {
         populateAlbumOptions()
     } else {
         // Wait for mg-album to dispatch 'albums-loaded' when it finishes loading data
         document.addEventListener('albums-loaded', () => populateAlbumOptions(), { once: true })
     }
+    */
 
     // Handle album option clicks -- append selected album to updAlbumTags (comma-separated, no duplicates)
     albumOptions.addEventListener('click', (event) => {
@@ -149,10 +151,28 @@ function displayImgContextMenu(event) {
         return
     }
     let index = parseInt(event.target.getAttribute('data-index'))
-    if (typeof index !== "undefined" && index !== null) {
-        displayModalDetail(index)
-        mediaModal.show()
+    if (typeof index == "undefined" || index == null) {
+        console.log("Context Menu: No data-index found on target")
+        return
     }
+
+    if (albumOptions.innerHTML == '') {
+        if (Array.isArray(albumList) && albumList.length) {
+            populateAlbumOptions()
+        }
+    }
+
+    /*
+    if (Array.isArray(albumList) && albumList.length) {
+        populateAlbumOptions()
+    } else {
+        // Wait for mg-album to dispatch 'albums-loaded' when it finishes loading data
+        document.addEventListener('albums-loaded', () => populateAlbumOptions(), { once: true })
+    }
+    */
+   
+    displayModalDetail(index)
+    mediaModal.show()
 }
 
     function holdDownStart(event) {

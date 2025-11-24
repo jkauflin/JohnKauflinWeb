@@ -20,7 +20,6 @@ import {mediaInfo,mediaType,
     newVideosMediaInfo
 } from './mg-data-repository.js'
 
-import {mediaAlbumMenuCanvasId,buildAlbumMenuElements} from './mg-album.js'
 import {setContextMenuListeners} from './mg-contextmenu.js'
 import {displayElementInLightbox} from './mg-lightbox.js'
 import {playlistSongClass,audioPrevClass,audioNextClass,audioPlayer,setAudioListeners,

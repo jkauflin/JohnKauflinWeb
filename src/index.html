@@ -437,8 +437,15 @@ and being part of a wonderful music community
 						</div>
 
                         <div class="mb-2 form-floating">
-							<input  id="updPeople" type="text" class="form-control shadow-none" />
-							<label for="updPeople">People</label>
+                            <div class="input-group">
+							    <input  id="updPeople" type="text" class="form-control shadow-none" placeholder="People" />
+                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    People
+                                </button>
+                                <ul id="peopleOptions" class="dropdown-menu dropdown-menu-end" style="max-height:200px; overflow-y:auto;">
+                                </ul>
+                            </div>
+
 						</div>
 					</div>
 

@@ -7,22 +7,18 @@ Modification History
 2023-08-26 JJK  Initial version - moved menu components to this module
 ================================================================================*/
 import {empty} from './util.js';
-import {mediaInfo,mediaType,mediaTypeDesc,setMediaType,
-    queryMediaInfo,
-    getFilePath,getFileName
-} from './mg-data-repository.js'
+import {mediaType,mediaTypeDesc,queryMediaInfo} from './mg-data-repository.js'
 
 var menuList = []
 var mediaMenuCanvas
 var mediaMenuCanvasLabel
 const MediaOffcanvasMenuId = "MediaOffcanvasMenu"
-export const MediaMenuRequestClass = "MediaMenuRequest"
-export const mediaMenuCanvasId = "MediaMenuCanvas"
-export var menuContainer
+const MediaMenuRequestClass = "MediaMenuRequest"
+var menuContainer
 
 document.addEventListener('DOMContentLoaded', () => {
     // Get the element reference and pass it to Bootstrap
-    const mediaMenuEl = document.getElementById(mediaMenuCanvasId)
+    const mediaMenuEl = document.getElementById("MediaMenuCanvas")
     if (mediaMenuEl) {
         mediaMenuCanvas = bootstrap.Offcanvas.getOrCreateInstance(mediaMenuEl)
     } else {

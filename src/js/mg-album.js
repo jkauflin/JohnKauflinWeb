@@ -9,25 +9,19 @@ Modification History
 2024-01-14 JJK  Added getAlbumName
 ================================================================================*/
 import {empty} from './util.js';
-import {mediaInfo,mediaType,mediaTypeDesc,setMediaType,
-    queryMediaInfo,
-    getFilePath,getFileName
-} from './mg-data-repository.js'
+import {mediaType,mediaTypeDesc,queryMediaInfo} from './mg-data-repository.js'
 
-export const MediaAlbumMenuRequestClass = "MediaAlbumMenuRequest"
-export const mediaAlbumMenuCanvasId = "MediaAlbumMenuCanvas"
-export var albumList = []
+const MediaAlbumMenuRequestClass = "MediaAlbumMenuRequest"
+var albumList = []
 var mediaAlbumMenuCanvas
-var MediaOffcanvasAlbumMenuId = "MediaOffcanvasAlbumMenu"
-export var menuAlbumContainer
+var menuAlbumContainer
 var mediaAlbumMenuCanvasLabel
 
 document.addEventListener('DOMContentLoaded', () => {
-    //mediaAlbumMenuCanvas = bootstrap.Offcanvas.getOrCreateInstance(mediaAlbumMenuCanvasId)
-    mediaAlbumMenuCanvas = bootstrap.Offcanvas.getOrCreateInstance(document.getElementById(mediaAlbumMenuCanvasId))
+    mediaAlbumMenuCanvas = bootstrap.Offcanvas.getOrCreateInstance(document.getElementById("MediaAlbumMenuCanvas"))
     mediaAlbumMenuCanvasLabel = document.getElementById("MediaAlbumMenuCanvasLabel")
 
-    menuAlbumContainer = document.getElementById(MediaOffcanvasAlbumMenuId)
+    menuAlbumContainer = document.getElementById("MediaOffcanvasAlbumMenu")
     menuAlbumContainer.addEventListener("click", function (event) {
         if (event.target && event.target.classList.contains(MediaAlbumMenuRequestClass)) {
             // If click on a album item, query the data and build the thumbnail display
@@ -44,20 +38,11 @@ document.addEventListener('DOMContentLoaded', () => {
     })
 })
 
-
-async function loadAlbumsFromServer() {
-    // ...fetch/build albumList...
-    albumList = /* result array */
-    // notify listeners
-    document.dispatchEvent(new CustomEvent('albums-loaded'))
-}
-
-// call your loader at init time
-loadAlbumsFromServer()
-
-
 export function setAlbumList(inAlbumList) {
     albumList = inAlbumList
+}
+export function getAlbumList() {
+    return albumList
 }
 
 export function hideMediaAlbumMenuCanvas() {

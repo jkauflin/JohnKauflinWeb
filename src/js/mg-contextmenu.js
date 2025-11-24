@@ -10,7 +10,7 @@ Modification History
 import {empty} from './util.js';
 import {isAdmin,mediaInfo,getFilePath,getFileName,updateMediaInfo} from './mg-data-repository.js'
 import {setPeopleListenersDetail} from './mg-people.js'
-import {albumList} from './mg-album.js'
+import {getAlbumList} from './mg-album.js'
 
 var mediaModal
 var mediaModalTitle
@@ -26,8 +26,9 @@ var updPeople
 var updDescription
 var updMessageDisplay
 var albumOptions
+var peopleOptions
 var listenClass = ""
-var editMode = true
+//var editMode = true
 
 var beingHeldDown = false
 var holdDownStartMs = 0
@@ -49,22 +50,17 @@ document.addEventListener('DOMContentLoaded', () => {
     updMessageDisplay = document.getElementById("updMessageDisplay")
 
     albumOptions = document.getElementById("albumOptions")
-
-    // Populate album options dropdown only when albumList is available.
-    /*
-    if (Array.isArray(albumList) && albumList.length) {
-        populateAlbumOptions()
-    } else {
-        // Wait for mg-album to dispatch 'albums-loaded' when it finishes loading data
-        document.addEventListener('albums-loaded', () => populateAlbumOptions(), { once: true })
-    }
-    */
+    peopleOptions = document.getElementById("peopleOptions")
 
     // Handle album option clicks -- append selected album to updAlbumTags (comma-separated, no duplicates)
     albumOptions.addEventListener('click', (event) => {
         if (event.target.classList.contains('dropdown-item')) {
             event.preventDefault()
-            const selected = event.target.textContent.trim()
+            
+            let albumOptionVal = event.target.textContent.trim()
+            let firstSpaceIndex = albumOptionVal.indexOf(" ");   // find the position of the first space
+            const selected = albumOptionVal.substring(0, firstSpaceIndex)
+
             const current = (updAlbumTags.value || '').trim()
             if (selected.length === 0) return
             // Build array of existing tags (trim each)
@@ -73,6 +69,27 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!parts.includes(selected)) {
                 parts.push(selected)
                 updAlbumTags.value = parts.join(', ')
+            }
+        }
+    })
+
+    // Handle people option clicks -- append selected person to updPeople (comma-separated, no duplicates)
+    peopleOptions.addEventListener('click', (event) => {
+        if (event.target.classList.contains('dropdown-item')) {
+            event.preventDefault()
+            
+            let selected = event.target.textContent.trim()
+            //let firstSpaceIndex = albumOptionVal.indexOf(" ");   // find the position of the first space
+            //const selected = albumOptionVal.substring(0, firstSpaceIndex)
+
+            const current = (updPeople.value || '').trim()
+            if (selected.length === 0) return
+            // Build array of existing tags (trim each)
+            const parts = current.length ? current.split(/\s*,\s*/).filter(p => p.length) : []
+            // Only append if not already present
+            if (!parts.includes(selected)) {
+                parts.push(selected)
+                updPeople.value = parts.join(',')
             }
         }
     })
@@ -101,32 +118,15 @@ document.addEventListener('DOMContentLoaded', () => {
         let formValid = UpdateMediaForm.checkValidity()
         event.preventDefault()
         event.stopPropagation()
-        UpdateOwnerMessageDisplay.textContent = ""
+        updMessageDisplay.textContent = ""
         if (!formValid) {
-            UpdateOwnerMessageDisplay.textContent = "Form inputs are NOT valid"
+            updMessageDisplay.textContent = "Form inputs are NOT valid"
         } else {
             updateOwner()
         }
         UpdateMediaForm.classList.add('was-validated')
     })
 })
-
-function populateAlbumOptions() {
-    // Clear existing options
-    albumOptions.innerHTML = ''
-    
-    // Populate with albums from albumList
-    for (let index in albumList) {
-        const li = document.createElement('li')
-        const a = document.createElement('a')
-        a.classList.add('dropdown-item')
-        a.href = '#'
-        a.textContent = albumList[index].albumKey + " " + albumList[index].albumName
-        li.appendChild(a)
-        albumOptions.appendChild(li)
-    }
-}
-
 
 export function updateMessage(displayMessage) {
     if (updMessageDisplay != null) {
@@ -156,21 +156,23 @@ function displayImgContextMenu(event) {
         return
     }
 
-    if (albumOptions.innerHTML == '') {
-        if (Array.isArray(albumList) && albumList.length) {
-            populateAlbumOptions()
-        }
+    if (albumOptions.innerHTML.trim() == '') {
+        albumOptions.innerHTML = ''
+        let albumList = getAlbumList()
+        // Populate with albums from albumList
+        for (let index in albumList) {
+            const li = document.createElement('li')
+            const a = document.createElement('a')
+            a.classList.add('dropdown-item')
+            a.href = '#'
+            a.textContent = albumList[index].albumKey + " " + albumList[index].albumName
+            li.appendChild(a)
+            albumOptions.appendChild(li)
+        }        
+
+        queryPeopleInfo()
     }
 
-    /*
-    if (Array.isArray(albumList) && albumList.length) {
-        populateAlbumOptions()
-    } else {
-        // Wait for mg-album to dispatch 'albums-loaded' when it finishes loading data
-        document.addEventListener('albums-loaded', () => populateAlbumOptions(), { once: true })
-    }
-    */
-   
     displayModalDetail(index)
     mediaModal.show()
 }
@@ -206,6 +208,35 @@ function displayImgContextMenu(event) {
             }
         }
     }
+
+//------------------------------------------------------------------------------------------------------------
+// Query the database for people data and store in js variables
+//------------------------------------------------------------------------------------------------------------
+async function queryPeopleInfo() {
+    const endpoint = "/api/GetPeopleList";
+    const response = await fetch(endpoint, {
+        method: "POST"
+    })
+    const result = await response.json()
+    if (result.errors != null) {
+        console.log("Error: "+result.errors[0].message)
+        console.table(result.errors)
+        // Message display ???
+    } else {
+        let peopleList = result
+
+        peopleOptions.innerHTML = ''
+        for (let index in peopleList) {
+            const li = document.createElement('li')
+            const a = document.createElement('a')
+            a.classList.add('dropdown-item')
+            a.href = '#'
+            a.textContent = peopleList[index]
+            li.appendChild(a)
+            peopleOptions.appendChild(li)
+        }        
+    }
+}
 
 //-------------------------------------------------------------------------------------------------------
 // Display file information in Medial Modal popup
@@ -384,7 +415,6 @@ function displayModalDetail(index) {
     "AlbumName": "EA",
     "AlbumDesc": "Good times
 */
-
 
 }
 

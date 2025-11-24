@@ -27,9 +27,8 @@ Modification History
 
 import {empty,showLoadingSpinner,checkFetchResponse,addDays} from './util.js';
 import {createMediaPage,displayCurrFileList,updateAdminMessage} from './mg-create-pages.js';
-import {mediaAlbumMenuCanvasId,buildAlbumMenuElements} from './mg-album.js'
-import {setMenuList,buildMenuElements,mediaMenuCanvasId} from './mg-menu.js';
-import {setAlbumList,getAlbumName} from './mg-album.js';
+import {setMenuList,buildMenuElements} from './mg-menu.js';
+import {setAlbumList,getAlbumName,buildAlbumMenuElements} from './mg-album.js';
 import {updateMessage} from './mg-contextmenu.js';
 
 export var isAdmin = false
@@ -313,7 +312,7 @@ export async function queryMediaInfo(paramData) {
         }
 
         contentDesc = mediaTypeDesc + " - " + queryCategory
-        createMediaPage(paramData.getMenu)
+        createMediaPage()
         MediaPageMessage.textContent = ""
 
     } catch (err) {

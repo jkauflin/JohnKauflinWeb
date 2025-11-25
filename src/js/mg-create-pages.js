@@ -11,15 +11,7 @@ Modification History
                 the presentation functions with no edit
 ================================================================================*/
 import {empty} from './util.js';
-import {mediaInfo,mediaType,
-    queryCategory,querySearchStr,queryMenuItem,queryAlbumKey,
-    categoryList,contentDesc,
-    queryMediaInfo,
-    getFilePath,getFileName,
-    updateMediaInfo,
-    newVideosMediaInfo
-} from './mg-data-repository.js'
-
+import {mediaInfo,mediaType,querySearchStr,queryMenuItem,queryAlbumKey,queryMediaInfo,getFilePath,getFileName} from './mg-data-repository.js'
 import {setContextMenuListeners} from './mg-contextmenu.js'
 import {displayElementInLightbox} from './mg-lightbox.js'
 import {playlistSongClass,audioPrevClass,audioNextClass,audioPlayer,setAudioListeners,
@@ -38,9 +30,9 @@ var editRow1 = document.createElement("div")
 var mediaAdminMessage
 var mediaCategorySelect
 var mediaMenuSelect
-var mediaPeopleInput
-var mediaPeopleSelect
-var mediaPeopleList
+//var mediaPeopleInput
+//var mediaPeopleSelect
+//var mediaPeopleList
 
 var mediaFilterCategory
 var mediaFilterStartDate
@@ -53,7 +45,7 @@ var mediaDetailImg
 var mediaDetailCategoryTags
 var mediaDetailMenuTags
 var mediaDetailAlbumTags
-var mediaDetailPeopleList
+//var mediaDetailPeopleList
 var mediaDetailDescription
 // NEW ones
 var mediaDetailVideoList

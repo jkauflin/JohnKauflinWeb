@@ -23,6 +23,7 @@ Modification History
 2025-10-30 JJK  Adjusting logic for media queries 
 2025-11-01 JJK  Re-adding admin update functions
 2025-11-15 JJK  Moving filter elements here from mg-create-pages.js
+2025-11-24 JJK  Got context menu update working again
 ================================================================================*/
 
 import {empty,showLoadingSpinner,checkFetchResponse,addDays} from './util.js';
@@ -52,7 +53,7 @@ export var categoryList = []
 var defaultCategory = ""
 //let defaultCategory = "1 John J Kauflin"
 export var menuFilter = []
-export var peopleList = []
+//export var peopleList = []
 
 // Look into using environment variables for this (like secrets for Azure credentials)
 const photosUri = "https://jjkwebstorage.blob.core.windows.net/photos/"
@@ -116,7 +117,7 @@ export function getFileName(index) {
 // Query the database for menu and file information and store in js variables
 //------------------------------------------------------------------------------------------------------------
 export async function queryMediaInfo(paramData) {
-    console.log("--------------------------------------------------------------------")
+    //console.log("-------------")
 
     // This is set when tab, tile, or album is clicked, but making sure it get set in the parameter values (for the API calls)
     if (paramData.MediaFilterMediaType != null && paramData.MediaFilterMediaType != '') {
@@ -125,7 +126,7 @@ export async function queryMediaInfo(paramData) {
         paramData.MediaFilterMediaType = mediaType.toString()
     }   
 
-    console.log(">>>>> in the QueryMediaInfo, MediaFilterMediaType = "+paramData.MediaFilterMediaType+", mediaType = "+mediaType)
+    //console.log(">>>>> in the QueryMediaInfo, MediaFilterMediaType = "+paramData.MediaFilterMediaType+", mediaType = "+mediaType)
 
     // Load the category list for the selected media type
     let mti = mediaType - 1;
@@ -175,7 +176,7 @@ export async function queryMediaInfo(paramData) {
         let mediaInfoColl = await response.json()
         isAdmin = mediaInfoColl.isAdmin
         
-        console.log("mediaInfoList.length = ",mediaInfoColl.mediaInfoList.length,", isAdmin = ",isAdmin)
+        //console.log("mediaInfoList.length = ",mediaInfoColl.mediaInfoList.length,", isAdmin = ",isAdmin)
         
         mediaInfo.fileList.length = 0
         mediaInfo.fileList = mediaInfoColl.mediaInfoList
@@ -242,6 +243,7 @@ export async function queryMediaInfo(paramData) {
 
         } // if (mediaInfo.fileList.length > 0) {
 
+        // Set the Menu and Album elements on the initial load for this media type
         if (paramData.getMenu) {
             let mti = mediaType - 1
             mediaTypeDesc = mediaTypeData[mti].MediaTypeDesc
@@ -258,15 +260,6 @@ export async function queryMediaInfo(paramData) {
                     category = mediaTypeData[mti].Category[i]
                     categoryList.push(category.CategoryName)
                     cnt++
-                    if (mediaType == 1) {
-                        if (cnt == 2) {
-                            defaultCategory = category.CategoryName
-                        }
-                    } else {
-                        if (cnt == 1) {
-                            defaultCategory = category.CategoryName
-                        }
-                    }
 
                     for (let j = 0; j < category.Menu.length; j++) {
                         menuFilter[menuFilter.length] = category.Menu[j].MenuItem;
@@ -325,10 +318,10 @@ export async function queryMediaInfo(paramData) {
 function executeFilter(inStartDate) {
     //mediaFilterSearchStr.value = cleanInputStr(mediaFilterSearchStr.value)
     //console.log(">>> Execute Filter mediaFilterMediaType = "+mediaType)
-    console.log(">>> Execute Filter mediaFilterCategory = "+mediaFilterCategory.value)
-    console.log(">>> Filter mediaFilterStartDate = "+mediaFilterStartDate.value)
-    console.log(">>> Filter          inStartDate = "+inStartDate)
-    console.log(">>> Filter mediaFilterSearchStr = "+mediaFilterSearchStr.value)
+    //console.log(">>> Execute Filter mediaFilterCategory = "+mediaFilterCategory.value)
+    //console.log(">>> Filter mediaFilterStartDate = "+mediaFilterStartDate.value)
+    //console.log(">>> Filter          inStartDate = "+inStartDate)
+    //console.log(">>> Filter mediaFilterSearchStr = "+mediaFilterSearchStr.value)
 
     let paramData = {
         MediaFilterMediaType: mediaType, 
@@ -344,7 +337,7 @@ function executeFilter(inStartDate) {
 // Create a collapsible menu from a directory structure
 //------------------------------------------------------------------------------------------------------------
 function buildFilterElements() {
-    console.log(">>> buildFilterElements in data-repository.js, mediaType = "+mediaType)
+    //console.log(">>> buildFilterElements in data-repository.js, mediaType = "+mediaType)
 
     // Clear existing options
     mediaFilterCategory.options.length = 0
@@ -497,6 +490,7 @@ function checkSelected(fileInfo) {
     return !fileInfo.Selected
 }
 
+/* >>>>>>>> re-think this (Category changes - re-build any menu filters ???)
 export function setMenuFilter(categoryName) {
     // Clear the array
     menuFilter = []
@@ -518,7 +512,7 @@ export function setMenuFilter(categoryName) {
         }
     }
 }
-
+*/
 
 var mediaTypeData = [
 {

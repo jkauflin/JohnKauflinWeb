@@ -359,16 +359,17 @@ and being part of a wonderful music community
           <h5 id="MediaModalTitle" class="modal-title"></h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div id="MediaModalBody" class="modal-body">
+        <div class="modal-body">
 
             <form id="UpdateMediaForm" class="needs-validation" novalidate>
+                <input id="updIndex" name="updIndex" type="text" readonly hidden>
 				<div class="row">			
 					<div class="col-md-4"><!-- Col 1 -->
-                        <img id="updImg" class="img-fluid rounded" width="95%" data-index="" src="" />
-                        <button type="submit" class="btn btn-warning shadow-none mt-2">
+                        <img id="updImg" class="img-fluid rounded" width="95%" src="" />
+                        <button id="updPrevMediaInfo" type="button" class="btn btn-warning shadow-none mt-2">
 							<i class="fa fa-chevron-left me-1"></i> Prev
 						</button>
-                        <button type="submit" class="btn btn-info shadow-none mt-2">
+                        <button id="updNextMediaInfo" type="button" class="btn btn-info shadow-none mt-2">
 							<i class="fa fa-chevron-right me-1"></i> Next
 						</button>
                         <button type="submit" class="btn btn-success shadow-none mt-2">
@@ -377,36 +378,6 @@ and being part of a wonderful music community
 						<div id="updMessageDisplay" class="m-2"></div>
 
 					</div>
-    <!--
-    var mediaAlbumSelect = document.createElement("select")
-    //mediaAlbumSelect.classList.add('form-select','float-start','shadow-none','mt-2','py-1')
-    mediaAlbumSelect.classList.add('form-select','float-start','shadow-none')
-    for (let index in albumList) {
-        if (index == 1) {
-            mediaAlbumSelect.options[mediaAlbumSelect.options.length] = new Option(albumList[index].albumKey+" "+albumList[index].albumName, albumList[index].albumKey, true, true)
-        } else {
-            mediaAlbumSelect.options[mediaAlbumSelect.options.length] = new Option(albumList[index].albumKey+" "+albumList[index].albumName, albumList[index].albumKey)
-        }
-    }
-    // When the Category changes, set the menuFilter menu items for that Category
-    mediaAlbumSelect.addEventListener("change", function () {
-        // set menuFilter array based on selected CategoryName
-        setMenuFilter(mediaAlbumSelect.value)
-        // Clear the menu options and re-load from current menuFilter
-        mediaMenuSelect.options.length = 0
-        for (let index in menuFilter) {
-            mediaMenuSelect.options[mediaMenuSelect.options.length] = new Option(menuFilter[index], menuFilter[index])
-        }
-        mediaDetailAlbumTags.value = mediaAlbumSelect.value
-    })
-    //editRow1Col3.appendChild(mediaAlbumSelect);
-    
-    // >>>>> Create a drop-down for Album Tags based on the albumList from mg-album
-    for (let index in albumList) {
-        //console.log(">>> albumList["+index+"].albumKey = "+albumList[index].albumKey+", name = "+albumList[index].albumName)
-    }
-    rowCol2.appendChild(mediaAlbumSelect)
-    -->
 
 					<div class="col-md-4"><!-- Col 2 -->
 						<div class="mb-2 form-floating">
@@ -454,7 +425,7 @@ and being part of a wonderful music community
 							<textarea  id="updDescription" class="form-control shadow-none" style="height: 250px"></textarea>
 							<label for="updDescription">Description</label>
 						</div>
-
+                            <!--
                             <div class="input-group">
                                 <input type="text" class="form-control" placeholder="Choose or type a value" id="myInput">
                                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -466,7 +437,7 @@ and being part of a wonderful music community
                                     <li><a class="dropdown-item" href="#" onclick="setValue('Option 3')">Option 3</a></li>
                                 </ul>
                             </div>
-                            
+                            -->
 					</div>
                     
 				</div>

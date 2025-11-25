@@ -150,6 +150,8 @@ namespace JohnKauflinWeb.Function
                 CosmosClient cosmosClient = new CosmosClient(apiCosmosDbConnStr);
                 Database db = cosmosClient.GetDatabase(databaseId);
                 Container container = db.GetContainer(containerId);
+
+                var sql = "SELECT * FROM c WHERE c.id = @id ";
                 int updCnt = 0;
                 int tempIndex = -1;
                 foreach (Item item in updParamData.MediaInfoFileList)
@@ -173,7 +175,6 @@ namespace JohnKauflinWeb.Function
                     }
 
                     // Build SQL query - Get the existing document from Cosmos DB (by the main unique "id")
-                    var sql = "SELECT * FROM c WHERE c.id = @id ";
                     var queryDef = new QueryDefinition(sql)
                         .WithParameter("@id", item.id);
                     var feed = container.GetItemQueryIterator<MediaInfo>(queryDef);

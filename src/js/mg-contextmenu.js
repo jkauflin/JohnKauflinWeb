@@ -6,16 +6,18 @@ DESCRIPTION:
 Modification History
 2023-09-01 JJK  Initial version - moved contextmenu components to this module
 2025-11-04 JJK  Updated display elements (dedicated modal is already in index.html)
+2025-11-24 JJK  Finished update by adding handling of Prev/Next and Save buttons
 ================================================================================*/
 import {empty} from './util.js';
 import {isAdmin,mediaInfo,getFilePath,getFileName,updateMediaInfo} from './mg-data-repository.js'
-import {setPeopleListenersDetail} from './mg-people.js'
+//import {setPeopleListenersDetail} from './mg-people.js'
 import {getAlbumList} from './mg-album.js'
 
 var mediaModal
 var mediaModalTitle
-var mediaModalBody
 
+var updMediaForm
+var updIndex
 var updImg
 var updTitle
 var updTakenDateTime
@@ -28,7 +30,8 @@ var updMessageDisplay
 var albumOptions
 var peopleOptions
 var listenClass = ""
-//var editMode = true
+var updPrevMediaInfo
+var updNextMediaInfo
 
 var beingHeldDown = false
 var holdDownStartMs = 0
@@ -37,8 +40,9 @@ var holdDownDuration = 900
 document.addEventListener('DOMContentLoaded', () => {
     mediaModal = new bootstrap.Modal(document.getElementById('MediaModal'))
     mediaModalTitle = document.getElementById("MediaModalTitle")
-    mediaModalBody = document.getElementById("MediaModalBody")
 
+    updMediaForm = document.getElementById("UpdateMediaForm")
+    updIndex = document.getElementById("updIndex")
     updImg = document.getElementById("updImg")
     updTitle = document.getElementById("updTitle")
     updTakenDateTime = document.getElementById("updTakenDateTime")
@@ -48,6 +52,9 @@ document.addEventListener('DOMContentLoaded', () => {
     updPeople = document.getElementById("updPeople")
     updDescription = document.getElementById("updDescription")
     updMessageDisplay = document.getElementById("updMessageDisplay")
+
+    updPrevMediaInfo = document.getElementById("updPrevMediaInfo")
+    updNextMediaInfo = document.getElementById("updNextMediaInfo")
 
     albumOptions = document.getElementById("albumOptions")
     peopleOptions = document.getElementById("peopleOptions")
@@ -93,6 +100,48 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     })
+        
+    updPrevMediaInfo.addEventListener("click", function (event) {
+        event.preventDefault()
+        event.stopPropagation()
+        let index = parseInt(updIndex.value)
+        if (index > 0) {
+            displayModalDetail(index-1)
+        }            
+    })
+
+    updNextMediaInfo.addEventListener("click", function (event) {
+        event.preventDefault()
+        event.stopPropagation()
+        let index = parseInt(updIndex.value)
+        if (index < mediaInfo.fileList.length-1) {
+            displayModalDetail(index+1)
+        }            
+    })
+
+    updMediaForm.addEventListener('submit', (event) => {
+        let formValid = updMediaForm.checkValidity()
+        event.preventDefault()
+        event.stopPropagation()
+        updMessageDisplay.textContent = ""
+        if (!formValid) {
+            updMessageDisplay.textContent = "Form inputs are NOT valid"
+        } else {
+            let index = parseInt(updIndex.value)
+            if (index > 0) {
+                let fi = mediaInfo.fileList[index]
+                fi.title = updTitle.value
+                fi.takenDateTime = updTakenDateTime.value
+                fi.categoryTags = updCategoryTags.value
+                fi.menuTags = updMenuTags.value
+                fi.albumTags = updAlbumTags.value
+                fi.people = updPeople.value
+                fi.description = updDescription.value
+                updateMediaInfo(index)
+            }
+        }
+        updMediaForm.classList.add('was-validated')
+    })
 
     document.addEventListener('touchstart', (event) => {
         holdDownStart(event)
@@ -112,19 +161,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (event.button == 0) {
             holdDownEnd(event)
         }
-    })
-
-    UpdateMediaForm.addEventListener('submit', (event) => {
-        let formValid = UpdateMediaForm.checkValidity()
-        event.preventDefault()
-        event.stopPropagation()
-        updMessageDisplay.textContent = ""
-        if (!formValid) {
-            updMessageDisplay.textContent = "Form inputs are NOT valid"
-        } else {
-            updateOwner()
-        }
-        UpdateMediaForm.classList.add('was-validated')
     })
 })
 
@@ -251,9 +287,8 @@ function displayModalDetail(index) {
 
     mediaModalTitle.textContent = fi.name;
 
+    updIndex.value = index
     updImg.src = getFilePath(index,"Smaller")
-    updImg.dataset.index = index
-    //updImg.setAttribute('data-index', index)
     updTitle.value = fi.title
     updTakenDateTime.value = fi.takenDateTime
     updCategoryTags.value = fi.categoryTags
@@ -262,159 +297,5 @@ function displayModalDetail(index) {
     updPeople.value = fi.people
     updDescription.value = fi.description
     updMessageDisplay.value = ""
-
-/*
-    let itemList = document.createElement("ul")
-    itemList.classList.add("list-group","mt-3")
-    let a = document.createElement("a")
-    a.setAttribute('href', getFilePath(index,"",true))
-    a.classList.add("list-group-item","list-group-item-action")
-    a.target = '_blank'
-    a.textContent = "Open FULL image in new tab"
-    itemList.appendChild(a)
-
-    a = document.createElement("a")
-    a.setAttribute('href', getFilePath(index,"",true))
-    a.download = getFileName(index)
-    a.classList.add("list-group-item","list-group-item-action")
-    a.textContent = "Save (Download) FULL image"
-    itemList.appendChild(a)
-
-    col1.appendChild(itemList)
-
-
-    var mediaAlbumSelect = document.createElement("select")
-    //mediaAlbumSelect.classList.add('form-select','float-start','shadow-none','mt-2','py-1')
-    mediaAlbumSelect.classList.add('form-select','float-start','shadow-none')
-    for (let index in albumList) {
-        if (index == 1) {
-            mediaAlbumSelect.options[mediaAlbumSelect.options.length] = new Option(albumList[index].albumKey+" "+albumList[index].albumName, albumList[index].albumKey, true, true)
-        } else {
-            mediaAlbumSelect.options[mediaAlbumSelect.options.length] = new Option(albumList[index].albumKey+" "+albumList[index].albumName, albumList[index].albumKey)
-        }
-    }
-    // When the Category changes, set the menuFilter menu items for that Category
-    mediaAlbumSelect.addEventListener("change", function () {
-        // set menuFilter array based on selected CategoryName
-        setMenuFilter(mediaAlbumSelect.value)
-        // Clear the menu options and re-load from current menuFilter
-        mediaMenuSelect.options.length = 0
-        for (let index in menuFilter) {
-            mediaMenuSelect.options[mediaMenuSelect.options.length] = new Option(menuFilter[index], menuFilter[index])
-        }
-        mediaDetailAlbumTags.value = mediaAlbumSelect.value
-    })
-    //editRow1Col3.appendChild(mediaAlbumSelect);
-    
-    // >>>>> Create a drop-down for Album Tags based on the albumList from mg-album
-    for (let index in albumList) {
-        //console.log(">>> albumList["+index+"].albumKey = "+albumList[index].albumKey+", name = "+albumList[index].albumName)
-    }
-    rowCol2.appendChild(mediaAlbumSelect)
-
-    //-------------------------------------------------------------------------------------------------------------
-    // *** People list ***
-    //-------------------------------------------------------------------------------------------------------------
-    mediaPeopleList = document.createElement("input")
-    mediaPeopleList.classList.add('form-control','shadow-none','py-1')
-    mediaPeopleList.setAttribute('type',"text")
-    mediaPeopleList.setAttribute('placeholder',"People list")
-    mediaPeopleList.value = fi.people
-    let peopleButton = document.createElement("button")
-    peopleButton.classList.add('btn','btn-danger','btn-sm','float-start','shadow-none','me-2','my-1')
-    peopleButton.setAttribute('type',"button")
-    peopleButton.setAttribute('role',"button")
-    peopleButton.textContent = "People"
-
-    rowCol2.appendChild(peopleButton)
-    // Load people
-    setPeopleListenersDetail(peopleButton,mediaPeopleList)
-    rowCol2.appendChild(mediaPeopleList);
-
-    row.appendChild(rowCol1)
-    row.appendChild(rowCol2)
-    col2.appendChild(row)
-
-    row = document.createElement("div");
-    row.classList.add('row')
-    rowCol1 = document.createElement("div");
-    rowCol1.classList.add('col-sm-2')
-    rowCol1.textContent = "Description"
-    // Add a SAVE button under the Description label
-    if (editMode) {
-        let editSaveButton = document.createElement("button")
-        editSaveButton.classList.add('btn','btn-success','btn-sm','float-start','shadow-none','mt-3','me-2','mb-3')
-        editSaveButton.setAttribute('type',"button")
-        editSaveButton.setAttribute('role',"button")
-        editSaveButton.textContent = "Update"
-        rowCol1.appendChild(editSaveButton)
-        editSaveButton.addEventListener("click", function () {
-                fi.title = mediaDetailTitle.value
-                fi.takenDateTime = mediaDetailTaken.value
-                fi.categoryTags = mediaDetailCategoryTags.value
-                fi.menuTags = mediaDetailMenuTags.value
-                fi.albumTags = mediaDetailAlbumTags.value
-                fi.people = mediaPeopleList.value
-                fi.description = mediaDetailDescription.value
-                updateMediaInfo(index)
-                //mediaModal.hide()
-        })
-    }
-    
-    // Prev
-    let detailPrevButton = document.createElement("button")
-            //detailPrevButton.id = "MediaAdminSelectAllButton"
-            detailPrevButton.classList.add('btn','btn-warning','btn-sm','float-start','shadow-none','me-2','my-0')
-            detailPrevButton.setAttribute('type',"button")
-            detailPrevButton.setAttribute('role',"button")
-            detailPrevButton.textContent = "Prev"
-            rowCol1.appendChild(detailPrevButton)
-            detailPrevButton.addEventListener("click", function () {
-                if (index > 0) {
-                    displayModalDetail(index-1)
-                }            
-            })
-    // Next
-    let detailNextButton = document.createElement("button")
-            //detailNextButton.id = "MediaAdminGetNewButton"
-            detailNextButton.classList.add('btn','btn-info','btn-sm','float-start','shadow-none','me-2','my-1')
-            detailNextButton.setAttribute('type',"button")
-            detailNextButton.setAttribute('role',"button")
-            detailNextButton.textContent = "Next"
-            rowCol1.appendChild(detailNextButton)
-            detailNextButton.addEventListener("click", function () {
-                if (index < mediaInfo.fileList.length-1) {
-                    displayModalDetail(index+1)
-                }            
-            });
-        
-    rowCol2 = document.createElement("div");
-    rowCol2.classList.add('col-sm')
-            // Description
-            mediaDetailDescription = document.createElement("textarea")
-            //mediaDetailDescription.id = "MediaDetailDescription"
-            mediaDetailDescription.classList.add('form-control','py-1','my-1','shadow-none')
-            mediaDetailDescription.setAttribute('rows', "6")
-            mediaDetailDescription.setAttribute('placeholder', "Description")
-            if (editMode) {
-                mediaDetailDescription.disabled = false
-            } else {
-                mediaDetailDescription.disabled = true
-            }
-            mediaDetailDescription.value = fi.description
-    rowCol2.appendChild(mediaDetailDescription)
-    row.appendChild(rowCol1)
-    row.appendChild(rowCol2)
-    col2.appendChild(row)
-
-    */
-/*
-    "id": "1",
-    "MediaAlbumId": 1,
-    "AlbumKey": "AL1",
-    "AlbumName": "EA",
-    "AlbumDesc": "Good times
-*/
-
 }
 

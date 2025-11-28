@@ -45,9 +45,11 @@
  *                  Bootstrap v5.3.8)
  * 2025-11-01 JJK   Pulling in new mediagallery code from public and 
  *                  re-adding update logic
+ * 2025-11-28 JJK   Removing mediagallery code from here - now back in
+ *                  main public codebase with isAdmin flag checks.
+ *                  Admin will be for reference data updates
  *============================================================================*/
 import {} from './genv.js';
-import {} from './mediagallery.js';
 
 // Keep track of the state of the navbar collapse (shown or hidden)
 var navbarCollapseShown = false

@@ -24,6 +24,11 @@ Modification History
 2025-11-01 JJK  Re-adding admin update functions
 2025-11-15 JJK  Moving filter elements here from mg-create-pages.js
 2025-11-24 JJK  Got context menu update working again
+2025-11-28 JJK  Re-adding multi-record update, and cleaning up query filter logic:
+                Menu, Album, and Filter elements are created in index.html
+                Filter:  Sets Catregory, Start Date, Search String 
+                Menu: Set Category and Menu Item (clears AlbumKey, Start Date, Search String)
+                Album: Sets AlbumKey (Sets Category to ALL), clear all other filters
 ================================================================================*/
 
 import {empty,showLoadingSpinner,checkFetchResponse,addDays} from './util.js';
@@ -117,7 +122,7 @@ export function getFileName(index) {
 // Query the database for menu and file information and store in js variables
 //------------------------------------------------------------------------------------------------------------
 export async function queryMediaInfo(paramData) {
-    //console.log("-------------")
+    console.log(" ")
 
     // This is set when tab, tile, or album is clicked, but making sure it get set in the parameter values (for the API calls)
     if (paramData.MediaFilterMediaType != null && paramData.MediaFilterMediaType != '') {
@@ -126,7 +131,14 @@ export async function queryMediaInfo(paramData) {
         paramData.MediaFilterMediaType = mediaType.toString()
     }   
 
-    //console.log(">>>>> in the QueryMediaInfo, MediaFilterMediaType = "+paramData.MediaFilterMediaType+", mediaType = "+mediaType)
+    console.log(">>> QueryMediaInfo, MediaFilterMediaType = "+paramData.MediaFilterMediaType+", mediaType = "+mediaType)
+    console.log(">>> QueryMediaInfo, MediaFilterCategory = "+paramData.MediaFilterCategory
+        +", MediaFilterMenuItem = "+paramData.MediaFilterMenuItem
+        +", MediaFilterAlbumKey = "+paramData.MediaFilterAlbumKey
+        +", MediaFilterStartDate = "+paramData.MediaFilterStartDate
+        +", MediaFilterSearchStr = "+paramData.MediaFilterSearchStr
+    )
+    console.log(" ")
 
     // Load the category list for the selected media type
     let mti = mediaType - 1;
@@ -136,6 +148,20 @@ export async function queryMediaInfo(paramData) {
     if (paramData.MediaFilterCategory == null || paramData.MediaFilterCategory == '' || paramData.MediaFilterCategory == '0' || paramData.MediaFilterCategory == 'DEFAULT') {
         paramData.MediaFilterCategory = defaultCategory
     }
+
+
+//                Filter:  Sets Catregory, Start Date, Search String 
+//                Menu: Set Category and Menu Item (clears AlbumKey, Start Date, Search String)
+//                Album: Sets AlbumKey (Sets Category to ALL), clear all other filters
+
+//    mediaFilterCategory = document.getElementById('MediaFilterCategory')
+//    mediaFilterStartDate = document.getElementById('MediaFilterStartDate')
+//    mediaFilterSearchStr = document.getElementById('MediaFilterSearchStr')
+
+    // >>>>> Determine what kind of query
+    // seperate how the Menu and Album enters?
+
+
 
     // Save the parameters from the laste query
     queryCategory = paramData.MediaFilterCategory
@@ -210,7 +236,7 @@ export async function queryMediaInfo(paramData) {
                 startDate: lastTakenDateTime
             }
             mediaInfo.filterList.push(filterRec)
-            //console.log("Next, startDate: lastTakenDateTime = "+lastTakenDateTime)
+            console.log("Next, startDate: lastTakenDateTime = "+lastTakenDateTime)
 
             //if ($param->MediaFilterMediaType == 1 && !$albumKeyExists && $cnt > 50) {
             if (mediaType == 1 && paramData.MediaFilterAlbumKey == "" && mediaInfo.fileList.length > 50) {
@@ -316,12 +342,11 @@ export async function queryMediaInfo(paramData) {
 } // queryMediaInfo
 
 function executeFilter(inStartDate) {
-    //mediaFilterSearchStr.value = cleanInputStr(mediaFilterSearchStr.value)
-    //console.log(">>> Execute Filter mediaFilterMediaType = "+mediaType)
-    //console.log(">>> Execute Filter mediaFilterCategory = "+mediaFilterCategory.value)
-    //console.log(">>> Filter mediaFilterStartDate = "+mediaFilterStartDate.value)
-    //console.log(">>> Filter          inStartDate = "+inStartDate)
-    //console.log(">>> Filter mediaFilterSearchStr = "+mediaFilterSearchStr.value)
+    console.log("**** Execute Filter mediaFilterMediaType = "+mediaType)
+    console.log("**** Execute Filter mediaFilterCategory = "+mediaFilterCategory.value)
+    console.log("**** Filter mediaFilterStartDate = "+mediaFilterStartDate.value)
+    console.log("**** Filter          inStartDate = "+inStartDate)
+    console.log("**** Filter mediaFilterSearchStr = "+mediaFilterSearchStr.value)
 
     let paramData = {
         MediaFilterMediaType: mediaType, 

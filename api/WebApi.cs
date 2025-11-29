@@ -370,9 +370,6 @@ namespace JohnKauflinWeb.Function
 
                 var queryDefinition = new QueryDefinition(
                     "SELECT * FROM c ORDER BY c._ts DESC OFFSET 0 LIMIT 1 ");
-                //"SELECT * FROM c WHERE c.id = @id")
-                //.WithParameter("@id", "9");
-                //.WithParameter("@id", "8");
 
                 // Get the existing document from Cosmos DB
                 var feed = container.GetItemQueryIterator<GenvMetricPoint>(queryDefinition);
@@ -393,6 +390,82 @@ namespace JohnKauflinWeb.Function
             }
 
             return new OkObjectResult(genvMetricPoint);
+        }
+
+        [Function("GetGenvMetrics")]
+        public async Task<IActionResult> GetGenvMetrics(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequestData req)
+        {
+            string userName = "";
+            if (!authCheck.UserAuthorizedForRole(req, userAdminRole, out userName))
+            {
+                return new BadRequestObjectResult("Unauthorized call - User does not have the correct Admin role");
+            }
+
+            string databaseId = "jjkdb1";
+            string containerId = "GenvMetricPoint";
+            var results = new List<object>();
+
+            try
+            {
+                // Read parameters from request body
+                string body = await new StreamReader(req.Body).ReadToEndAsync();
+                var paramData = JsonConvert.DeserializeObject<Dictionary<string, object>>(body ?? "{}") ?? new Dictionary<string, object>();
+
+                int pointDateStartBucket = 0;
+                int startDayTime = 0;
+                int endDayTime = 0;
+                int pointMaxRows = 5000;
+
+                if (paramData.ContainsKey("pointDateStartBucket")) pointDateStartBucket = Convert.ToInt32(paramData["pointDateStartBucket"]);
+                if (paramData.ContainsKey("startDayTime")) startDayTime = Convert.ToInt32(paramData["startDayTime"]);
+                if (paramData.ContainsKey("endDayTime")) endDayTime = Convert.ToInt32(paramData["endDayTime"]);
+                if (paramData.ContainsKey("pointMaxRows")) pointMaxRows = Convert.ToInt32(paramData["pointMaxRows"]);
+
+                CosmosClient cosmosClient = new CosmosClient(apiCosmosDbConnStr);
+                Database db = cosmosClient.GetDatabase(databaseId);
+                Container container = db.GetContainer(containerId);
+
+                // Build SQL query with parameters
+                var sql = "SELECT c.PointDateTime, c.currTemperature, c.PointDayTime FROM c WHERE c.PointDay = @PointDay";
+                if (startDayTime > 0)
+                {
+                    sql += " AND c.PointDayTime >= @StartDayTime";
+                }
+                if (endDayTime > 0)
+                {
+                    sql += " AND c.PointDayTime < @EndDayTime";
+                }
+                sql += " ORDER BY c.PointDateTime ASC OFFSET 0 LIMIT @MaxRows";
+
+                var qd = new QueryDefinition(sql)
+                    .WithParameter("@PointDay", pointDateStartBucket)
+                    .WithParameter("@MaxRows", pointMaxRows);
+
+                if (startDayTime > 0) qd = qd.WithParameter("@StartDayTime", startDayTime);
+                if (endDayTime > 0) qd = qd.WithParameter("@EndDayTime", endDayTime);
+
+                var feed = container.GetItemQueryIterator<JObject>(qd);
+                while (feed.HasMoreResults)
+                {
+                    var response = await feed.ReadNextAsync();
+                    foreach (var item in response)
+                    {
+                        // Convert JObject to plain object with the fields we need
+                        var obj = new {
+                            PointDateTime = item["PointDateTime"]?.ToString(),
+                            currTemperature = item["currTemperature"]?.ToObject<double?>()
+                        };
+                        results.Add(obj);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult($"Exception in DB query to {containerId}, message = {ex.Message}");
+            }
+
+            return new OkObjectResult(results);
         }
 
         [Function("GetGenvSelfie")]

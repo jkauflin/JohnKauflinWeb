@@ -33,6 +33,7 @@ Modification History
 2025-10-30 JJK  Commented out queryGenvMetrics until I can get it converted to
                 Function API
 2025-11-02 JJK  Checking functions
+2025-11-29 JJK  Converted queryGenvMetrics to use Function API
 ================================================================================*/
 
 import {empty,showLoadingSpinner,checkFetchResponse,convertUTCDateToLocalDate,
@@ -531,61 +532,35 @@ function _renderGenvMetricPoint(gmp) {
 //------------------------------------------------------------------------------------------------------------
 // Query the database for menu and file information and store in js variables
 //------------------------------------------------------------------------------------------------------------
-export async function queryGenvMetrics(paramData) {
+export async function queryGenvMetrics() {
     //console.log("metricsStartDate.value = "+metricsStartDate.value)
     let dateStr = metricsStartDate.value
     let pointDateStartBucket = getDateInt(metricsStartDate.value)
     let startDayTime = parseInt(dateStr.substring(2,4) + startHour.value.padStart(2,'0') + "0000")
     let endDayTime = parseInt(dateStr.substring(2,4) + stopHour.value.padStart(2,'0') + "0000")
     let pointMaxRows = 5000
-
-    /*
-    let gql2 = `query {
-        joints(
-            filter: { 
-                and: [ 
-                    { PointDay: { eq: ${pointDateStartBucket} } }
-                    { PointDayTime: { gte: ${startDayTime} } } 
-                    { PointDayTime: { lt: ${endDayTime} } } 
-                ] 
-            },
-            orderBy: { PointDateTime: ASC },
-            first: ${pointMaxRows}
-          ) {
-              items {
-                PointDateTime
-                currTemperature
-              }
-          }
-    }`
-
-    //console.log("gql2 = "+gql2)
-
-    const apiQuery2 = {
-        query: gql2,
-        variables: {
-        }
-    }
-
     
     showLoadingSpinner(getMetricsButton)
-    const endpoint2 = "/data-api/graphql";
-    const response = await fetch(endpoint2, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(apiQuery2)
-    })
+    // Call server-side function that queries Cosmos DB and returns JSON array
+    const endpoint2 = "/api/GetGenvMetrics";
+    const postBody = {
+        pointDateStartBucket: pointDateStartBucket,
+        startDayTime: startDayTime,
+        endDayTime: endDayTime,
+        pointMaxRows: pointMaxRows
+    }
 
+    try {
+        const response = await fetch(endpoint2, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(postBody)
+        })
+        await checkFetchResponse(response)
+        const items = await response.json()
+        getMetricsButton.innerHTML = getMetricsButtonHTML
 
-    const result = await response.json()
-    getMetricsButton.innerHTML = getMetricsButtonHTML
-    if (result.errors != null) {
-        console.log("Error: "+result.errors[0].message);
-        console.table(result.errors);
-    } else {
-        //console.log("result.data # of joints = "+result.data.joints.items.length)
-
-        let numOfDataPoints = result.data.joints.items.length
+        let numOfDataPoints = items.length
         let avgGrandTotal = 0.0
         let average = 0.0
         let pointLocalDateTime = null
@@ -593,40 +568,34 @@ export async function queryGenvMetrics(paramData) {
 
         let pointData = []
         if (numOfDataPoints > 0) {
-            let cnt = 0
-            //let numPointsForAvg = 50.0
-            let numPointsForAvg = numOfDataPoints / 20
-            //console.log(">>> numPointsForAvg = "+numPointsForAvg)
-
-            result.data.joints.items.forEach((point) => {
-                avgGrandTotal += point.currTemperature
+            items.forEach((point) => {
+                // currTemperature may be null; treat as 0
+                avgGrandTotal += (point.currTemperature != null ? parseFloat(point.currTemperature) : 0)
             })
             average = avgGrandTotal / numOfDataPoints
-            //console.log("$$$$$ average = "+average)
 
-            let avgCnt = 0
-            let avgTotal = result.data.joints.items[0].currTemperature
-            let avgValue = result.data.joints.items[0].currTemperature  // Start it out at the 1st value
-            result.data.joints.items.forEach((point) => {
-                cnt++
-                pointLocalDateTime = convertUTCDateToLocalDate(new Date(point.PointDateTime));
+            items.forEach((point) => {
+                if (!point.pointDateTime) return
+                pointLocalDateTime = convertUTCDateToLocalDate(new Date(point.pointDateTime));
                 PointDateTime = pointLocalDateTime.toISOString()
-
                 pointData.push({ 
                     time: PointDateTime.substring(11,16), 
-                    currTemp: parseFloat(point.currTemperature),
-                    avgTemp: average })
-                    //avgTemp: parseFloat(avgValue) })
+                    currTemp: parseFloat(point.currTemperature || 0),
+                    avgTemp: average
+                })
             })
         }
 
         if (pointData.length > 0) {
             displayCharts(pointData)
         }
+    } catch (err) {
+        console.error(err)
+        getMetricsButton.innerHTML = getMetricsButtonHTML
+        messageDisplay.textContent = `Error getting metrics: ${err.message}`
     }
-    */
+    
 }
-
 
 function displayCharts(pointData) {
     // create the 2nd dataset by taking the average of X number of data points (like every 10 or 100?)

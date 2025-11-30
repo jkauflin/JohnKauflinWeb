@@ -67,16 +67,13 @@ document.addEventListener('DOMContentLoaded', () => {
     editModeToggleInput.name = "editModeSwitch"
     editModeToggleInput.addEventListener("change", (event) => {
         if (event.target.checked) {
-            console.log("Switch is ON")
             editMode = true
             createMediaPage()
         } else {
-            console.log("Switch is OFF")
             editMode = false
             createMediaPage()
         }
     })
-
     editModeToggleLabel = document.createElement("label")
     editModeToggleLabel.classList.add('form-check-label')
     editModeToggleLabel.setAttribute('for',"editModeSwitch")
@@ -488,6 +485,7 @@ export function updateAdminMessage(displayMessage) {
 
             // Create a Card to hold the thumbnail of the media object
             let thumb = document.createElement("div")
+            //thumb.classList.add('card','fs-6','vh-75','float-start','m-1')
             thumb.classList.add('card','fs-6','vh-75','float-start')
 
             let titleMax = 25
@@ -529,9 +527,9 @@ export function updateAdminMessage(displayMessage) {
                 let img = document.createElement("img");
                 // add a class for event click
                 if (editMode) {
-                    img.classList.add('rounded','float-start','m-1',imgThumbnailClass)
+                    img.classList.add('rounded','float-start','m-2',imgThumbnailClass)
                 } else {
-                    img.classList.add('rounded','float-start','mt-2','me-2',imgThumbnailClass)
+                    img.classList.add('rounded','float-start','me-2','mb-2',imgThumbnailClass)
                 }
                 img.setAttribute('onerror', "this.onerror=null; this.remove()")
                 img.src = getFilePath(index,"Thumbs")
@@ -718,7 +716,7 @@ export function updateAdminMessage(displayMessage) {
                 button.setAttribute('data-menuItem', queryMenuItem)
                 button.setAttribute('data-albumKey', queryAlbumKey)
                 button.setAttribute('data-searchStr', querySearchStr)
-                button.classList.add('btn',buttonColor,'btn-sm','shadow-none','me-2','my-2',MediaFilterRequestClass)
+                button.classList.add('btn',buttonColor,'btn-sm','shadow-none','me-2','mt-2',MediaFilterRequestClass)
                 button.textContent = FilterRec.filterName
                 thumbnailRow1Col1.appendChild(button)
 
@@ -733,7 +731,7 @@ export function updateAdminMessage(displayMessage) {
                     button2.setAttribute('data-menuItem', queryMenuItem)
                     button2.setAttribute('data-albumKey', queryAlbumKey)
                     button2.setAttribute('data-searchStr', querySearchStr)
-                    button2.classList.add('btn',buttonColor,'btn-sm','shadow-none','me-2','my-2',MediaFilterRequestClass)
+                    button2.classList.add('btn',buttonColor,'btn-sm','shadow-none','me-2','mb-2',MediaFilterRequestClass)
                     button2.textContent = FilterRec.filterName
                     thumbnailRow3Col1.appendChild(button2)
                 }
@@ -742,7 +740,7 @@ export function updateAdminMessage(displayMessage) {
                 let buttonTop = document.createElement("button")
                 buttonTop.setAttribute('type',"button")
                 buttonTop.setAttribute('role',"button")
-                buttonTop.classList.add('btn','btn-primary','btn-sm','shadow-none','me-2','my-2')
+                buttonTop.classList.add('btn','btn-primary','btn-sm','shadow-none','me-2','mb-2')
                 buttonTop.textContent = "Top"
                 thumbnailRow3Col1.appendChild(buttonTop)
                 buttonTop.addEventListener("click", function () {

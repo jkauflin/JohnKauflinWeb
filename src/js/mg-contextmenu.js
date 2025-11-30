@@ -9,9 +9,9 @@ Modification History
 2025-11-24 JJK  Finished update by adding handling of Prev/Next and Save buttons
 ================================================================================*/
 import {empty} from './util.js';
-import {isAdmin,mediaInfo,getFilePath,getFileName,updateMediaInfo} from './mg-data-repository.js'
+import {isAdmin,mediaInfo,getFilePath,getFileName,updateMediaInfo,getAlbumList} from './mg-data-repository.js'
 //import {setPeopleListenersDetail} from './mg-people.js'
-import {getAlbumList} from './mg-album.js'
+//import {getAlbumList} from './mg-album.js'
 
 var mediaModal
 var mediaModalTitle

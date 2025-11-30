@@ -25,9 +25,9 @@ const thumbCheckboxClass = "thumb-checkbox"
 var mediaPageContainer = document.getElementById("MediaPage");
 var thumbnailContainer = document.createElement("div")
 var editRow1 = document.createElement("div")
+var editMode = false
 
 var mediaAdminMessage
-
 var mediaCategorySelect
 var mediaMenuSelect
 var mediaPeopleInput
@@ -45,6 +45,9 @@ var mediaDetailPeopleList
 var mediaDetailDescription
 // NEW ones
 var mediaDetailVideoList
+var editModeToggle
+var editModeToggleInput
+var editModeToggleLabel
 
 var currIndex = 0
 var currSelectAll = false
@@ -53,6 +56,33 @@ document.addEventListener('DOMContentLoaded', () => {
     mediaPageContainer = document.getElementById("MediaPage");
     thumbnailContainer = document.createElement("div")
     editRow1 = document.createElement("div")
+
+    editModeToggle = document.createElement("div")
+    editModeToggle.classList.add('form-check','form-switch','mt-1','ms-2','float-end')
+    editModeToggleInput = document.createElement("input")
+    editModeToggleInput.classList.add('form-check-input','shadow-none')
+    editModeToggleInput.setAttribute('type',"checkbox")
+    editModeToggleInput.setAttribute('role',"switch")
+    editModeToggleInput.id = "editModeSwitch"
+    editModeToggleInput.name = "editModeSwitch"
+    editModeToggleInput.addEventListener("change", (event) => {
+        if (event.target.checked) {
+            console.log("Switch is ON")
+            editMode = true
+            createMediaPage()
+        } else {
+            console.log("Switch is OFF")
+            editMode = false
+            createMediaPage()
+        }
+    })
+
+    editModeToggleLabel = document.createElement("label")
+    editModeToggleLabel.classList.add('form-check-label')
+    editModeToggleLabel.setAttribute('for',"editModeSwitch")
+    editModeToggleLabel.textContent = "Edit Mode"
+    editModeToggle.appendChild(editModeToggleInput)
+    editModeToggle.appendChild(editModeToggleLabel)
 
     // Set the container and class for the contextmenu
     setContextMenuListeners(thumbnailContainer, imgThumbnailClass)
@@ -99,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     mediaInfo.fileList[index].selected = false
                 } else {
                     mediaInfo.fileList[index].selected = true
-                    if (isAdmin) {
+                    if (editMode) {
                         displayFileDetail(index)
                     }
                 }
@@ -126,7 +156,7 @@ export function createMediaPage() {
     empty(thumbnailContainer)
     empty(editRow1)
 
-    if (isAdmin) {
+    if (editMode) {
             // Create Row and columns
             editRow1.classList.add('row')
 
@@ -465,7 +495,7 @@ export function updateAdminMessage(displayMessage) {
                 titleMax = 12
             }
 
-            if (isAdmin) {
+            if (editMode) {
                 // If EditMode, add a checkbox to the thumb card
                 let cardCheckboxDiv = document.createElement("div")
                 cardCheckboxDiv.classList.add('form-check','mx-1','float-start','shadow-none')
@@ -498,7 +528,7 @@ export function updateAdminMessage(displayMessage) {
             if (mediaType == 1) {
                 let img = document.createElement("img");
                 // add a class for event click
-                if (isAdmin) {
+                if (editMode) {
                     img.classList.add('rounded','float-start','m-1',imgThumbnailClass)
                 } else {
                     img.classList.add('rounded','float-start','mt-2','me-2',imgThumbnailClass)
@@ -516,7 +546,7 @@ export function updateAdminMessage(displayMessage) {
                     imgCache.src = getFilePath(index,"Smaller")
                 }
 
-                if (isAdmin) {
+                if (editMode) {
                     thumb.appendChild(img)
                 } else {
                     thumb = img
@@ -719,6 +749,10 @@ export function updateAdminMessage(displayMessage) {
                     window.scrollTo(0, 0)
                 });
             }
+        }
+
+        if (isAdmin) {
+            thumbnailRow1Col1.appendChild(editModeToggle)
         }
 
         // Add the Menu or Album name as row 0 (if it is non-blank)

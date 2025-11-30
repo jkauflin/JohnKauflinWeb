@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
     editModeToggleLabel = document.createElement("label")
     editModeToggleLabel.classList.add('form-check-label')
     editModeToggleLabel.setAttribute('for',"editModeSwitch")
-    editModeToggleLabel.textContent = "Edit Mode"
+    editModeToggleLabel.textContent = "Edit"
     editModeToggle.appendChild(editModeToggleInput)
     editModeToggle.appendChild(editModeToggleLabel)
 

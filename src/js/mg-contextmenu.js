@@ -11,7 +11,6 @@ Modification History
 import {empty} from './util.js';
 import {isAdmin,mediaInfo,getFilePath,getFileName,updateMediaInfo,getAlbumList} from './mg-data-repository.js'
 //import {setPeopleListenersDetail} from './mg-people.js'
-//import {getAlbumList} from './mg-album.js'
 
 var mediaModal
 var mediaModalTitle
@@ -119,7 +118,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }            
     })
 
-    updMediaForm.addEventListener('submit', (event) => {
+    //updMediaForm.addEventListener('submit', (event) => {
+    updMediaForm.addEventListener('submit', function (event) {
         let formValid = updMediaForm.checkValidity()
         event.preventDefault()
         event.stopPropagation()

@@ -998,3 +998,24 @@ export function buildAlbumMenuElements(mediaType) {
     }
 }
 
+export function setMenuFilter(categoryName) {
+    // Clear the array
+    menuFilter = []
+    menuFilter.length = 0
+    let mti = mediaType - 1
+    if (categoryName == "ALL") {
+        for (let index in mediaTypeData[mti].Category) {
+            for (let index2 in mediaTypeData[mti].Category[index].Menu) {
+                menuFilter[menuFilter.length] = mediaTypeData[mti].Category[index].Menu[index2].MenuItem
+            }
+        }
+    } else {
+        for (let index in mediaTypeData[mti].Category) {
+            if (mediaTypeData[mti].Category[index].CategoryName == categoryName) {
+                for (let index2 in mediaTypeData[mti].Category[index].Menu) {
+                    menuFilter[menuFilter.length] = mediaTypeData[mti].Category[index].Menu[index2].MenuItem
+                }
+            }
+        }
+    }
+}

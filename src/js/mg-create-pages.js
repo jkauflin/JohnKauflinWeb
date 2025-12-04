@@ -12,9 +12,11 @@ Modification History
 2024-03-29 JJK  Migrating to Azure SWA, blob storage, Cosmos DB with GraphQL
                 for queries.  Also, removing Admin functions to make this just
                 the presentation functions with no edit
+2025-12-04 JJK  Re-implementing the Edit functions to update multiple mediaInfo
+                documents (as opposed to the single update in contextmenu)
 ================================================================================*/
 import {empty} from './util.js';
-import {isAdmin,mediaType,mediaInfo,getFilePath,getFileName,categoryList,menuFilter,
+import {isAdmin,mediaType,mediaInfo,getFilePath,getFileName,categoryList,menuFilter,setMenuFilter,
     querySearchStr,queryMenuItem,queryAlbumKey,queryMediaInfo,queryCategory} from './mg-data-repository.js'
 import {setContextMenuListeners} from './mg-contextmenu.js'
 import {displayElementInLightbox} from './mg-lightbox.js'
@@ -88,9 +90,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Set the container and class for the contextmenu
     setContextMenuListeners(thumbnailContainer, imgThumbnailClass)
     setAudioListeners(thumbnailContainer)
-
-
-
 
     //-------------------------------------------------------------------------------------------------------
     // Listen for clicks in containers
@@ -256,7 +255,6 @@ export function createMediaPage() {
             mediaDetailTaken.setAttribute('type', "text")
             mediaDetailTaken.setAttribute('placeholder', "Taken DateTime")
             editRow1Col2.appendChild(mediaDetailTaken)
-    
 
             if (mediaType == 1) {
                 mediaDetailImg = document.createElement("img")
@@ -297,7 +295,6 @@ export function createMediaPage() {
             }
             editRow1.appendChild(editRow1Col2)
 
-
             // Col 3
             let editRow1Col3 = document.createElement("div")
             editRow1Col3.classList.add('col-sm-3','col-md-2')
@@ -308,26 +305,11 @@ export function createMediaPage() {
             for (let index in categoryList) {
                 mediaCategorySelect.options[mediaCategorySelect.options.length] = new Option(categoryList[index], categoryList[index])
             }
-
-            /*
-                for (let i = 0; i < mediaFilterCategory.options.length; i++) {
-                    if (mediaFilterCategory.options[i].value === eventCategory) {
-                        mediaFilterCategory.options[i].selected = true
-                        break
-                    }
-                }
-            */
-
-                // >>>>>>>> when a thumbnail is selected for edit, set the Category and Menu to the current values 
-
             // When the Category changes, set the menuFilter menu items for that Category
             mediaCategorySelect.addEventListener("change", function () {
                 // set menuFilter array based on selected CategoryName
-                //setMenuFilter(mediaCategorySelect.value)
-                // >>>>>>>>>> don't care about setting the top-level filter
-
+                setMenuFilter(mediaCategorySelect.value)
                 // Clear the menu options and re-load from current menuFilter
-                // >>>>>>>>>> need to use MenuList not menuFilter
                 mediaMenuSelect.options.length = 0
                 for (let index in menuFilter) {
                     mediaMenuSelect.options[mediaMenuSelect.options.length] = new Option(menuFilter[index], menuFilter[index])
@@ -335,6 +317,7 @@ export function createMediaPage() {
             })
             editRow1Col3.appendChild(mediaCategorySelect);
 
+            setMenuFilter(mediaCategorySelect.value)
             mediaMenuSelect = document.createElement("select")
             mediaMenuSelect.classList.add('form-select','float-start','shadow-none','mt-2','py-1')
             for (let index in menuFilter) {
@@ -829,7 +812,33 @@ export function updateAdminMessage(displayMessage) {
             }
         }
         */    
-        
+
+        // Adjust the Category and Menu select options to match the current file
+        for (let i = 0; i < mediaCategorySelect.options.length; i++) {
+            if (mediaCategorySelect.options[i].value === fi.categoryTags) {
+                mediaCategorySelect.options[i].selected = true
+            } else {
+                mediaCategorySelect.options[i].selected = false
+            }
+        }
+ 
+        // set menuFilter array based on selected CategoryName
+        setMenuFilter(mediaCategorySelect.value)
+        // Clear the menu options and re-load from current menuFilter
+        mediaMenuSelect.options.length = 0
+        for (let index in menuFilter) {
+            mediaMenuSelect.options[mediaMenuSelect.options.length] = new Option(menuFilter[index], menuFilter[index])
+        }
+
+        // Set the selected menu value according to the menuTags on the selected file
+        for (let i = 0; i < mediaMenuSelect.options.length; i++) {
+            if (mediaMenuSelect.options[i].value === fi.menuTags) {
+                mediaMenuSelect.options[i].selected = true
+            } else {
+                mediaMenuSelect.options[i].selected = false
+            }
+        }
+
         // Re-display the file list to show the correct selected image
         displayCurrFileList()
 

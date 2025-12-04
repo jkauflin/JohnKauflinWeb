@@ -1,7 +1,10 @@
 /*==============================================================================
 (C) Copyright 2023 John J Kauflin, All rights reserved.
 --------------------------------------------------------------------------------
-DESCRIPTION:
+DESCRIPTION:  CreatePages uses the data in MediaInfo array to dynamically
+                build the web page display of image thumbnails and filter
+                buttons to allow browse and select.  It also recognizes an
+                Admin and builds a display to edit/update media information
 --------------------------------------------------------------------------------
 Modification History
 2023-09-08 JJK  Initial version - moved create page components to this module
@@ -11,7 +14,8 @@ Modification History
                 the presentation functions with no edit
 ================================================================================*/
 import {empty} from './util.js';
-import {isAdmin,mediaInfo,mediaType,querySearchStr,queryMenuItem,queryAlbumKey,queryMediaInfo,getFilePath,getFileName, queryCategory} from './mg-data-repository.js'
+import {isAdmin,mediaType,mediaInfo,getFilePath,getFileName,categoryList,menuFilter,
+    querySearchStr,queryMenuItem,queryAlbumKey,queryMediaInfo,queryCategory} from './mg-data-repository.js'
 import {setContextMenuListeners} from './mg-contextmenu.js'
 import {displayElementInLightbox} from './mg-lightbox.js'
 import {playlistSongClass,audioPrevClass,audioNextClass,audioPlayer,setAudioListeners,
@@ -84,6 +88,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Set the container and class for the contextmenu
     setContextMenuListeners(thumbnailContainer, imgThumbnailClass)
     setAudioListeners(thumbnailContainer)
+
+
+
 
     //-------------------------------------------------------------------------------------------------------
     // Listen for clicks in containers
@@ -297,11 +304,30 @@ export function createMediaPage() {
             // Category
             mediaCategorySelect = document.createElement("select")
             mediaCategorySelect.classList.add('form-select','float-start','shadow-none','mt-2','py-1')
+            // Populate the category select using the categoryList from data-repository
+            for (let index in categoryList) {
+                mediaCategorySelect.options[mediaCategorySelect.options.length] = new Option(categoryList[index], categoryList[index])
+            }
+
+            /*
+                for (let i = 0; i < mediaFilterCategory.options.length; i++) {
+                    if (mediaFilterCategory.options[i].value === eventCategory) {
+                        mediaFilterCategory.options[i].selected = true
+                        break
+                    }
+                }
+            */
+
+                // >>>>>>>> when a thumbnail is selected for edit, set the Category and Menu to the current values 
+
             // When the Category changes, set the menuFilter menu items for that Category
             mediaCategorySelect.addEventListener("change", function () {
                 // set menuFilter array based on selected CategoryName
-                setMenuFilter(mediaCategorySelect.value)
+                //setMenuFilter(mediaCategorySelect.value)
+                // >>>>>>>>>> don't care about setting the top-level filter
+
                 // Clear the menu options and re-load from current menuFilter
+                // >>>>>>>>>> need to use MenuList not menuFilter
                 mediaMenuSelect.options.length = 0
                 for (let index in menuFilter) {
                     mediaMenuSelect.options[mediaMenuSelect.options.length] = new Option(menuFilter[index], menuFilter[index])
@@ -311,11 +337,10 @@ export function createMediaPage() {
 
             mediaMenuSelect = document.createElement("select")
             mediaMenuSelect.classList.add('form-select','float-start','shadow-none','mt-2','py-1')
-            /*
             for (let index in menuFilter) {
+                // a clever way of adding to the end of the options object collection
                 mediaMenuSelect.options[mediaMenuSelect.options.length] = new Option(menuFilter[index], menuFilter[index])
             }
-            */
             editRow1Col3.appendChild(mediaMenuSelect);
 
             //-------------------------------------------------------------------------------------------------------------

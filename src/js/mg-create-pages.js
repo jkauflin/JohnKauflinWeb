@@ -293,6 +293,13 @@ export function createMediaPage() {
                     newVideosMediaInfo(paramData)
                 });
             }
+
+            // Admin Message
+            mediaAdminMessage = document.createElement("div")
+            mediaAdminMessage.id = "MediaAdminMessage"
+            mediaAdminMessage.classList.add('float-start','my-2')
+            mediaAdminMessage.textContent = "Number of images = " + (mediaInfo.fileList.length)
+            editRow1Col2.appendChild(mediaAdminMessage)
             editRow1.appendChild(editRow1Col2)
 
             // Col 3
@@ -367,7 +374,7 @@ export function createMediaPage() {
                             fi.takenDateTime = mediaDetailTaken.value
                         }
                         fi.categoryTags = mediaCategorySelect.value
-                        mediaDetailCategoryTags.value = mediaCategorySelect.value
+                        mediaDetailCategoryTags.value = mediaCategorySelect.value   // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
                         fi.menuTags = mediaMenuSelect.value
                         mediaDetailMenuTags.value = mediaMenuSelect.value
                         fi.albumTags = mediaDetailAlbumTags.value
@@ -376,6 +383,8 @@ export function createMediaPage() {
                         fi.description = mediaDetailDescription.value
                     }
                 }
+
+                mediaAdminMessage.textContent = "MediaInfo updated for selected items.  Click Save to DB to commit changes."
             });
         
             // Save
@@ -430,17 +439,11 @@ export function createMediaPage() {
             mediaDetailDescription = document.createElement("textarea")
             //mediaDetailDescription.id = "MediaDetailDescription"
             mediaDetailDescription.classList.add('form-control','py-1','mb-1','shadow-none')
-            mediaDetailDescription.setAttribute('rows', "6")
+            mediaDetailDescription.setAttribute('rows', "8")
             mediaDetailDescription.setAttribute('placeholder', "Description")
             //mediaDetailDescription.value = fi.description
             editRow1Col3.appendChild(mediaDetailDescription)
 
-            // Admin Message
-            mediaAdminMessage = document.createElement("div")
-            mediaAdminMessage.id = "MediaAdminMessage"
-            mediaAdminMessage.classList.add('float-start')
-            mediaAdminMessage.textContent = "Number of images = " + (mediaInfo.fileList.length)
-            editRow1Col3.appendChild(mediaAdminMessage)
             editRow1.appendChild(editRow1Col3)
 
         mediaPageContainer.appendChild(editRow1);

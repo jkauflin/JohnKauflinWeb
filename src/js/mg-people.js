@@ -17,7 +17,7 @@ var PeopleSaveButton
 
 var peopleList = []
 var peopleSaveList
-var peopleSaveListDetail //????????????????????????????????????????????????????????????
+var peopleSaveListDetail
 
 document.addEventListener('DOMContentLoaded', () => {
     peopleModal = new bootstrap.Modal(document.getElementById('PeopleModal'))
@@ -56,16 +56,32 @@ document.addEventListener('DOMContentLoaded', () => {
     })
 
     PeopleAppendButton.addEventListener("click", function () {
+        let selected = peopleList[PeopleSelect.value].trim()
+        const current = (PeopleInputList.value || '').trim()
+        if (selected.length === 0) return
+        // Build array of existing tags (trim each)
+        const parts = current.length ? current.split(/\s*,\s*/).filter(p => p.length) : []
+        // Only append if not already present
+        if (!parts.includes(selected)) {
+            parts.push(selected)
+            PeopleInputList.value = parts.join(',')
+        }
+        /*
         if (PeopleInputList.value) {
             PeopleInputList.value = PeopleInputList.value + ',' + peopleList[PeopleSelect.value]
         } else {
             PeopleInputList = peopleList[PeopleSelect.value]
         }
+        */
     })
 
     PeopleSaveButton.addEventListener("click", function () {
-        peopleSaveList.value = PeopleInputList.value
-        peopleSaveListDetail.value = PeopleInputList.value
+        if (peopleSaveList != null) {
+            peopleSaveList.value = PeopleInputList.value
+        }
+        if (peopleSaveListDetail != null) {
+            peopleSaveListDetail.value = PeopleInputList.value
+        }
         peopleModal.hide()
     })
 })

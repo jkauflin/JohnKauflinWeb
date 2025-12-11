@@ -10,7 +10,7 @@ Modification History
 ================================================================================*/
 import {empty} from './util.js';
 import {isAdmin,mediaInfo,getFilePath,getFileName,updateMediaInfo,getAlbumList} from './mg-data-repository.js'
-//import {setPeopleListenersDetail} from './mg-people.js'
+import {setPeopleListenersDetail} from './mg-people.js'
 
 var mediaModal
 var mediaModalTitle
@@ -24,6 +24,7 @@ var updCategoryTags
 var updMenuTags
 var updAlbumTags
 var updPeople
+var updPeopleButton
 var updDescription
 var updMessageDisplay
 var albumOptions
@@ -49,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updMenuTags = document.getElementById("updMenuTags")
     updAlbumTags = document.getElementById("updAlbumTags")
     updPeople = document.getElementById("updPeople")
+    updPeopleButton = document.getElementById("updPeopleButton")
     updDescription = document.getElementById("updDescription")
     updMessageDisplay = document.getElementById("updMessageDisplay")
 
@@ -78,6 +80,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     })
+
+    //setPeopleListenersDetail(peopleButton, updPeople)
 
     // Handle people option clicks -- append selected person to updPeople (comma-separated, no duplicates)
     peopleOptions.addEventListener('click', (event) => {
@@ -248,6 +252,7 @@ function displayImgContextMenu(event) {
 //------------------------------------------------------------------------------------------------------------
 // Query the database for people data and store in js variables
 //------------------------------------------------------------------------------------------------------------
+/*
 async function queryPeopleInfo() {
     const endpoint = "/api/GetPeopleList";
     const response = await fetch(endpoint, {
@@ -273,6 +278,7 @@ async function queryPeopleInfo() {
         }        
     }
 }
+*/
 
 //-------------------------------------------------------------------------------------------------------
 // Display file information in Medial Modal popup

@@ -16,7 +16,7 @@ Modification History
                 documents (as opposed to the single update in contextmenu)
 ================================================================================*/
 import {empty} from './util.js';
-import {isAdmin,mediaType,mediaInfo,getFilePath,getFileName,categoryList,menuFilter,setMenuFilter,
+import {isAdmin,mediaType,mediaInfo,getFilePath,getFileName,categoryList,menuFilter,setMenuFilter,updateMediaInfo,
     querySearchStr,queryMenuItem,queryAlbumKey,queryMediaInfo,queryCategory} from './mg-data-repository.js'
 import {setContextMenuListeners} from './mg-contextmenu.js'
 import {displayElementInLightbox} from './mg-lightbox.js'
@@ -36,8 +36,6 @@ var editMode = false
 var mediaAdminMessage
 var mediaCategorySelect
 var mediaMenuSelect
-var mediaPeopleInput
-var mediaPeopleSelect
 var mediaPeopleList
 
 var mediaDetailFilename
@@ -165,7 +163,7 @@ export function createMediaPage() {
 
             // Col 1
             let editRow1Col1 = document.createElement("div")
-            editRow1Col1.classList.add('col-sm-5','col-md-6')
+            editRow1Col1.classList.add('col-sm-5','col-md-5')
 
             editRow1Col1.appendChild(thumbnailContainer);
             editRow1.appendChild(editRow1Col1)
@@ -175,6 +173,7 @@ export function createMediaPage() {
             editRow1Col2.classList.add('col-sm-4','col-md-4')
 
             // GetNEW
+            /*
             let getNewButton = document.createElement("button")
             getNewButton.classList.add('btn','btn-success','btn-sm','float-start','shadow-none','me-2','my-2')
             getNewButton.setAttribute('type',"button")
@@ -187,6 +186,7 @@ export function createMediaPage() {
                     getNew: true}
                 queryMediaInfo(paramData);
             });
+            */
 
             // SelectALL
             let selectAllButton = document.createElement("button")
@@ -211,6 +211,7 @@ export function createMediaPage() {
             });
 
             // Prev
+            /*
             let detailPrevButton = document.createElement("button")
             //detailPrevButton.id = "MediaAdminSelectAllButton"
             detailPrevButton.classList.add('btn','btn-warning','btn-sm','float-start','shadow-none','me-2','my-2')
@@ -239,9 +240,12 @@ export function createMediaPage() {
                     displayFileDetail(currIndex)
                 }            
             });
+            */
 
             // *** Detail TAGS ***
             mediaDetailFilename = document.createElement("div")
+            //mediaDetailFilename.classList.add('m-2','fw-bold','text-center')
+            mediaDetailFilename.classList.add('m-2','fw-bold')
             editRow1Col2.appendChild(mediaDetailFilename)
     
             mediaDetailTitle = document.createElement("input")
@@ -304,7 +308,7 @@ export function createMediaPage() {
 
             // Col 3
             let editRow1Col3 = document.createElement("div")
-            editRow1Col3.classList.add('col-sm-3','col-md-2')
+            editRow1Col3.classList.add('col-sm-3','col-md-3')
             // Category
             mediaCategorySelect = document.createElement("select")
             mediaCategorySelect.classList.add('form-select','float-start','shadow-none','mt-2','py-1')
@@ -337,25 +341,26 @@ export function createMediaPage() {
             // *** People list ***
             //-------------------------------------------------------------------------------------------------------------
             mediaPeopleList = document.createElement("input")
-            mediaPeopleList.classList.add('form-control','shadow-none','py-1')
+            mediaPeopleList.classList.add('form-control','float-start','shadow-none','mt-2','py-1')
             mediaPeopleList.setAttribute('type',"text")
             mediaPeopleList.setAttribute('placeholder',"People list")
+            editRow1Col3.appendChild(mediaPeopleList);
+
             let peopleButton = document.createElement("button")
-            peopleButton.classList.add('btn','btn-danger','btn-sm','float-start','shadow-none','me-2','my-1')
+            peopleButton.classList.add('btn','btn-danger','btn-sm','float-start','shadow-none','mt-3','me-2')
             peopleButton.setAttribute('type',"button")
             peopleButton.setAttribute('role',"button")
             peopleButton.textContent = "People"
             editRow1Col3.appendChild(peopleButton)
             // Load people
             setPeopleListeners(peopleButton,mediaPeopleList)
-            editRow1Col3.appendChild(mediaPeopleList);
 
             // Update
             let editUpdateButton = document.createElement("button")
             editUpdateButton.classList.add('btn','btn-info','btn-sm','float-start','shadow-none','mt-3','me-2')
             editUpdateButton.setAttribute('type',"button")
             editUpdateButton.setAttribute('role',"button")
-            editUpdateButton.textContent = "Update Selected"
+            editUpdateButton.textContent = "Upd Selected"
             editRow1Col3.appendChild(editUpdateButton)
             editUpdateButton.addEventListener("click", function () {
                 //console.log("mediaCategorySelect.value = "+mediaCategorySelect.value)

@@ -788,11 +788,14 @@ export async function queryMediaAlbum(paramData) {
 
 //------------------------------------------------------------------------------------------------------------
 // Update the media info in the database table (Batch)
+// (inIndex of -999 indicates a DELETE all selected records)
 //------------------------------------------------------------------------------------------------------------
 export async function updateMediaInfo(inIndex) {
     let index = -1
-    if (inIndex != null && inIndex >= 0) {
-        index = inIndex
+    if (inIndex != null) {
+        if (inIndex >= 0 || inIndex == -999) {
+            index = inIndex
+        }
     }
 
     // Assume current values and selected files in the mediaInfo.fileList are what we want updated

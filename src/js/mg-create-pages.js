@@ -398,7 +398,6 @@ export function createMediaPage() {
         
             // Save
             let editSaveButton = document.createElement("button")
-            //editSaveButton.id = "MediaAdminSaveButton"
             editSaveButton.classList.add('btn','btn-success','btn-sm','float-start','shadow-none','mt-3','me-2','mb-3')
             editSaveButton.setAttribute('type',"button")
             editSaveButton.setAttribute('role',"button")
@@ -407,6 +406,18 @@ export function createMediaPage() {
             editSaveButton.addEventListener("click", function () {
                 currIndex = 0
                 updateMediaInfo()
+            });
+
+            // Delete
+            let editDeleteButton = document.createElement("button")
+            editDeleteButton.classList.add('btn','btn-warning','btn-sm','float-start','shadow-none','mt-3','me-2','mb-3')
+            editDeleteButton.setAttribute('type',"button")
+            editDeleteButton.setAttribute('role',"button")
+            editDeleteButton.textContent = "DELETE"
+            editRow1Col3.appendChild(editDeleteButton)
+            editDeleteButton.addEventListener("click", function () {
+                currIndex = 0
+                updateMediaInfo(-999)
             });
 
             // Category Tags

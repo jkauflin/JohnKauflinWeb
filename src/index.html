@@ -388,12 +388,24 @@ and being part of a wonderful music community
 							<label for="updTakenDateTime">Taken DateTime</label>
 						</div>
 						<div class="mb-2 form-floating">
-							<input  id="updCategoryTags" type="text" class="form-control shadow-none" />
-							<label for="updCategoryTags">Category tags</label>
+                            <div class="input-group">
+                                <input  id="updCategoryTags" type="text" class="form-control shadow-none" placeholder="Category" />
+                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    Category
+                                </button>
+                                <ul id="categoryOptions" class="dropdown-menu dropdown-menu-end">
+                                </ul>
+                            </div>
 						</div>
 						<div class="mb-2 form-floating">
-							<input  id="updMenuTags" type="text" class="form-control shadow-none" />
-							<label for="updMenuTags">Menu tags</label>
+                            <div class="input-group">
+							    <input  id="updMenuTags" type="text" class="form-control shadow-none" placeholder="Menu" />
+                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    Menu
+                                </button>
+                                <ul id="menuOptions" class="dropdown-menu dropdown-menu-end">
+                                </ul>
+                            </div>
 						</div>
 						<div class="mb-2 form-floating">
                             <div class="input-group">

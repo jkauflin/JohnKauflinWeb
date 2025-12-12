@@ -9,7 +9,7 @@ Modification History
 2025-11-24 JJK  Finished update by adding handling of Prev/Next and Save buttons
 ================================================================================*/
 import {empty} from './util.js';
-import {isAdmin,mediaInfo,getFilePath,getFileName,updateMediaInfo,getAlbumList} from './mg-data-repository.js'
+import {isAdmin,mediaInfo,getFilePath,getFileName,updateMediaInfo,getAlbumList,categoryList,menuFilter,setMenuFilter} from './mg-data-repository.js'
 
 var mediaModal
 var mediaModalTitle
@@ -26,6 +26,8 @@ var updPeople
 var updPeopleButton
 var updDescription
 var updMessageDisplay
+var categoryOptions
+var menuOptions
 var albumOptions
 var peopleOptions
 var listenClass = ""
@@ -52,14 +54,41 @@ document.addEventListener('DOMContentLoaded', () => {
     updPeopleButton = document.getElementById("updPeopleButton")
     updDescription = document.getElementById("updDescription")
     updMessageDisplay = document.getElementById("updMessageDisplay")
-
     updPrevMediaInfo = document.getElementById("updPrevMediaInfo")
     updNextMediaInfo = document.getElementById("updNextMediaInfo")
 
+    categoryOptions = document.getElementById("categoryOptions")
+    menuOptions = document.getElementById("menuOptions")
     albumOptions = document.getElementById("albumOptions")
     peopleOptions = document.getElementById("peopleOptions")
 
-    // Handle album option clicks -- append selected album to updAlbumTags (comma-separated, no duplicates)
+    categoryOptions.addEventListener('click', (event) => {
+        if (event.target.classList.contains('dropdown-item')) {
+            event.preventDefault()
+            updCategoryTags.value = event.target.textContent.trim()
+            setMenuFilter(updCategoryTags.value)
+            // Clear the menu options and re-load from current menuFilter
+            menuOptions.innerHTML = ''
+            for (let index in menuFilter) {
+                const li = document.createElement('li')
+                const a = document.createElement('a')
+                a.classList.add('dropdown-item')
+                a.href = '#'
+                a.textContent = menuFilter[index]
+                li.appendChild(a)
+                menuOptions.appendChild(li)
+            }        
+        }
+    })
+
+    menuOptions.addEventListener('click', (event) => {
+        if (event.target.classList.contains('dropdown-item')) {
+            event.preventDefault()
+            updMenuTags.value = event.target.textContent.trim()
+        }
+    })
+
+        // Handle album option clicks -- append selected album to updAlbumTags (comma-separated, no duplicates)
     albumOptions.addEventListener('click', (event) => {
         if (event.target.classList.contains('dropdown-item')) {
             event.preventDefault()
@@ -186,6 +215,32 @@ function displayImgContextMenu(event) {
     if (typeof index == "undefined" || index == null) {
         console.log("Context Menu: No data-index found on target")
         return
+    }
+
+    if (categoryOptions.innerHTML.trim() == '') {
+        categoryOptions.innerHTML = ''
+        for (let index in categoryList) {
+            const li = document.createElement('li')
+            const a = document.createElement('a')
+            a.classList.add('dropdown-item')
+            a.href = '#'
+            a.textContent = categoryList[index]
+            li.appendChild(a)
+            categoryOptions.appendChild(li)
+        }        
+    }
+
+    if (menuOptions.innerHTML.trim() == '') {
+        menuOptions.innerHTML = ''
+        for (let index in menuFilter) {
+            const li = document.createElement('li')
+            const a = document.createElement('a')
+            a.classList.add('dropdown-item')
+            a.href = '#'
+            a.textContent = menuFilter[index]
+            li.appendChild(a)
+            menuOptions.appendChild(li)
+        }        
     }
 
     if (albumOptions.innerHTML.trim() == '') {

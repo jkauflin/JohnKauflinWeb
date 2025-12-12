@@ -383,7 +383,7 @@ export function createMediaPage() {
                             fi.takenDateTime = mediaDetailTaken.value
                         }
                         fi.categoryTags = mediaCategorySelect.value
-                        mediaDetailCategoryTags.value = mediaCategorySelect.value   // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                        mediaDetailCategoryTags.value = mediaCategorySelect.value
                         fi.menuTags = mediaMenuSelect.value
                         mediaDetailMenuTags.value = mediaMenuSelect.value
                         fi.albumTags = mediaDetailAlbumTags.value
@@ -851,17 +851,6 @@ export function updateAdminMessage(displayMessage) {
         mediaDetailPeopleList.value = fi.people
         mediaPeopleList.value = fi.people
         mediaDetailDescription.value = fi.description
-
-        // Set only the selected file in the thumbnail list
-        /*
-        for (let index2 in mediaInfo.fileList) {
-            if (index2 == index) {
-                mediaInfo.fileList[index2].Selected = true
-            } else {
-                mediaInfo.fileList[index2].Selected = false
-            }
-        }
-        */    
 
         // Adjust the Category and Menu select options to match the current file
         for (let i = 0; i < mediaCategorySelect.options.length; i++) {

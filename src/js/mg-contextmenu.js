@@ -10,7 +10,6 @@ Modification History
 ================================================================================*/
 import {empty} from './util.js';
 import {isAdmin,mediaInfo,getFilePath,getFileName,updateMediaInfo,getAlbumList} from './mg-data-repository.js'
-import {setPeopleListenersDetail} from './mg-people.js'
 
 var mediaModal
 var mediaModalTitle
@@ -81,17 +80,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     })
 
-    //setPeopleListenersDetail(peopleButton, updPeople)
-
     // Handle people option clicks -- append selected person to updPeople (comma-separated, no duplicates)
     peopleOptions.addEventListener('click', (event) => {
         if (event.target.classList.contains('dropdown-item')) {
             event.preventDefault()
-            
             let selected = event.target.textContent.trim()
-            //let firstSpaceIndex = albumOptionVal.indexOf(" ");   // find the position of the first space
-            //const selected = albumOptionVal.substring(0, firstSpaceIndex)
-
             const current = (updPeople.value || '').trim()
             if (selected.length === 0) return
             // Build array of existing tags (trim each)
@@ -122,7 +115,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }            
     })
 
-    //updMediaForm.addEventListener('submit', (event) => {
     updMediaForm.addEventListener('submit', function (event) {
         let formValid = updMediaForm.checkValidity()
         event.preventDefault()

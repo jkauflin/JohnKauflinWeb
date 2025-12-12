@@ -810,7 +810,7 @@ export async function updateMediaInfo(inIndex) {
         body: JSON.stringify(paramData)
     })
     const returnMsg = await response.text()
-    console.log("result = "+returnMsg, ", index = "+index)
+    //console.log("result = "+returnMsg, ", index = "+index)
 
     if (index >= 0) {
         updateMessage(returnMsg)
@@ -861,7 +861,7 @@ export function newVideosMediaInfo() {
 }
 
 function checkSelected(fileInfo) {
-    return !fileInfo.Selected
+    return !fileInfo.selected
 }
 
 //------------------------------------------------------------------------------------------------------------

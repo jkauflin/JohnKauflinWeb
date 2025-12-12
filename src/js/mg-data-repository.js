@@ -810,7 +810,7 @@ export async function updateMediaInfo(inIndex) {
         body: JSON.stringify(paramData)
     })
     const returnMsg = await response.text()
-    //console.log("result = "+returnMsg)
+    console.log("result = "+returnMsg, ", index = "+index)
 
     if (index >= 0) {
         updateMessage(returnMsg)

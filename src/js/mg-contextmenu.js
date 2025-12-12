@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
             updMessageDisplay.textContent = "Form inputs are NOT valid"
         } else {
             let index = parseInt(updIndex.value)
-            if (index > 0) {
+            if (index >= 0) {
                 let fi = mediaInfo.fileList[index]
                 fi.title = updTitle.value
                 fi.takenDateTime = updTakenDateTime.value
@@ -252,7 +252,6 @@ function displayImgContextMenu(event) {
 //------------------------------------------------------------------------------------------------------------
 // Query the database for people data and store in js variables
 //------------------------------------------------------------------------------------------------------------
-/*
 async function queryPeopleInfo() {
     const endpoint = "/api/GetPeopleList";
     const response = await fetch(endpoint, {
@@ -278,7 +277,6 @@ async function queryPeopleInfo() {
         }        
     }
 }
-*/
 
 //-------------------------------------------------------------------------------------------------------
 // Display file information in Medial Modal popup

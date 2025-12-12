@@ -14,9 +14,10 @@ Modification History
                 the presentation functions with no edit
 2025-12-04 JJK  Re-implementing the Edit functions to update multiple mediaInfo
                 documents (as opposed to the single update in contextmenu)
+2025-12-11 JJK  Added build of new people and album options in Edit mode
 ================================================================================*/
 import {empty} from './util.js';
-import {isAdmin,mediaType,mediaInfo,getFilePath,getFileName,categoryList,menuFilter,setMenuFilter,updateMediaInfo,
+import {isAdmin,mediaType,mediaInfo,getFilePath,getFileName,categoryList,menuFilter,setMenuFilter,updateMediaInfo,getAlbumList,
     querySearchStr,queryMenuItem,queryAlbumKey,queryMediaInfo,queryCategory} from './mg-data-repository.js'
 import {setContextMenuListeners} from './mg-contextmenu.js'
 import {displayElementInLightbox} from './mg-lightbox.js'
@@ -44,7 +45,10 @@ var mediaDetailTaken
 var mediaDetailImg
 var mediaDetailCategoryTags
 var mediaDetailMenuTags
+var mediaDetailAlbumDiv
 var mediaDetailAlbumTags
+var mediaDetailAlbumButton
+var albumOptions
 var mediaDetailPeopleList
 var mediaDetailDescription
 // NEW ones
@@ -423,30 +427,68 @@ export function createMediaPage() {
             mediaDetailMenuTags.disabled = true
             editRow1Col3.appendChild(mediaDetailMenuTags)
 
+
             // Album Tags
+            mediaDetailAlbumDiv = document.createElement("div")
+            mediaDetailAlbumDiv.classList.add('input-group','mb-1')
             mediaDetailAlbumTags = document.createElement("input")
-            //mediaDetailAlbumTags.id = "MediaDetailAlbumTags"
-            mediaDetailAlbumTags.classList.add('form-control','py-1','mb-1','shadow-none')
+            mediaDetailAlbumTags.classList.add('form-control','shadow-none')
             mediaDetailAlbumTags.setAttribute('type', "text")
-            mediaDetailAlbumTags.setAttribute('placeholder', "Album tags")
-            editRow1Col3.appendChild(mediaDetailAlbumTags)
+            mediaDetailAlbumTags.setAttribute('placeholder', "Albums")
+            mediaDetailAlbumButton = document.createElement("button")
+            mediaDetailAlbumButton.classList.add('btn','btn-outline-secondary','dropdown-toggle')
+            mediaDetailAlbumButton.setAttribute('type', "button")
+            mediaDetailAlbumButton.setAttribute('data-bs-toggle', "dropdown")
+            mediaDetailAlbumButton.textContent = "Albums"
+            albumOptions = document.createElement("ul")
+            albumOptions.classList.add('dropdown-menu','dropdown-menu-end')
+            let albumList = getAlbumList()
+            // Populate with albums from albumList
+            for (let index in albumList) {
+                const li = document.createElement('li')
+                const a = document.createElement('a')
+                a.classList.add('dropdown-item')
+                a.href = '#'
+                a.textContent = albumList[index].albumKey + " " + albumList[index].albumName
+                li.appendChild(a)
+                albumOptions.appendChild(li)
+            }
+            // Handle album option clicks -- append selected album to updAlbumTags (comma-separated, no duplicates)
+            albumOptions.addEventListener('click', (event) => {
+                if (event.target.classList.contains('dropdown-item')) {
+                    event.preventDefault()
+                    let albumOptionVal = event.target.textContent.trim()
+                    let firstSpaceIndex = albumOptionVal.indexOf(" ");   // find the position of the first space
+                    const selected = albumOptionVal.substring(0, firstSpaceIndex)
+                    const current = (mediaDetailAlbumTags.value || '').trim()
+                    if (selected.length === 0) return
+                    // Build array of existing tags (trim each)
+                    const parts = current.length ? current.split(/\s*,\s*/).filter(p => p.length) : []
+                    // Only append if not already present
+                    if (!parts.includes(selected)) {
+                        parts.push(selected)
+                        mediaDetailAlbumTags.value = parts.join(', ')
+                    }
+                }
+            })
+            mediaDetailAlbumDiv.appendChild(mediaDetailAlbumTags)
+            mediaDetailAlbumDiv.appendChild(mediaDetailAlbumButton)
+            mediaDetailAlbumDiv.appendChild(albumOptions)
+            editRow1Col3.appendChild(mediaDetailAlbumDiv)
 
             // People List
             mediaDetailPeopleList = document.createElement("input")
-            //mediaDetailPeopleList.id = "MediaDetailPeopleList"
             mediaDetailPeopleList.classList.add('form-control','py-1','mb-1','shadow-none')
             mediaDetailPeopleList.setAttribute('type', "text")
             mediaDetailPeopleList.setAttribute('placeholder', "People list")
-            mediaDetailPeopleList.disabled = true  //<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+            mediaDetailPeopleList.disabled = true
             editRow1Col3.appendChild(mediaDetailPeopleList)
 
             // Description
             mediaDetailDescription = document.createElement("textarea")
-            //mediaDetailDescription.id = "MediaDetailDescription"
             mediaDetailDescription.classList.add('form-control','py-1','mb-1','shadow-none')
             mediaDetailDescription.setAttribute('rows', "8")
             mediaDetailDescription.setAttribute('placeholder', "Description")
-            //mediaDetailDescription.value = fi.description
             editRow1Col3.appendChild(mediaDetailDescription)
 
             editRow1.appendChild(editRow1Col3)

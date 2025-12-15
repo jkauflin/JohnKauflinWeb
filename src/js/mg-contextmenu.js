@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Only append if not already present
             if (!parts.includes(selected)) {
                 parts.push(selected)
-                updAlbumTags.value = parts.join(', ')
+                updAlbumTags.value = parts.join(',')
             }
         }
     })

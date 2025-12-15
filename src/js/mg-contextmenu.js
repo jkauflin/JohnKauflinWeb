@@ -217,6 +217,8 @@ function displayImgContextMenu(event) {
         return
     }
 
+    updMessageDisplay.textContent = ""
+    
     if (categoryOptions.innerHTML.trim() == '') {
         categoryOptions.innerHTML = ''
         for (let index in categoryList) {

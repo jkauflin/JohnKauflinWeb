@@ -15,6 +15,7 @@ Modification History
 2025-05-23 JJK  Added functions for GenvMonitor
 2025-07-05 JJK  Added UpdateGenvConfig (first time I used Co-Pilot AI agent 
                 to help with editing code in VS Code)
+2025-12-12 JJK  Added delete functionality to UpdateMediaInfo function
 ================================================================================*/
 using System.Globalization;
 using Microsoft.Azure.Functions.Worker;
@@ -174,35 +175,47 @@ namespace JohnKauflinWeb.Function
                         }
                     }
 
-                    // Build SQL query - Get the existing document from Cosmos DB (by the main unique "id")
-                    var queryDef = new QueryDefinition(sql)
-                        .WithParameter("@id", item.id);
-                    var feed = container.GetItemQueryIterator<MediaInfo>(queryDef);
-                    while (feed.HasMoreResults)
+                    // If FileListIndex is -999, then delete the record
+                    if (updParamData.FileListIndex == -999)
                     {
-                        var response = await feed.ReadNextAsync();
-                        foreach (var mediaInfo in response)
+                        await container.DeleteItemAsync<MediaInfo>(
+                            id: item.id,
+                            partitionKey: new PartitionKey(updParamData.MediaFilterMediaType)
+                        );
+                        updCnt++;
+                    } 
+                    else
+                    {
+                        // Build SQL query - Get the existing document from Cosmos DB (by the main unique "id")
+                        var queryDef = new QueryDefinition(sql)
+                            .WithParameter("@id", item.id);
+                        var feed = container.GetItemQueryIterator<MediaInfo>(queryDef);
+                        while (feed.HasMoreResults)
                         {
-                            mediaInfo.TakenDateTime = DateTime.Parse(item.takenDateTime);
-                            mediaInfo.TakenFileTime = int.Parse(mediaInfo.TakenDateTime.ToString("yyyyMMddHH"));
-                            mediaInfo.CategoryTags = item.categoryTags;
-                            mediaInfo.MenuTags = item.menuTags;
-                            mediaInfo.AlbumTags = item.albumTags;
-                            mediaInfo.Title = item.title;
-                            mediaInfo.Description = item.description;
-                            mediaInfo.People = item.people;
-                            mediaInfo.SearchStr = mediaInfo.CategoryTags.ToLower() + " " +
-                                    mediaInfo.MenuTags.ToLower() + " " +
-                                    mediaInfo.Title.ToLower() + " " +
-                                    mediaInfo.Description.ToLower() + " " +
-                                    mediaInfo.People.ToLower();
-                            await container.UpsertItemAsync(mediaInfo, new PartitionKey(mediaInfo.MediaTypeId));
-                            updCnt++;
+                            var response = await feed.ReadNextAsync();
+                            foreach (var mediaInfo in response)
+                            {
+                                mediaInfo.TakenDateTime = DateTime.Parse(item.takenDateTime);
+                                mediaInfo.TakenFileTime = int.Parse(mediaInfo.TakenDateTime.ToString("yyyyMMddHH"));
+                                mediaInfo.CategoryTags = item.categoryTags;
+                                mediaInfo.MenuTags = item.menuTags;
+                                mediaInfo.AlbumTags = item.albumTags;
+                                mediaInfo.Title = item.title;
+                                mediaInfo.Description = item.description;
+                                mediaInfo.People = item.people;
+                                mediaInfo.SearchStr = mediaInfo.CategoryTags.ToLower() + " " +
+                                        mediaInfo.MenuTags.ToLower() + " " +
+                                        mediaInfo.Title.ToLower() + " " +
+                                        mediaInfo.Description.ToLower() + " " +
+                                        mediaInfo.People.ToLower();
+                                await container.UpsertItemAsync(mediaInfo, new PartitionKey(mediaInfo.MediaTypeId));
+                                updCnt++;
+                            }
                         }
                     }
                 }
 
-                responseMessage = $"Number of records saved = {updCnt}";
+                responseMessage = $"Number of recs updated = {updCnt}";
             }
             catch (Exception ex)
             {

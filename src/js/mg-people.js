@@ -66,13 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
             parts.push(selected)
             PeopleInputList.value = parts.join(',')
         }
-        /*
-        if (PeopleInputList.value) {
-            PeopleInputList.value = PeopleInputList.value + ',' + peopleList[PeopleSelect.value]
-        } else {
-            PeopleInputList = peopleList[PeopleSelect.value]
-        }
-        */
     })
 
     PeopleSaveButton.addEventListener("click", function () {

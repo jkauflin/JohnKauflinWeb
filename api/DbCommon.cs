@@ -388,7 +388,8 @@ namespace JohnKauflinWeb.Function
             //log.LogWarning($">>> GetMediaInfoDB paramData: {Newtonsoft.Json.JsonConvert.SerializeObject(paramData)}");
 
             var albumList = new List<MediaAlbum>();
-            var albumQuery = new QueryDefinition("SELECT * FROM c ORDER BY c.AlbumName");
+            //var albumQuery = new QueryDefinition("SELECT * FROM c ORDER BY c.AlbumName");
+            var albumQuery = new QueryDefinition("SELECT * FROM c ORDER BY c.AlbumKey");
             var albumFeed = container.GetItemQueryIterator<MediaAlbum>(albumQuery);
             while (albumFeed.HasMoreResults)
             {

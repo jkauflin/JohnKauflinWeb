@@ -9,8 +9,7 @@ Modification History
 2025-11-24 JJK  Finished update by adding handling of Prev/Next and Save buttons
 ================================================================================*/
 import {empty} from './util.js';
-import {isAdmin,mediaInfo,getFilePath,getFileName,updateMediaInfo,getAlbumList} from './mg-data-repository.js'
-import {setPeopleListenersDetail} from './mg-people.js'
+import {isAdmin,mediaInfo,getFilePath,getFileName,updateMediaInfo,getAlbumList,categoryList,menuFilter,setMenuFilter} from './mg-data-repository.js'
 
 var mediaModal
 var mediaModalTitle
@@ -27,6 +26,8 @@ var updPeople
 var updPeopleButton
 var updDescription
 var updMessageDisplay
+var categoryOptions
+var menuOptions
 var albumOptions
 var peopleOptions
 var listenClass = ""
@@ -53,14 +54,41 @@ document.addEventListener('DOMContentLoaded', () => {
     updPeopleButton = document.getElementById("updPeopleButton")
     updDescription = document.getElementById("updDescription")
     updMessageDisplay = document.getElementById("updMessageDisplay")
-
     updPrevMediaInfo = document.getElementById("updPrevMediaInfo")
     updNextMediaInfo = document.getElementById("updNextMediaInfo")
 
+    categoryOptions = document.getElementById("categoryOptions")
+    menuOptions = document.getElementById("menuOptions")
     albumOptions = document.getElementById("albumOptions")
     peopleOptions = document.getElementById("peopleOptions")
 
-    // Handle album option clicks -- append selected album to updAlbumTags (comma-separated, no duplicates)
+    categoryOptions.addEventListener('click', (event) => {
+        if (event.target.classList.contains('dropdown-item')) {
+            event.preventDefault()
+            updCategoryTags.value = event.target.textContent.trim()
+            setMenuFilter(updCategoryTags.value)
+            // Clear the menu options and re-load from current menuFilter
+            menuOptions.innerHTML = ''
+            for (let index in menuFilter) {
+                const li = document.createElement('li')
+                const a = document.createElement('a')
+                a.classList.add('dropdown-item')
+                a.href = '#'
+                a.textContent = menuFilter[index]
+                li.appendChild(a)
+                menuOptions.appendChild(li)
+            }        
+        }
+    })
+
+    menuOptions.addEventListener('click', (event) => {
+        if (event.target.classList.contains('dropdown-item')) {
+            event.preventDefault()
+            updMenuTags.value = event.target.textContent.trim()
+        }
+    })
+
+        // Handle album option clicks -- append selected album to updAlbumTags (comma-separated, no duplicates)
     albumOptions.addEventListener('click', (event) => {
         if (event.target.classList.contains('dropdown-item')) {
             event.preventDefault()
@@ -76,22 +104,16 @@ document.addEventListener('DOMContentLoaded', () => {
             // Only append if not already present
             if (!parts.includes(selected)) {
                 parts.push(selected)
-                updAlbumTags.value = parts.join(', ')
+                updAlbumTags.value = parts.join(',')
             }
         }
     })
-
-    //setPeopleListenersDetail(peopleButton, updPeople)
 
     // Handle people option clicks -- append selected person to updPeople (comma-separated, no duplicates)
     peopleOptions.addEventListener('click', (event) => {
         if (event.target.classList.contains('dropdown-item')) {
             event.preventDefault()
-            
             let selected = event.target.textContent.trim()
-            //let firstSpaceIndex = albumOptionVal.indexOf(" ");   // find the position of the first space
-            //const selected = albumOptionVal.substring(0, firstSpaceIndex)
-
             const current = (updPeople.value || '').trim()
             if (selected.length === 0) return
             // Build array of existing tags (trim each)
@@ -122,7 +144,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }            
     })
 
-    //updMediaForm.addEventListener('submit', (event) => {
     updMediaForm.addEventListener('submit', function (event) {
         let formValid = updMediaForm.checkValidity()
         event.preventDefault()
@@ -132,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
             updMessageDisplay.textContent = "Form inputs are NOT valid"
         } else {
             let index = parseInt(updIndex.value)
-            if (index > 0) {
+            if (index >= 0) {
                 let fi = mediaInfo.fileList[index]
                 fi.title = updTitle.value
                 fi.takenDateTime = updTakenDateTime.value
@@ -196,6 +217,34 @@ function displayImgContextMenu(event) {
         return
     }
 
+    updMessageDisplay.textContent = ""
+    
+    if (categoryOptions.innerHTML.trim() == '') {
+        categoryOptions.innerHTML = ''
+        for (let index in categoryList) {
+            const li = document.createElement('li')
+            const a = document.createElement('a')
+            a.classList.add('dropdown-item')
+            a.href = '#'
+            a.textContent = categoryList[index]
+            li.appendChild(a)
+            categoryOptions.appendChild(li)
+        }        
+    }
+
+    if (menuOptions.innerHTML.trim() == '') {
+        menuOptions.innerHTML = ''
+        for (let index in menuFilter) {
+            const li = document.createElement('li')
+            const a = document.createElement('a')
+            a.classList.add('dropdown-item')
+            a.href = '#'
+            a.textContent = menuFilter[index]
+            li.appendChild(a)
+            menuOptions.appendChild(li)
+        }        
+    }
+
     if (albumOptions.innerHTML.trim() == '') {
         albumOptions.innerHTML = ''
         let albumList = getAlbumList()
@@ -252,7 +301,6 @@ function displayImgContextMenu(event) {
 //------------------------------------------------------------------------------------------------------------
 // Query the database for people data and store in js variables
 //------------------------------------------------------------------------------------------------------------
-/*
 async function queryPeopleInfo() {
     const endpoint = "/api/GetPeopleList";
     const response = await fetch(endpoint, {
@@ -278,7 +326,6 @@ async function queryPeopleInfo() {
         }        
     }
 }
-*/
 
 //-------------------------------------------------------------------------------------------------------
 // Display file information in Medial Modal popup

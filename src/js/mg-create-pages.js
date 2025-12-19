@@ -14,9 +14,10 @@ Modification History
                 the presentation functions with no edit
 2025-12-04 JJK  Re-implementing the Edit functions to update multiple mediaInfo
                 documents (as opposed to the single update in contextmenu)
+2025-12-11 JJK  Added build of new people and album options in Edit mode
 ================================================================================*/
 import {empty} from './util.js';
-import {isAdmin,mediaType,mediaInfo,getFilePath,getFileName,categoryList,menuFilter,setMenuFilter,updateMediaInfo,
+import {isAdmin,mediaType,mediaInfo,getFilePath,getFileName,categoryList,menuFilter,setMenuFilter,updateMediaInfo,getAlbumList,
     querySearchStr,queryMenuItem,queryAlbumKey,queryMediaInfo,queryCategory} from './mg-data-repository.js'
 import {setContextMenuListeners} from './mg-contextmenu.js'
 import {displayElementInLightbox} from './mg-lightbox.js'
@@ -32,6 +33,7 @@ var mediaPageContainer = document.getElementById("MediaPage");
 var thumbnailContainer = document.createElement("div")
 var editRow1 = document.createElement("div")
 var editMode = false
+var editModeAll = false
 
 var mediaAdminMessage
 var mediaCategorySelect
@@ -44,7 +46,10 @@ var mediaDetailTaken
 var mediaDetailImg
 var mediaDetailCategoryTags
 var mediaDetailMenuTags
+var mediaDetailAlbumDiv
 var mediaDetailAlbumTags
+var mediaDetailAlbumButton
+var albumOptions
 var mediaDetailPeopleList
 var mediaDetailDescription
 // NEW ones
@@ -52,6 +57,9 @@ var mediaDetailVideoList
 var editModeToggle
 var editModeToggleInput
 var editModeToggleLabel
+var editModeAllToggle
+var editModeAllToggleInput
+var editModeAllToggleLabel
 
 var currIndex = 0
 var currSelectAll = false
@@ -75,6 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
             createMediaPage()
         } else {
             editMode = false
+            // in the future when you turn off edit mode, re-query to get de-selected items
             createMediaPage()
         }
     })
@@ -84,6 +93,28 @@ document.addEventListener('DOMContentLoaded', () => {
     editModeToggleLabel.textContent = "Edit"
     editModeToggle.appendChild(editModeToggleInput)
     editModeToggle.appendChild(editModeToggleLabel)
+
+    editModeAllToggle = document.createElement("div")
+    editModeAllToggle.classList.add('form-check','form-switch','mt-1','ms-2','float-end')
+    editModeAllToggleInput = document.createElement("input")
+    editModeAllToggleInput.classList.add('form-check-input','shadow-none')
+    editModeAllToggleInput.setAttribute('type',"checkbox")
+    editModeAllToggleInput.setAttribute('role',"switch")
+    editModeAllToggleInput.id = "editModeAllSwitch"
+    editModeAllToggleInput.name = "editModeAllSwitch"
+    editModeAllToggleInput.addEventListener("change", (event) => {
+        if (event.target.checked) {
+            editModeAll = true
+        } else {
+            editModeAll = false
+        }
+    })
+    editModeAllToggleLabel = document.createElement("label")
+    editModeAllToggleLabel.classList.add('form-check-label')
+    editModeAllToggleLabel.setAttribute('for',"editModeAllSwitch")
+    editModeAllToggleLabel.textContent = "All"
+    editModeAllToggle.appendChild(editModeAllToggleInput)
+    editModeAllToggle.appendChild(editModeAllToggleLabel)
 
     // Set the container and class for the contextmenu
     setContextMenuListeners(thumbnailContainer, imgThumbnailClass)
@@ -258,6 +289,9 @@ export function createMediaPage() {
             mediaDetailTaken.classList.add('form-control','py-1','mb-1','shadow-none')
             mediaDetailTaken.setAttribute('type', "text")
             mediaDetailTaken.setAttribute('placeholder', "Taken DateTime")
+            if (!editModeAll) {
+                mediaDetailTaken.disabled = true
+            }
             editRow1Col2.appendChild(mediaDetailTaken)
 
             if (mediaType == 1) {
@@ -375,17 +409,21 @@ export function createMediaPage() {
                         if (mediaDetailTitle.value != "") {
                             fi.title = mediaDetailTitle.value
                         }
-                        if (mediaDetailTaken.value != "") {
-                            fi.takenDateTime = mediaDetailTaken.value
-                        }
                         fi.categoryTags = mediaCategorySelect.value
-                        mediaDetailCategoryTags.value = mediaCategorySelect.value   // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                        mediaDetailCategoryTags.value = mediaCategorySelect.value
                         fi.menuTags = mediaMenuSelect.value
                         mediaDetailMenuTags.value = mediaMenuSelect.value
-                        fi.albumTags = mediaDetailAlbumTags.value
-                        fi.people = mediaPeopleList.value
-                        mediaDetailPeopleList.value = mediaPeopleList.value
-                        fi.description = mediaDetailDescription.value
+
+                        // int the future, offer ability to update ALL fields (or select which ones)
+                        if (editModeAll) {
+                            if (mediaDetailTaken.value != "") {
+                                fi.takenDateTime = mediaDetailTaken.value
+                            }
+                            fi.albumTags = mediaDetailAlbumTags.value
+                            fi.people = mediaPeopleList.value
+                            mediaDetailPeopleList.value = mediaPeopleList.value
+                            fi.description = mediaDetailDescription.value
+                        }
                     }
                 }
 
@@ -394,7 +432,6 @@ export function createMediaPage() {
         
             // Save
             let editSaveButton = document.createElement("button")
-            //editSaveButton.id = "MediaAdminSaveButton"
             editSaveButton.classList.add('btn','btn-success','btn-sm','float-start','shadow-none','mt-3','me-2','mb-3')
             editSaveButton.setAttribute('type',"button")
             editSaveButton.setAttribute('role',"button")
@@ -403,6 +440,18 @@ export function createMediaPage() {
             editSaveButton.addEventListener("click", function () {
                 currIndex = 0
                 updateMediaInfo()
+            });
+
+            // Delete
+            let editDeleteButton = document.createElement("button")
+            editDeleteButton.classList.add('btn','btn-warning','btn-sm','float-start','shadow-none','mt-3','me-2','mb-3')
+            editDeleteButton.setAttribute('type',"button")
+            editDeleteButton.setAttribute('role',"button")
+            editDeleteButton.textContent = "DELETE"
+            editRow1Col3.appendChild(editDeleteButton)
+            editDeleteButton.addEventListener("click", function () {
+                currIndex = 0
+                updateMediaInfo(-999)
             });
 
             // Category Tags
@@ -423,30 +472,76 @@ export function createMediaPage() {
             mediaDetailMenuTags.disabled = true
             editRow1Col3.appendChild(mediaDetailMenuTags)
 
+
             // Album Tags
+            mediaDetailAlbumDiv = document.createElement("div")
+            mediaDetailAlbumDiv.classList.add('input-group','mb-1')
             mediaDetailAlbumTags = document.createElement("input")
-            //mediaDetailAlbumTags.id = "MediaDetailAlbumTags"
-            mediaDetailAlbumTags.classList.add('form-control','py-1','mb-1','shadow-none')
+            mediaDetailAlbumTags.classList.add('form-control','shadow-none')
             mediaDetailAlbumTags.setAttribute('type', "text")
-            mediaDetailAlbumTags.setAttribute('placeholder', "Album tags")
-            editRow1Col3.appendChild(mediaDetailAlbumTags)
+            mediaDetailAlbumTags.setAttribute('placeholder', "Albums")
+            if (!editModeAll) {
+                mediaDetailAlbumTags.disabled = true
+            }
+            mediaDetailAlbumButton = document.createElement("button")
+            mediaDetailAlbumButton.classList.add('btn','btn-outline-secondary','dropdown-toggle')
+            mediaDetailAlbumButton.setAttribute('type', "button")
+            mediaDetailAlbumButton.setAttribute('data-bs-toggle', "dropdown")
+            mediaDetailAlbumButton.textContent = "Albums"
+            albumOptions = document.createElement("ul")
+            albumOptions.classList.add('dropdown-menu','dropdown-menu-end')
+            let albumList = getAlbumList()
+            // Populate with albums from albumList
+            for (let index in albumList) {
+                const li = document.createElement('li')
+                const a = document.createElement('a')
+                a.classList.add('dropdown-item')
+                a.href = '#'
+                a.textContent = albumList[index].albumKey + " " + albumList[index].albumName
+                li.appendChild(a)
+                albumOptions.appendChild(li)
+            }
+            // Handle album option clicks -- append selected album to updAlbumTags (comma-separated, no duplicates)
+            albumOptions.addEventListener('click', (event) => {
+                if (event.target.classList.contains('dropdown-item')) {
+                    event.preventDefault()
+                    let albumOptionVal = event.target.textContent.trim()
+                    let firstSpaceIndex = albumOptionVal.indexOf(" ");   // find the position of the first space
+                    const selected = albumOptionVal.substring(0, firstSpaceIndex)
+                    const current = (mediaDetailAlbumTags.value || '').trim()
+                    if (selected.length === 0) return
+                    // Build array of existing tags (trim each)
+                    const parts = current.length ? current.split(/\s*,\s*/).filter(p => p.length) : []
+                    // Only append if not already present
+                    if (!parts.includes(selected)) {
+                        parts.push(selected)
+                        mediaDetailAlbumTags.value = parts.join(', ')
+                    }
+                }
+            })
+            mediaDetailAlbumDiv.appendChild(mediaDetailAlbumTags)
+            mediaDetailAlbumDiv.appendChild(mediaDetailAlbumButton)
+            mediaDetailAlbumDiv.appendChild(albumOptions)
+            editRow1Col3.appendChild(mediaDetailAlbumDiv)
 
             // People List
             mediaDetailPeopleList = document.createElement("input")
-            //mediaDetailPeopleList.id = "MediaDetailPeopleList"
             mediaDetailPeopleList.classList.add('form-control','py-1','mb-1','shadow-none')
             mediaDetailPeopleList.setAttribute('type', "text")
             mediaDetailPeopleList.setAttribute('placeholder', "People list")
-            mediaDetailPeopleList.disabled = true  //<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+            if (!editModeAll) {
+                mediaDetailPeopleList.disabled = true
+            }
             editRow1Col3.appendChild(mediaDetailPeopleList)
 
             // Description
             mediaDetailDescription = document.createElement("textarea")
-            //mediaDetailDescription.id = "MediaDetailDescription"
             mediaDetailDescription.classList.add('form-control','py-1','mb-1','shadow-none')
             mediaDetailDescription.setAttribute('rows', "8")
             mediaDetailDescription.setAttribute('placeholder', "Description")
-            //mediaDetailDescription.value = fi.description
+            if (!editModeAll) {
+                mediaDetailDescription.disabled = true
+            }
             editRow1Col3.appendChild(mediaDetailDescription)
 
             editRow1.appendChild(editRow1Col3)
@@ -767,6 +862,7 @@ export function updateAdminMessage(displayMessage) {
 
         if (isAdmin) {
             thumbnailRow1Col1.appendChild(editModeToggle)
+            thumbnailRow1Col1.appendChild(editModeAllToggle)
         }
 
         // Add the Menu or Album name as row 0 (if it is non-blank)
@@ -809,17 +905,6 @@ export function updateAdminMessage(displayMessage) {
         mediaDetailPeopleList.value = fi.people
         mediaPeopleList.value = fi.people
         mediaDetailDescription.value = fi.description
-
-        // Set only the selected file in the thumbnail list
-        /*
-        for (let index2 in mediaInfo.fileList) {
-            if (index2 == index) {
-                mediaInfo.fileList[index2].Selected = true
-            } else {
-                mediaInfo.fileList[index2].Selected = false
-            }
-        }
-        */    
 
         // Adjust the Category and Menu select options to match the current file
         for (let i = 0; i < mediaCategorySelect.options.length; i++) {

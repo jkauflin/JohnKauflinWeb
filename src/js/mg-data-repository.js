@@ -299,7 +299,8 @@ var mediaTypeData = [
         },
         {CategoryName: "Phil N the Blanks",
             Menu: [
-                {MenuItem: "(1984-06-01) Live in the basement"}
+                {MenuItem: "(1984-06-01) Live in the basement"},
+                {MenuItem: "(1984) 07-04 The Blanks (in Concert)"}
             ]
         },
         {CategoryName: "The Mortar Shells",

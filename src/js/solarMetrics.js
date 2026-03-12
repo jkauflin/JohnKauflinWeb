@@ -14,6 +14,7 @@ Modification History
                 getDateDayInt for the correct day buckets in metrics)
 2025-06-29 JJK  Working on queries to make them quicker and more reliable
 2025-10-24 JJK  Converted data-api calls to api function calls
+2026-03-12 JJK  Commented out display of the Volt and Amp gauges for now
 ================================================================================*/
 
 import {empty,showLoadingSpinner,checkFetchResponse,addDays,addHours,getDateInt,getDateDayInt,getHoursInt} from './util.js';
@@ -202,6 +203,7 @@ function convertUTCDateToLocalDate(date) {
 }
 
 function displayGauges(PointDateTime,pvVoltsFloat,pvAmpsFloat,pvWattsFloat) {
+    /*
     if (gaugeVolts == null) {
         gaugeVolts = new Gauge(currVoltsGuage).setOptions(optsVolts)
         document.getElementById("CurrVoltsVal").className = "preview-textfield";
@@ -219,7 +221,8 @@ function displayGauges(PointDateTime,pvVoltsFloat,pvAmpsFloat,pvWattsFloat) {
         gaugeAmps.setMinValue(0); 
         gaugeAmps.animationSpeed = 32
     }
-
+    */
+   
     if (gaugeWatts == null) {
         gaugeWatts = new Gauge(currWattsGuage).setOptions(optsWatts)
         document.getElementById("CurrWattsVal").className = "preview-textfield";

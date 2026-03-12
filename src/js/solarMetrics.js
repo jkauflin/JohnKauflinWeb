@@ -203,7 +203,6 @@ function convertUTCDateToLocalDate(date) {
 }
 
 function displayGauges(PointDateTime,pvVoltsFloat,pvAmpsFloat,pvWattsFloat) {
-    /*
     if (gaugeVolts == null) {
         gaugeVolts = new Gauge(currVoltsGuage).setOptions(optsVolts)
         document.getElementById("CurrVoltsVal").className = "preview-textfield";
@@ -221,7 +220,6 @@ function displayGauges(PointDateTime,pvVoltsFloat,pvAmpsFloat,pvWattsFloat) {
         gaugeAmps.setMinValue(0); 
         gaugeAmps.animationSpeed = 32
     }
-    */
    
     if (gaugeWatts == null) {
         gaugeWatts = new Gauge(currWattsGuage).setOptions(optsWatts)

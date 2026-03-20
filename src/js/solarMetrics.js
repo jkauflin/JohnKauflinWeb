@@ -30,6 +30,10 @@ var dailyTotalsCanvas
 var currVoltsGuage
 var currAmpsGuage
 var currWattsGuage
+var currVoltsVal
+var currAmpsVal
+var currWattsVal
+
 var pointDateTimeDiv
 var ytdWatts
 var totalsTbody
@@ -39,9 +43,14 @@ var getDataButton
 document.addEventListener('DOMContentLoaded', () => {
     dailyWattsCanvas = document.getElementById('DailyWattsCanvas')
     dailyTotalsCanvas = document.getElementById('DailyTotalsCanvas')
+
     currVoltsGuage = document.getElementById('CurrVoltsGuage')
     currAmpsGuage = document.getElementById('CurrAmpsGuage')
     currWattsGuage = document.getElementById('CurrWattsGuage') 
+    currVoltsVal = document.getElementById('CurrVoltsVal')
+    currAmpsVal = document.getElementById('CurrAmpsVal')
+    currWattsVal = document.getElementById('CurrWattsVal')
+
     pointDateTimeDiv = document.getElementById('PointDateTime')
     ytdWatts = document.getElementById('YtdWatts')
     totalsTbody = document.getElementById('TotalsTbody')
@@ -134,7 +143,8 @@ function displaySolarMetrics(solarMetrics) {
                 dayTotalMaxData.push({ 
                     date: tempDateStr.substring(4,6) + "-" + tempDateStr.substring(6,8), 
                     ampMaxValue: parseFloat(dayTotal.ampMaxValue), 
-                    wattMaxValue: parseFloat(dayTotal.wattMaxValue) 
+                    wattMaxValue: parseInt(dayTotal.wattMaxValue) 
+                    //wattMaxValue: parseFloat(dayTotal.wattMaxValue) 
                 })
             }
         })
@@ -203,6 +213,7 @@ function convertUTCDateToLocalDate(date) {
 }
 
 function displayGauges(PointDateTime,pvVoltsFloat,pvAmpsFloat,pvWattsFloat) {
+    /*
     if (gaugeVolts == null) {
         gaugeVolts = new Gauge(currVoltsGuage).setOptions(optsVolts)
         document.getElementById("CurrVoltsVal").className = "preview-textfield";
@@ -220,7 +231,9 @@ function displayGauges(PointDateTime,pvVoltsFloat,pvAmpsFloat,pvWattsFloat) {
         gaugeAmps.setMinValue(0); 
         gaugeAmps.animationSpeed = 32
     }
-   
+    */
+    currVoltsVal.innerHTML = pvVoltsFloat.toFixed(1) + " V"
+    currAmpsVal.innerHTML = pvAmpsFloat.toFixed(2) + " A"
     if (gaugeWatts == null) {
         gaugeWatts = new Gauge(currWattsGuage).setOptions(optsWatts)
         document.getElementById("CurrWattsVal").className = "preview-textfield";
@@ -231,8 +244,8 @@ function displayGauges(PointDateTime,pvVoltsFloat,pvAmpsFloat,pvWattsFloat) {
     }
   
     pointDateTimeDiv.innerHTML = PointDateTime.substring(0,10) + " " + PointDateTime.substring(11,19)
-    gaugeVolts.set(pvVoltsFloat);
-    gaugeAmps.set(pvAmpsFloat.toFixed(2));
+    //gaugeVolts.set(pvVoltsFloat);
+    //gaugeAmps.set(pvAmpsFloat.toFixed(2));
     gaugeWatts.set(pvWattsFloat);
 }
 

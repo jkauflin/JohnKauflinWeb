@@ -124,7 +124,7 @@ function displaySolarMetrics(solarMetrics) {
     let dayTotalMaxData = []
 
     if (solarMetrics.totalList.length > 0) {
-        let maxValStart = solarMetrics.totalList.length - 10
+        let maxValStart = solarMetrics.totalList.length - 9
         let totCnt = 0
         let tempDateStr = ""
         solarMetrics.totalList.forEach((dayTotal) => {
@@ -160,6 +160,9 @@ function displaySolarMetrics(solarMetrics) {
             })
             lifetimeTotal += parseInt(yearTotal.totalValue)
         })
+
+        // keep only the last X entries
+        totalsData = totalsData.slice(-8);
     }
 
     //"2024-05-10T11:51:34.6353964-04:00"
@@ -232,8 +235,8 @@ function displayGauges(PointDateTime,pvVoltsFloat,pvAmpsFloat,pvWattsFloat) {
         gaugeAmps.animationSpeed = 32
     }
     */
-    currVoltsVal.innerHTML = pvVoltsFloat.toFixed(1) + " V"
-    currAmpsVal.innerHTML = pvAmpsFloat.toFixed(2) + " A"
+    currVoltsVal.innerHTML = pvVoltsFloat.toFixed(1) + "V"
+    currAmpsVal.innerHTML = pvAmpsFloat.toFixed(2) + "A"
     if (gaugeWatts == null) {
         gaugeWatts = new Gauge(currWattsGuage).setOptions(optsWatts)
         document.getElementById("CurrWattsVal").className = "preview-textfield";
@@ -521,12 +524,12 @@ var optsWatts = {
     angle: 0.00,
     // line thickness
     //lineWidth: 0.44,
-    lineWidth: 0.5,
+    lineWidth: 0.4,
     // radius scale
     //radiusScale: 1.0,
-    radiusScale: 1.0,
+    radiusScale: 0.8,
     // font size
-    fontSize: 40,
+    fontSize: 30,
     // if false, max value increases automatically if value > maxValue
     limitMax: false,
     // if true, the min value of the gauge will be fixed

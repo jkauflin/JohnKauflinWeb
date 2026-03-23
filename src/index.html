@@ -216,7 +216,7 @@
                 <h6 id="YtdWatts" class="float-start"></h6> 
             </div>
             <div class="col">
-                <button id="GetDataButton" type="button" class="btn btn-success mt-2 float-end">Get Data</button>
+                <button id="GetDataButton" type="button" class="btn btn-success mt-2 float-end shadow-none">Get Data</button>
             </div>
         </div>
 
@@ -251,40 +251,41 @@
 			</div>
             -->
 
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <canvas id="CurrWattsGuage" class="m-0 p-0"></canvas>
                 <div class="row">
-                    <div class="col">
-                        <h5 class="float-end">Watts:</h5>
+                    <div class="col-2">
+                        <h6 class="float-end">Watts:</h6>
                     </div>
-                    <div class="col">
-                        <h5 id="CurrWattsVal"></h5>
+                    <div class="col-2">
+                        <h6 id="CurrWattsVal"></h6>
                     </div>
-                    <div class="col">
-                        <h5 id="CurrAmpsVal"></h5>
+                    <div class="col-2">
+                        <h6 id="CurrAmpsVal"></h6>
                     </div>
-                    <div class="col">
-                        <h5 id="CurrVoltsVal"></h5>
+                    <div class="col-2">
+                        <h6 id="CurrVoltsVal"></h6>
                     </div>
                 </div>
 			</div>
 
-		</div><!-- row -->	                
-
-        <div class="row mt-2">
-			<div class="col-md-5">
+            <div class="col-md-4">
                 <h6>Daily Watts</h6>
                 <canvas id="DailyWattsCanvas"></canvas>
 			</div>
-			<div class="col-md-5">
+			<div class="col-md-4">
                 <h6>Daily Totals</h6>
                 <canvas id="DailyTotalsCanvas"></canvas>
 			</div>
+
+		</div><!-- row -->	                
+
+        <div class="row mt-2">
 		</div><!-- row -->	                
 
         <div class="row mt-2">
 			<div class="col-4 col-md-3 col-lg-2">
-                <table class="table table-sm">
+                <table class="table table-sm" style="font-size: 12px;">
                     <thead>
                       <tr>
                         <th scope="col">Year</th>
@@ -296,7 +297,7 @@
                 </table>
             </div>
 			<div class="col-8 col-md-7 col-lg-4">
-                <table class="table table-sm">
+                <table class="table table-sm" style="font-size: 12px;">
                     <thead>
                       <tr>
                         <th scope="col">Date</th>

@@ -415,6 +415,7 @@ export function createMediaPage() {
                         mediaDetailMenuTags.value = mediaMenuSelect.value
 
                         // int the future, offer ability to update ALL fields (or select which ones)
+                        // ALL includes updates to taken, album tags, people, and description for the Selected Items
                         if (editModeAll) {
                             if (mediaDetailTaken.value != "") {
                                 fi.takenDateTime = mediaDetailTaken.value

@@ -15,6 +15,7 @@ Modification History
 2025-12-04 JJK  Re-implementing the Edit functions to update multiple mediaInfo
                 documents (as opposed to the single update in contextmenu)
 2025-12-11 JJK  Added build of new people and album options in Edit mode
+2026-05-02 JJK  Adding function to get timestamp from filename for multi-record updates
 ================================================================================*/
 import {empty} from './util.js';
 import {isAdmin,mediaType,mediaInfo,getFilePath,getFileName,categoryList,menuFilter,setMenuFilter,updateMediaInfo,getAlbumList,

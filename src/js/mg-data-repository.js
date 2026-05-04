@@ -30,6 +30,7 @@ Modification History
                 Menu: Set Category and Menu Item (clears AlbumKey, Start Date, Search String)
                 Album: Sets AlbumKey (Sets Category to ALL), clear all other filters
                 (However, the filter buttons use Start Date for Next)
+2026-05-02 JJK  Adding function to get timestamp from filename for multi-record updates
 ================================================================================*/
 
 import {empty,showLoadingSpinner,checkFetchResponse,addDays} from './util.js';

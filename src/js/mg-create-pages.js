@@ -418,9 +418,17 @@ export function createMediaPage() {
                         // int the future, offer ability to update ALL fields (or select which ones)
                         // ALL includes updates to taken, album tags, people, and description for the Selected Items
                         if (editModeAll) {
-                            if (mediaDetailTaken.value != "") {
-                                fi.takenDateTime = mediaDetailTaken.value
+
+                            // Check a flag to see if we get the taken value from the filename???
+                            let useFilenameForTaken = true
+                            if (useFilenameForTaken) {
+                                fi.takenDateTime = "USE_FILENAME";
+                            } else {
+                                if (mediaDetailTaken.value != "") {
+                                    fi.takenDateTime = mediaDetailTaken.value
+                                }
                             }
+
                             fi.albumTags = mediaDetailAlbumTags.value
                             fi.people = mediaPeopleList.value
                             mediaDetailPeopleList.value = mediaPeopleList.value

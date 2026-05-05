@@ -18,6 +18,7 @@ Modification History
 2025-12-12 JJK  Added delete functionality to UpdateMediaInfo function
 ================================================================================*/
 using System.Globalization;
+using System.Text.RegularExpressions;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Configuration;
@@ -42,6 +43,19 @@ namespace JohnKauflinWeb.Function
         private readonly string userAdminRole;
         private readonly DbCommon dbCommon;
 
+        private static List<DatePattern> dpList = new List<DatePattern>();
+        private static DateTime minDateTime = new DateTime(1800, 1, 1);
+        public class DatePattern
+        {
+            public Regex regex;
+            public string dateParseFormat;
+            public DatePattern(Regex regex, string dateParseFormat)
+            {
+                this.regex = regex;
+                this.dateParseFormat = dateParseFormat;
+            }   
+        }
+
         public WebApi(ILogger<WebApi> logger, IConfiguration configuration)
         {
             log = logger;
@@ -52,6 +66,205 @@ namespace JohnKauflinWeb.Function
             userAdminRole = "jjkadmin";   // add to config ???
 
             dbCommon = new DbCommon(log, config);
+        }
+
+        private void loadDatePatterns()
+        {
+            // Load the patterns to use for RegEx and DateTime Parse
+            DatePattern datePattern;
+
+            datePattern = new DatePattern(
+                new Regex(@"(19|20)\d{2}-((0[1-9])|(1[012]))_(19|20)\d{2}((0[1-9])|(1[012]))((0[1-9]|[12]\d)|3[01])"),
+                "yyyy-MM_yyyyMMdd");
+            dpList.Add(datePattern);
+
+            datePattern = new DatePattern(
+                new Regex(@"IMG_(19|20)\d{2}((0[1-9])|(1[012]))((0[1-9]|[12]\d)|3[01])"),
+                "IMG_yyyyMMdd");
+            dpList.Add(datePattern);
+
+            datePattern = new DatePattern(
+                new Regex(@"(19|20)\d{2}((0[1-9])|(1[012]))((0[1-9]|[12]\d)|3[01])_\d{9}_iOS"),
+                "yyyyMMdd_iOS");
+            dpList.Add(datePattern);
+
+            datePattern = new DatePattern(
+                new Regex(@"(19|20)\d{2}((0[1-9])|(1[012]))((0[1-9]|[12]\d)|3[01])"),
+                "yyyyMMdd");
+            dpList.Add(datePattern);
+            // \d{4} to (19|20)\d{2}
+            //+		fi	{D:\Photos\1 John J Kauflin\2016-to-2022\2018\01 Winter\FB_IMG_1520381172965.jpg}	System.IO.FileInfo
+
+            datePattern = new DatePattern(
+                new Regex(@"(19|20)\d{2}-((0[1-9])|(1[012]))-((0[1-9]|[12]\d)|3[01])"),
+                "yyyy-MM-dd");
+            dpList.Add(datePattern);
+
+            datePattern = new DatePattern(
+                new Regex(@"(19|20)\d{2}_((0[1-9])|(1[012]))_((0[1-9]|[12]\d)|3[01])"),
+                "yyyy_MM_dd");
+            dpList.Add(datePattern);
+
+            datePattern = new DatePattern(
+                new Regex(@"(19|20)\d{2}-((0[1-9])|(1[012]))"),
+                "yyyy-MM");
+            dpList.Add(datePattern);
+
+            datePattern = new DatePattern(
+                new Regex(@"(19|20)\d{2}_((0[1-9])|(1[012]))"),
+                "yyyy_MM");
+            dpList.Add(datePattern);
+
+            datePattern = new DatePattern(
+                new Regex(@"(19|20)\d{2}((0[1-9])|(1[012]))"),
+                "yyyyMM");
+            dpList.Add(datePattern);
+
+            datePattern = new DatePattern(
+                new Regex(@"\\(19|20)\d{2}(\-|\ )"),
+                "yyyy");
+            dpList.Add(datePattern);
+
+            datePattern = new DatePattern(
+                new Regex(@"(\(|\\)(19|20)\d{2}(\)|\\)"),
+                "yyyy");
+            dpList.Add(datePattern);
+
+            datePattern = new DatePattern(
+                new Regex(@"(19|20)\d{2} "),
+                "yyyy ");
+            dpList.Add(datePattern);
+
+            datePattern = new DatePattern(
+                new Regex(@" (19|20)\d{2}"),
+                " yyyy");
+            dpList.Add(datePattern);
+        }
+
+        private DateTime getDateFromFilename(string fileName)
+        {
+            DateTime outDateTime = new DateTime(9999, 1, 1);
+            string dateFormat;
+            string dateStr;
+
+            if (fileName.Contains("FB_IMG_"))
+            {
+                return outDateTime;
+            }
+
+            MatchCollection matches;
+            bool found = false;
+            int index = 0;
+            // Loop through the defined RegEx patterns for date, find matches in the filename, and parse to get DateTime
+
+            if (dpList is null)
+            {
+                return outDateTime;
+            }
+
+            while (index < dpList.Count && !found)
+            {
+                matches = dpList[index].regex.Matches(fileName);
+                if (matches.Count > 0)
+                {
+                    found = true;
+                    // If there are multiple matches, just take the last one
+                    dateStr = matches[matches.Count - 1].Value;
+                    dateFormat = dpList[index].dateParseFormat ?? "";
+
+                    // For this combined case, get the year-month from the start
+                    if (dateFormat.Equals("yyyy-MM_yyyyMMdd"))
+                    {
+                        dateStr = dateStr.Substring(0, 7);
+                        dateFormat = "yyyy-MM";
+                    }
+
+                    // Majority case - backup from iPhone iOS photos
+                    if (dateFormat.Equals("yyyyMMdd_iOS"))
+                    {
+                        /*
+                        20241017_090331090_iOS
+                        yyyyMMdd_HHmmssfff_iOS
+                        */
+                        // 2024-10-28 JJK - Add minutes and seconds to the iOS parse (based on how the file name is created on download)
+                        //dateStr = dateStr.Substring(0, 8);
+                        dateStr = dateStr.Substring(0, 15);
+                        //dateFormat = "yyyyMMdd";
+                        dateFormat = "yyyyMMdd_HHmmss";
+                    }
+
+                    if (dateFormat.Equals("IMG_yyyyMMdd"))
+                    {
+                        dateStr = dateStr.Substring(4, 8);
+                        dateFormat = "yyyyMMdd";
+                    }
+
+                    if (dateFormat.Equals("yyyy"))
+                    {
+                        // Strip off the beginning and ending characters ("\" or "(") form the year match
+                        dateStr = dateStr.Substring(1, 4);
+
+                        // Check for a season tag and add a month to the year
+                        if (fileName.Contains(" Winter"))
+                        {
+                            dateFormat = "yyyy-MM";
+                            if (fileName.Contains("01 Winter"))
+                            {
+                                dateStr = dateStr + "-01";
+                            }
+                            else
+                            {
+                                dateStr = dateStr + "-11";
+                            }
+                        }
+                        else if (fileName.Contains(" Spring"))
+                        {
+                            dateFormat = "yyyy-MM";
+                            dateStr = dateStr + "-04";
+                        }
+                        else if (fileName.Contains(" Summer"))
+                        {
+                            dateFormat = "yyyy-MM";
+                            dateStr = dateStr + "-07";
+                        }
+                        else if (fileName.Contains(" Fall"))
+                        {
+                            dateFormat = "yyyy-MM";
+                            dateStr = dateStr + "-09";
+                        }
+                    }
+
+                    if (dateFormat.Equals("yyyy "))
+                    {
+                        // Strip off the beginning and ending characters ("\" or "(") form the year match
+                        dateStr = dateStr.Substring(0, 4);
+                        dateFormat = "yyyy";
+                    }
+                    if (dateFormat.Equals(" yyyy"))
+                    {
+                        // Strip off the beginning and ending characters ("\" or "(") form the year match
+                        dateStr = dateStr.Substring(1, 4);
+                        dateFormat = "yyyy";
+                    }
+
+                    //if (DateTime.TryParseExact(dateStr, dateFormat, null, System.Globalization.DateTimeStyles.None, out outDateTime))
+                    // Modified to assume that the datetime in the filename format (from iPhone iOS) is a UTC datetime - this will make sure the datetime gets
+                    // converted to local datetime for an accurate datetime of when the photo was taken
+                    if (DateTime.TryParseExact(dateStr, dateFormat, null, System.Globalization.DateTimeStyles.None, out outDateTime))
+                    //if (DateTime.TryParseExact(dateStr, dateFormat, null, System.Globalization.DateTimeStyles.AssumeUniversal, out outDateTime))
+                    {
+                        //log($"{fileName}, date: {dateStr}, format: {dateFormat}, DateTime: {outDateTime}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"{fileName}, date: {dateStr}, format: {dateFormat}, *** PARSE FAILED ***");
+                    }
+                }
+
+                index++;
+            }
+
+            return outDateTime;
         }
 
 
@@ -195,8 +408,20 @@ namespace JohnKauflinWeb.Function
                             var response = await feed.ReadNextAsync();
                             foreach (var mediaInfo in response)
                             {
-                                mediaInfo.TakenDateTime = DateTime.Parse(item.takenDateTime);
-                                mediaInfo.TakenFileTime = int.Parse(mediaInfo.TakenDateTime.ToString("yyyyMMddHH"));
+                                if (item.takenDateTime.Equals("USE_FILENAME", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    loadDatePatterns();
+                                    mediaInfo.TakenDateTime = getDateFromFilename(mediaInfo.Name);
+                                    mediaInfo.TakenFileTime = int.Parse(mediaInfo.TakenDateTime.ToString("yyyyMMddHH"));
+                                }
+                                else
+                                {
+                                    mediaInfo.TakenDateTime = DateTime.Parse(item.takenDateTime);
+                                    mediaInfo.TakenFileTime = int.Parse(mediaInfo.TakenDateTime.ToString("yyyyMMddHH"));
+                                }
+                                //mediaInfo.TakenDateTime = DateTime.Parse(item.takenDateTime);
+                                //mediaInfo.TakenFileTime = int.Parse(mediaInfo.TakenDateTime.ToString("yyyyMMddHH"));
+
                                 mediaInfo.CategoryTags = item.categoryTags;
                                 mediaInfo.MenuTags = item.menuTags;
                                 mediaInfo.AlbumTags = item.albumTags;

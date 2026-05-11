@@ -70,6 +70,11 @@ namespace JohnKauflinWeb.Function
 
         private void loadDatePatterns()
         {
+            if (dpList.Count > 0)
+            {
+                return;
+            }
+
             // Load the patterns to use for RegEx and DateTime Parse
             DatePattern datePattern;
 
@@ -185,12 +190,67 @@ namespace JohnKauflinWeb.Function
                         /*
                         20241017_090331090_iOS
                         yyyyMMdd_HHmmssfff_iOS
+                        20260421_136707410_iOS.jpg
+                                   XX - need to validate all of the date and time elements and adjust them to the correct ranges for month, day, hour, minute, second, and milliseconds (if needed) to get a successful parse to DateTime - otherwise it will fail to parse and return the default 9999-01-01 date
                         */
                         // 2024-10-28 JJK - Add minutes and seconds to the iOS parse (based on how the file name is created on download)
-                        //dateStr = dateStr.Substring(0, 8);
-                        dateStr = dateStr.Substring(0, 15);
-                        //dateFormat = "yyyyMMdd";
-                        dateFormat = "yyyyMMdd_HHmmss";
+                        if (dateStr.Length >= 18)
+                        {
+                            dateStr = dateStr.Substring(0, 18);
+                            dateFormat = "yyyyMMdd_HHmmssfff";
+                        }
+                        else if (dateStr.Length >= 15)
+                        {
+                            dateStr = dateStr.Substring(0, 15);
+                            dateFormat = "yyyyMMdd_HHmmss";
+                        }
+                        else
+                        {
+                            dateStr = dateStr.Substring(0, 8);
+                            dateFormat = "yyyyMMdd";
+                        }
+
+                        // Validate and adjust date/time components to valid ranges
+                        if (dateFormat.Contains("_"))
+                        {
+                            var parts = dateStr.Split('_');
+                            string datePart = parts[0];
+                            string timePart = parts[1];
+                            int year = int.Parse(datePart.Substring(0, 4));
+                            int month = int.Parse(datePart.Substring(4, 2));
+                            int day = int.Parse(datePart.Substring(6, 2));
+                            int hour = int.Parse(timePart.Substring(0, 2));
+                            int minute = int.Parse(timePart.Substring(2, 2));
+                            int second = int.Parse(timePart.Substring(4, 2));
+                            int millisecond = dateFormat == "yyyyMMdd_HHmmssfff" ? int.Parse(timePart.Substring(6, 3)) : 0;
+
+                            // Adjust to valid ranges
+                            year = Math.Clamp(year, 1900, 2100);
+                            month = Math.Clamp(month, 1, 12);
+                            day = Math.Clamp(day, 1, DateTime.DaysInMonth(year, month));
+                            hour = Math.Clamp(hour, 0, 23);
+                            minute = Math.Clamp(minute, 0, 59);
+                            second = Math.Clamp(second, 0, 59);
+                            millisecond = Math.Clamp(millisecond, 0, 999);
+
+                            // Reconstruct the string
+                            datePart = $"{year:D4}{month:D2}{day:D2}";
+                            timePart = $"{hour:D2}{minute:D2}{second:D2}";
+                            if (dateFormat == "yyyyMMdd_HHmmssfff")
+                                timePart += $"{millisecond:D3}";
+                            dateStr = $"{datePart}_{timePart}";
+                        }
+                        else
+                        {
+                            // Date only validation
+                            int year = int.Parse(dateStr.Substring(0, 4));
+                            int month = int.Parse(dateStr.Substring(4, 2));
+                            int day = int.Parse(dateStr.Substring(6, 2));
+                            year = Math.Clamp(year, 1900, 2100);
+                            month = Math.Clamp(month, 1, 12);
+                            day = Math.Clamp(day, 1, DateTime.DaysInMonth(year, month));
+                            dateStr = $"{year:D4}{month:D2}{day:D2}";
+                        }
                     }
 
                     if (dateFormat.Equals("IMG_yyyyMMdd"))
@@ -411,6 +471,12 @@ namespace JohnKauflinWeb.Function
                                 if (item.takenDateTime.Equals("USE_FILENAME", StringComparison.OrdinalIgnoreCase))
                                 {
                                     loadDatePatterns();
+
+                                    /*
+                                    20241017_090331090_iOS
+                                    yyyyMMdd_HHmmssfff_iOS
+                                    */
+
                                     mediaInfo.TakenDateTime = getDateFromFilename(mediaInfo.Name);
                                     mediaInfo.TakenFileTime = int.Parse(mediaInfo.TakenDateTime.ToString("yyyyMMddHH"));
                                 }

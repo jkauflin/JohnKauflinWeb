@@ -317,6 +317,7 @@ namespace JohnKauflinWeb.Function
                     }
                     else
                     {
+                        // >>>>> figure out how to bubble this error up so an error message can be shown in web UI
                         Console.WriteLine($"{fileName}, date: {dateStr}, format: {dateFormat}, *** PARSE FAILED ***");
                     }
                 }

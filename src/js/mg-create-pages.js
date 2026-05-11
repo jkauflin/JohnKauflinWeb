@@ -61,6 +61,9 @@ var editModeToggleLabel
 var editModeAllToggle
 var editModeAllToggleInput
 var editModeAllToggleLabel
+var editModeFileTsToggle
+var editModeFileTsToggleInput
+var editModeFileTsToggleLabel
 
 var currIndex = 0
 var currSelectAll = false
@@ -116,6 +119,30 @@ document.addEventListener('DOMContentLoaded', () => {
     editModeAllToggleLabel.textContent = "All"
     editModeAllToggle.appendChild(editModeAllToggleInput)
     editModeAllToggle.appendChild(editModeAllToggleLabel)
+
+    /* FileTs
+    editModeAllToggle = document.createElement("div")
+    editModeAllToggle.classList.add('form-check','form-switch','mt-1','ms-2','float-end')
+    editModeAllToggleInput = document.createElement("input")
+    editModeAllToggleInput.classList.add('form-check-input','shadow-none')
+    editModeAllToggleInput.setAttribute('type',"checkbox")
+    editModeAllToggleInput.setAttribute('role',"switch")
+    editModeAllToggleInput.id = "editModeAllSwitch"
+    editModeAllToggleInput.name = "editModeAllSwitch"
+    editModeAllToggleInput.addEventListener("change", (event) => {
+        if (event.target.checked) {
+            editModeAll = true
+        } else {
+            editModeAll = false
+        }
+    })
+    editModeAllToggleLabel = document.createElement("label")
+    editModeAllToggleLabel.classList.add('form-check-label')
+    editModeAllToggleLabel.setAttribute('for',"editModeAllSwitch")
+    editModeAllToggleLabel.textContent = "All"
+    editModeAllToggle.appendChild(editModeAllToggleInput)
+    editModeAllToggle.appendChild(editModeAllToggleLabel)
+    */
 
     // Set the container and class for the contextmenu
     setContextMenuListeners(thumbnailContainer, imgThumbnailClass)

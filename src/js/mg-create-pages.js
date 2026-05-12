@@ -35,6 +35,7 @@ var thumbnailContainer = document.createElement("div")
 var editRow1 = document.createElement("div")
 var editMode = false
 var editModeAll = false
+var editModeFileTs = false
 
 var mediaAdminMessage
 var mediaCategorySelect
@@ -120,29 +121,27 @@ document.addEventListener('DOMContentLoaded', () => {
     editModeAllToggle.appendChild(editModeAllToggleInput)
     editModeAllToggle.appendChild(editModeAllToggleLabel)
 
-    /* FileTs
-    editModeAllToggle = document.createElement("div")
-    editModeAllToggle.classList.add('form-check','form-switch','mt-1','ms-2','float-end')
-    editModeAllToggleInput = document.createElement("input")
-    editModeAllToggleInput.classList.add('form-check-input','shadow-none')
-    editModeAllToggleInput.setAttribute('type',"checkbox")
-    editModeAllToggleInput.setAttribute('role',"switch")
-    editModeAllToggleInput.id = "editModeAllSwitch"
-    editModeAllToggleInput.name = "editModeAllSwitch"
-    editModeAllToggleInput.addEventListener("change", (event) => {
+    editModeFileTsToggle = document.createElement("div")
+    editModeFileTsToggle.classList.add('form-check','form-switch','mt-1','ms-2','float-end')
+    editModeFileTsToggleInput = document.createElement("input")
+    editModeFileTsToggleInput.classList.add('form-check-input','shadow-none')
+    editModeFileTsToggleInput.setAttribute('type',"checkbox")
+    editModeFileTsToggleInput.setAttribute('role',"switch")
+    editModeFileTsToggleInput.id = "editModeFileTsSwitch"
+    editModeFileTsToggleInput.name = "editModeFileTsSwitch"
+    editModeFileTsToggleInput.addEventListener("change", (event) => {
         if (event.target.checked) {
-            editModeAll = true
+            editModeFileTs = true
         } else {
-            editModeAll = false
+            editModeFileTs = false
         }
     })
-    editModeAllToggleLabel = document.createElement("label")
-    editModeAllToggleLabel.classList.add('form-check-label')
-    editModeAllToggleLabel.setAttribute('for',"editModeAllSwitch")
-    editModeAllToggleLabel.textContent = "All"
-    editModeAllToggle.appendChild(editModeAllToggleInput)
-    editModeAllToggle.appendChild(editModeAllToggleLabel)
-    */
+    editModeFileTsToggleLabel = document.createElement("label")
+    editModeFileTsToggleLabel.classList.add('form-check-label')
+    editModeFileTsToggleLabel.setAttribute('for',"editModeFileTsSwitch")
+    editModeFileTsToggleLabel.textContent = "FileTs"
+    editModeFileTsToggle.appendChild(editModeFileTsToggleInput)
+    editModeFileTsToggle.appendChild(editModeFileTsToggleLabel)
 
     // Set the container and class for the contextmenu
     setContextMenuListeners(thumbnailContainer, imgThumbnailClass)
@@ -445,10 +444,8 @@ export function createMediaPage() {
                         // int the future, offer ability to update ALL fields (or select which ones)
                         // ALL includes updates to taken, album tags, people, and description for the Selected Items
                         if (editModeAll) {
-
-                            // Check a flag to see if we get the taken value from the filename???
-                            let useFilenameForTaken = true
-                            if (useFilenameForTaken) {
+                            // Check the toggle for whether to update the takenDateTime with the timestamp from the filename (if available)
+                            if (editModeFileTs) {
                                 fi.takenDateTime = "USE_FILENAME";
                             } else {
                                 if (mediaDetailTaken.value != "") {
@@ -900,6 +897,7 @@ export function updateAdminMessage(displayMessage) {
         if (isAdmin) {
             thumbnailRow1Col1.appendChild(editModeToggle)
             thumbnailRow1Col1.appendChild(editModeAllToggle)
+            thumbnailRow1Col1.appendChild(editModeFileTsToggle)
         }
 
         // Add the Menu or Album name as row 0 (if it is non-blank)

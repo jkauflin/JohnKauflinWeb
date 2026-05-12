@@ -472,12 +472,6 @@ namespace JohnKauflinWeb.Function
                                 if (item.takenDateTime.Equals("USE_FILENAME", StringComparison.OrdinalIgnoreCase))
                                 {
                                     loadDatePatterns();
-
-                                    /*
-                                    20241017_090331090_iOS
-                                    yyyyMMdd_HHmmssfff_iOS
-                                    */
-
                                     mediaInfo.TakenDateTime = getDateFromFilename(mediaInfo.Name);
                                     mediaInfo.TakenFileTime = int.Parse(mediaInfo.TakenDateTime.ToString("yyyyMMddHH"));
                                 }
@@ -486,8 +480,6 @@ namespace JohnKauflinWeb.Function
                                     mediaInfo.TakenDateTime = DateTime.Parse(item.takenDateTime);
                                     mediaInfo.TakenFileTime = int.Parse(mediaInfo.TakenDateTime.ToString("yyyyMMddHH"));
                                 }
-                                //mediaInfo.TakenDateTime = DateTime.Parse(item.takenDateTime);
-                                //mediaInfo.TakenFileTime = int.Parse(mediaInfo.TakenDateTime.ToString("yyyyMMddHH"));
 
                                 mediaInfo.CategoryTags = item.categoryTags;
                                 mediaInfo.MenuTags = item.menuTags;

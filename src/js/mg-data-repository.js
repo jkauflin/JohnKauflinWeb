@@ -338,9 +338,24 @@ var mediaTypeData = [
     MediaTypeId: 4,
     MediaTypeDesc: "Docs",
     Category: [
-    {CategoryName: "John Kauflin",
-        Menu: []
-    }]
+        {CategoryName: "Misc",
+            Menu: [{MenuItem: "Misc"}]
+        },
+        {CategoryName: "Band",
+            Menu: [
+                {MenuItem: "Songlists"},
+                {MenuItem: "Band lyrics"},
+                {MenuItem: "Piano lyrics"},
+                {MenuItem: "Archive lyrics"}
+            ]
+        },
+        {CategoryName: "Music",
+            Menu: [
+                {MenuItem: "Misc"},
+                {MenuItem: "Playlists"}
+            ]
+        }
+    ]
 }
 ]
 

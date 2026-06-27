@@ -384,6 +384,7 @@ export var menuFilter = []
 const photosUri = "https://jjkwebstorage.blob.core.windows.net/photos/"
 const thumbsUri = "https://jjkwebstorage.blob.core.windows.net/thumbs/"
 const musicUri = "https://jjkwebstorage.blob.core.windows.net/music/"
+const docsUri = "https://jjkwebstorage.blob.core.windows.net/docs/"
 
 var MediaPageFilterContainer
 var MediaPageMessage
@@ -502,7 +503,9 @@ export function getFilePath(index,descMod="",fullPath=false) {
     // descMod could be "Thumbs" or "Smaller"
     let fi = mediaInfo.fileList[index]
 
-    if (mediaType == 3) {
+    if (mediaType == 4) {
+        return docsUri + fi.name
+    } else if (mediaType == 3) {
         return musicUri + fi.name
     } else {
         if (descMod == "Thumbs") {

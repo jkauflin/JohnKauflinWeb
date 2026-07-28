@@ -37,6 +37,8 @@ import {empty,showLoadingSpinner,checkFetchResponse,addDays} from './util.js';
 import {createMediaPage,displayCurrFileList,updateAdminMessage} from './mg-create-pages.js';
 import {updateMessage} from './mg-contextmenu.js';
 
+var apiUrl = "https://jjkwebfunctions2.azurewebsites.net/"
+
 var mediaTypeData = [
 {
     id: "1",
@@ -586,7 +588,7 @@ export async function queryMediaInfo(paramData) {
 
     showLoadingSpinner(MediaPageMessage)
     try {
-        const response = await fetch("/api/GetMediaInfo", {
+        const response = await fetch(apiUrl + "GetMediaInfo", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(paramData)
@@ -787,7 +789,7 @@ function buildFilterElements() {
 //------------------------------------------------------------------------------------------------------------
 export async function queryMediaAlbum(paramData) {
     try {
-        const response = await fetch("/api/GetMediaAlbum", {
+        const response = await fetch(apiUrl + "GetMediaAlbum", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(paramData)

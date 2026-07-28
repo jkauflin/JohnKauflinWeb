@@ -19,6 +19,8 @@ Modification History
 
 import {empty,showLoadingSpinner,checkFetchResponse,addDays,addHours,getDateInt,getDateDayInt,getHoursInt} from './util.js';
 
+var apiUrl = "https://jjkwebfunctions2.azurewebsites.net/"
+
 var gaugeVolts = null
 var gaugeAmps = null
 var gaugeWatts = null
@@ -95,12 +97,9 @@ export async function querySolarMetrics() {
     }
 //            string sql = "SELECT TOP @maxRows * FROM c WHERE c.PointDayTime >= @pointDayTime ORDER BY c.PointDayTime ASC";
 
-    //var apiUrl = "https://jjkwebfunctions2.azurewebsites.net/"
-    var apiUrl = "http://localhost:7071/api/"
-
     showLoadingSpinner(pointDateTimeDiv)
     try {
-        //const response = await fetch("/api/GetSolarMetrics", {
+        //const response = await fetch(apiUrl + "GetSolarMetrics", {
         const response = await fetch(apiUrl + "GetSolarMetrics", {
             method: "POST",
             headers: { "Content-Type": "application/json" },

@@ -39,6 +39,8 @@ Modification History
 import {empty,showLoadingSpinner,checkFetchResponse,convertUTCDateToLocalDate,
     formatDate,getDateInt,getDateDayInt,getHoursInt,daysFromDate} from './util.js';
 
+var apiUrl = "https://jjkwebfunctions2.azurewebsites.net/"
+
 var dailyTempCanvas
 var dailyTempChart = null
 var metricsStartDate
@@ -251,7 +253,7 @@ async function _lookup(event) {
 async function updateGenvConfig() {
     messageDisplay.textContent = "Updating GenvConfig..."
     try {
-        const response = await fetch("/api/UpdateGenvConfig", {
+        const response = await fetch(apiUrl + "UpdateGenvConfig", {
             method: "POST",
             body: new FormData(GenvFormData)
         })
@@ -269,7 +271,7 @@ async function updateGenvConfig() {
 
 async function getGenvConfig(genvConfigId) {
     try {
-        const response = await fetch("/api/GetGenvConfig", {
+        const response = await fetch(apiUrl + "GetGenvConfig", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: genvConfigId
@@ -295,7 +297,7 @@ async function getGenvConfigHistory() {
     let genvConfigId = "History"
     messageDisplay.textContent = "Getting History..."
     try {
-        const response = await fetch("/api/GetGenvConfig", {
+        const response = await fetch(apiUrl + "GetGenvConfig", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: genvConfigId
@@ -365,7 +367,7 @@ function formatGenvConfigHistory(genvConfigList) {
 
 async function getGenvMetricPoint() {
     try {
-        const response = await fetch("/api/GetGenvMetricPoint", {
+        const response = await fetch(apiUrl + "GetGenvMetricPoint", {
             method: "GET"
         })
         await checkFetchResponse(response)
@@ -381,7 +383,7 @@ async function getGenvMetricPoint() {
 async function _getSelfie(event) {
     showLoadingSpinner(messageDisplay)
     try {
-        const response = await fetch("/api/GetGenvSelfie", {
+        const response = await fetch(apiUrl + "GetGenvSelfie", {
             method: "GET"
         })
         await checkFetchResponse(response)
@@ -429,7 +431,7 @@ async function requestCommand(paramData) {
     showLoadingSpinner(messageDisplay)
 
     try {
-        const response = await fetch("/api/GenvRequestCommand", {
+        const response = await fetch(apiUrl + "GenvRequestCommand", {
             method: 'POST',
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(paramData)

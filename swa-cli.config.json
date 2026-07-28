@@ -4,7 +4,7 @@
     "johnkauflinweb": {
       "appLocation": "src",
       "outputLocation": "src",
-      "apiLocation": "api"
+      "apiLocation": ""
     }
   }
 }

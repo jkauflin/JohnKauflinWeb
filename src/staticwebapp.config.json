@@ -20,8 +20,5 @@
     },
     "globalHeaders": {
       "Referrer-Policy": "strict-origin-when-cross-origin"
-    },
-    "platform": {
-        "apiRuntime": "dotnet-isolated:8.0"
     }
 }

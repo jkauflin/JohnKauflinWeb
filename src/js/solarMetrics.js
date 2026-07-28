@@ -19,7 +19,7 @@ Modification History
 
 import {empty,showLoadingSpinner,checkFetchResponse,addDays,addHours,getDateInt,getDateDayInt,getHoursInt} from './util.js';
 
-var apiUrl = "https://jjkwebfunctions2.azurewebsites.net/"
+var apiUrl = "https://jjkwebfunctions2.azurewebsites.net/api/"
 
 var gaugeVolts = null
 var gaugeAmps = null

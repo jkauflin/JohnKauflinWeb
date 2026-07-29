@@ -36,10 +36,8 @@ Modification History
 2025-11-29 JJK  Converted queryGenvMetrics to use Function API
 ================================================================================*/
 
-import {empty,showLoadingSpinner,checkFetchResponse,convertUTCDateToLocalDate,
+import {empty,apiUrl,showLoadingSpinner,checkFetchResponse,convertUTCDateToLocalDate,
     formatDate,getDateInt,getDateDayInt,getHoursInt,daysFromDate} from './util.js';
-
-var apiUrl = "https://jjkwebfunctions2.azurewebsites.net/api/"
 
 var dailyTempCanvas
 var dailyTempChart = null

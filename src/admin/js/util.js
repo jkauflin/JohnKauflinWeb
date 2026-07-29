@@ -7,11 +7,13 @@
  * 2024-11-30 JJK   Added the showLoadingSpinner function to display a 
  *                  Loading... message with a built-in Bootstrap spinner
  * 2025-05-23 JJK   Adding checkbox again
+ * 2026-07-29 JJK   Added apiUrl variable for the Azure Function API
  *============================================================================*/
 
 //=================================================================================================================
 // Variables cached from the DOM
 
+export var apiUrl = "https://jjkwebfunctions2.azurewebsites.net/api/"
 var spanSpinner
 var spanSpinnerStatus
 

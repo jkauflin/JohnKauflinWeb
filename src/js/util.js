@@ -11,21 +11,8 @@
  * 2026-08-02 JJK   Added authenticatedFetch for local/production API calls
  *============================================================================*/
 
-import { login, getToken } from './localAuth.js';
-
 //=================================================================================================================
 // Variables cached from the DOM
-
-/*
-function getApiBaseUrl() {
-    if (typeof window !== "undefined" && window.__APP_CONFIG__ && window.__APP_CONFIG__.apiBaseUrl) {
-        return window.__APP_CONFIG__.apiBaseUrl
-    }
-
-    return "https://jjkwebfunctions2.azurewebsites.net/api/"
-}
-export var apiUrl = getApiBaseUrl()
-*/
 
 var spanSpinner
 var spanSpinnerStatus
@@ -80,12 +67,14 @@ export async function checkFetchResponse(response) {
     } 
 }
 
-// Should I add the api prefix here ?
 export async function authenticatedFetch(url, options = {}) {
     const headers = new Headers(options.headers || {});
-    const isLocal = typeof window !== "undefined" && window.__APP_CONFIG__?.isLocal === true;
+    const isLocal =
+        typeof window !== "undefined" &&
+        window.__APP_CONFIG__?.isLocal === true;
 
     if (isLocal) {
+        const { login, getToken } = await import('./localAuth.js');
         await login();
         const token = await getToken();
         headers.set("Authorization", `Bearer ${token}`);

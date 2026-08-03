@@ -36,8 +36,11 @@ Modification History
 2025-11-29 JJK  Converted queryGenvMetrics to use Function API
 ================================================================================*/
 
-import {empty,apiUrl,showLoadingSpinner,checkFetchResponse,convertUTCDateToLocalDate,
-    formatDate,getDateInt,getDateDayInt,getHoursInt,daysFromDate} from './util.js';
+import {empty,showLoadingSpinner,checkFetchResponse,convertUTCDateToLocalDate,
+    formatDate,getDateInt,getDateDayInt,getHoursInt,daysFromDate,authenticatedFetch} from '../../js/util.js';
+
+var apiUrl = window.__APP_CONFIG__.apiBaseUrl
+
 
 var dailyTempCanvas
 var dailyTempChart = null
@@ -236,7 +239,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     })
 
-    _lookup()
+    
+    //await login(); // ensures user is authenticated
+    //_lookup()
 })
 
  //=================================================================================================================
@@ -245,7 +250,69 @@ async function _lookup(event) {
     showLoadingSpinner(messageDisplay)
     // Just default to get the last record when page loads
     getGenvConfig()
-    getGenvMetricPoint()
+
+    //getGenvMetricPoint()
+}
+
+/*
+async function getGenvConfig(genvConfigId) {
+    try {
+
+        await login(); // ensures user is authenticated
+        //const data = await callApi("GetSolarMetrics");
+        const token = await getToken();
+
+        //const response = await fetch(apiUrl + "GetGenvConfig", {
+        const response = await fetch(window.__APP_CONFIG__.apiBaseUrl + "GetGenvConfig", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+            body: genvConfigId
+        })
+
+
+        await checkFetchResponse(response)
+        // Success
+        let genvConfigList = await response.json()
+        if (genvConfigList.length > 0) {
+            // Get the last one
+            let cr = genvConfigList[genvConfigList.length - 1]
+            messageDisplay.textContent = "GenvConfig loaded"
+            _renderConfig(cr);
+        } else {
+            messageDisplay.textContent = "No GenvConfig records found"
+        }   
+    } catch (err) {
+        console.error(err)
+        messageDisplay.textContent = `Error in Fetch: ${err.message}`
+    }
+}
+*/
+
+async function getGenvConfig(genvConfigId) {
+  try {
+    //window.__APP_CONFIG__.apiBaseUrl + "GetGenvConfig",
+    const response = await authenticatedFetch("GetGenvConfig",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: genvConfigId
+      }
+    );
+
+    await checkFetchResponse(response);
+    const genvConfigList = await response.json();
+
+    if (genvConfigList.length > 0) {
+        const cr = genvConfigList[genvConfigList.length - 1];
+        messageDisplay.textContent = "GenvConfig loaded";
+        _renderConfig(cr);
+    } else {
+        messageDisplay.textContent = "No GenvConfig records found";
+    }
+  } catch (err) {
+    console.error(err);
+    messageDisplay.textContent = `Error in Fetch: ${err.message}`;
+  }
 }
 
 async function updateGenvConfig() {
@@ -261,30 +328,6 @@ async function updateGenvConfig() {
         messageDisplay.textContent = "Update successful "
         _renderConfig(cr);
 
-    } catch (err) {
-        console.error(err)
-        messageDisplay.textContent = `Error in Fetch: ${err.message}`
-    }
-}
-
-async function getGenvConfig(genvConfigId) {
-    try {
-        const response = await fetch(apiUrl + "GetGenvConfig", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: genvConfigId
-        })
-        await checkFetchResponse(response)
-        // Success
-        let genvConfigList = await response.json()
-        if (genvConfigList.length > 0) {
-            // Get the last one
-            let cr = genvConfigList[genvConfigList.length - 1]
-            messageDisplay.textContent = "GenvConfig loaded"
-            _renderConfig(cr);
-        } else {
-            messageDisplay.textContent = "No GenvConfig records found"
-        }   
     } catch (err) {
         console.error(err)
         messageDisplay.textContent = `Error in Fetch: ${err.message}`

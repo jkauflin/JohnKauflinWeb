@@ -32,8 +32,8 @@ Modification History
                 (However, the filter buttons use Start Date for Next)
 2026-05-02 JJK  Adding function to get timestamp from filename for multi-record updates
 ================================================================================*/
-
-import {empty,apiUrl,showLoadingSpinner,checkFetchResponse,addDays} from './util.js';
+var apiUrl = window.__APP_CONFIG__.apiBaseUrl
+import {empty,showLoadingSpinner,checkFetchResponse,addDays} from './util.js';
 import {createMediaPage,displayCurrFileList,updateAdminMessage} from './mg-create-pages.js';
 import {updateMessage} from './mg-contextmenu.js';
 

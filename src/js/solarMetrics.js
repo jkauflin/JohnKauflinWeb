@@ -17,7 +17,8 @@ Modification History
 2026-03-12 JJK  Commented out display of the Volt and Amp gauges for now
 ================================================================================*/
 
-import {empty,apiUrl,showLoadingSpinner,checkFetchResponse,addDays,addHours,getDateInt,getDateDayInt,getHoursInt} from './util.js';
+var apiUrl = window.__APP_CONFIG__.apiBaseUrl
+import {empty,showLoadingSpinner,checkFetchResponse,addDays,addHours,getDateInt,getDateDayInt,getHoursInt} from './util.js';
 
 var gaugeVolts = null
 var gaugeAmps = null

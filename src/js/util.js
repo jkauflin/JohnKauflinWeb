@@ -8,12 +8,25 @@
  *                  Loading... message with a built-in Bootstrap spinner
  * 2025-06-06 JJK   Added checkFetchResponse
  * 2026-07-29 JJK   Added apiUrl variable for the Azure Function API
+ * 2026-08-02 JJK   Added authenticatedFetch for local/production API calls
  *============================================================================*/
+
+import { login, getToken } from './localAuth.js';
 
 //=================================================================================================================
 // Variables cached from the DOM
 
-export var apiUrl = "https://jjkwebfunctions2.azurewebsites.net/api/"
+/*
+function getApiBaseUrl() {
+    if (typeof window !== "undefined" && window.__APP_CONFIG__ && window.__APP_CONFIG__.apiBaseUrl) {
+        return window.__APP_CONFIG__.apiBaseUrl
+    }
+
+    return "https://jjkwebfunctions2.azurewebsites.net/api/"
+}
+export var apiUrl = getApiBaseUrl()
+*/
+
 var spanSpinner
 var spanSpinnerStatus
 
@@ -65,6 +78,23 @@ export async function checkFetchResponse(response) {
         }
         throw new Error(errMessage)
     } 
+}
+
+// Should I add the api prefix here ?
+export async function authenticatedFetch(url, options = {}) {
+    const headers = new Headers(options.headers || {});
+    const isLocal = typeof window !== "undefined" && window.__APP_CONFIG__?.isLocal === true;
+
+    if (isLocal) {
+        await login();
+        const token = await getToken();
+        headers.set("Authorization", `Bearer ${token}`);
+    }
+
+    return fetch(window.__APP_CONFIG__.apiBaseUrl + url, {
+        ...options,
+        headers
+    });
 }
 
 export function convertUTCDateToLocalDate(date) {
@@ -184,12 +214,48 @@ export function paddy(num, padlen, padchar) {
     return (pad + num).slice(-pad.length)
 }
 
+/*
 export function addDays(td, days) {
     td.setDate(td.getDate() + (parseInt(days)+1))
     return td.toISOString().substring(0,10)  //2024-01-31T19:37:12.291Z
 }
-
 export function addHours(td, hours) {
+  td.setHours(td.getHours() + (parseInt(hours)-4))  // Adjust for GMT time
+  return td.toISOString().substring(0,19)
+}
+*/
+
+export function addDays(inDate, days) {
+    //let td = new Date(inDate)
+    let td = inDate
+    td.setDate(td.getDate() + (parseInt(days)+1))
+    /*
+    let tempMonth = td.getMonth() + 1
+    let tempDay = td.getDate()
+    let outDate = td.getFullYear() + '-' + paddy(tempMonth,2) + '-' + paddy(tempDay,2)
+    */
+    /*
+    const dateTimeFormatOptions = {
+        //timeZone: "Africa/Accra",
+        //hour12: true,
+        //hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+    };
+    */
+    //return tempDate.toLocaleTimeString("en-US", dateTimeFormatOptions)
+    //return outDate;
+    //return tempDate.toLocaleDateString("en-US", dateTimeFormatOptions)
+    //return td.toLocaleDateString()
+    //return td.toISOString().substring(0,10)  //2024-01-31T19:37:12.291Z
+    
+    //return td.toISOString()  //2024-01-31T19:37:12.291Z
+    return td.toLocaleDateString()
+}
+
+export function addHours(inDate, hours) {
+  //let td = new Date(inDate)
+  let td = inDate
   td.setHours(td.getHours() + (parseInt(hours)-4))  // Adjust for GMT time
   return td.toISOString().substring(0,19)
 }
@@ -209,6 +275,7 @@ export function getDateInt(inDateStr) {
 }
 
 // Return an integer of the date + hours (2024123101)
+/*
 export function getDateDayInt(inDateStr) {
     let formattedDate = "1800-01-01 00:00:00"
     if (inDateStr != null) {
@@ -217,7 +284,29 @@ export function getDateDayInt(inDateStr) {
 
     return(parseInt(formattedDate))
 }
+*/
+// Return an integer of the date (20241231) from input of a Date object, and days to add
+export function getDateDayInt(inDate, days=0) {
+    let td = new Date()
+    if (inDate != null) {
+        td = inDate
+    }
 
+    // Add or Subtract days if passed
+    if (days != 0) {
+        td.setDate(td.getDate() + parseInt(days))
+    }
+
+    let dateStr = td.toISOString()  //2024-01-31T19:37:12.291Z
+    let formattedDate = "1800-01-01 00:00:00"
+    if (dateStr != null) {
+        formattedDate = dateStr.substring(0,4) + dateStr.substring(5,7) + dateStr.substring(8,10)
+    }
+
+    return(parseInt(formattedDate))
+}
+
+/*
 export function getHoursInt(inDateStr) {
   let formattedDate = "1800-01-01 00:00:00"
   if (inDateStr != null) {
@@ -225,6 +314,31 @@ export function getHoursInt(inDateStr) {
   }
   return(parseInt(formattedDate))
 }
+*/
+export function getHoursInt(inDate,startHour=7,numHours=2) {
+    let td = new Date()
+    if (inDate != null) {
+        td = inDate
+    }
+
+    //td.setHours(td.getHours() + (parseInt(hours)-gmtAdjustment))  // Adjust for GMT time
+
+    let dateStr = td.toISOString()  //2024-01-31T19:37:12.291Z
+
+    //"PointDayTime": 24060011,
+
+    // Example usage
+    //let gmtDate = new Date('2025-01-26T12:00:00Z'); // GMT date
+    //console.log(getESTTime(gmtDate)); // Convert GMT to EST/EDT
+
+
+    let formattedDate = "1800-01-01 00:00:00"
+    if (dateStr != null) {
+        formattedDate = dateStr.substring(2,4) + dateStr.substring(11,13) + dateStr.substring(14,16) + dateStr.substring(17,19)
+    }
+    return(parseInt(formattedDate))
+}
+
 
 export function daysFromDate(dateStr) {
     let date1 = new Date(dateStr);

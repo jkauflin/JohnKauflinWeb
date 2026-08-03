@@ -32,8 +32,8 @@ Modification History
                 (However, the filter buttons use Start Date for Next)
 2026-05-02 JJK  Adding function to get timestamp from filename for multi-record updates
 ================================================================================*/
-var apiUrl = window.__APP_CONFIG__.apiBaseUrl
-import {empty,showLoadingSpinner,checkFetchResponse,addDays} from './util.js';
+var apiUrl = ""
+import {empty,showLoadingSpinner,callApi,checkFetchResponse,addDays} from './util.js';
 import {createMediaPage,displayCurrFileList,updateAdminMessage} from './mg-create-pages.js';
 import {updateMessage} from './mg-contextmenu.js';
 
@@ -586,7 +586,8 @@ export async function queryMediaInfo(paramData) {
 
     showLoadingSpinner(MediaPageMessage)
     try {
-        const response = await fetch(apiUrl + "GetMediaInfo", {
+        //const response = await fetch(apiUrl + "GetMediaInfo", {
+        const response = await callApi("GetMediaInfo", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(paramData)

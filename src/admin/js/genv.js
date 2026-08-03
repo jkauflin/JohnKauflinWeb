@@ -37,9 +37,9 @@ Modification History
 ================================================================================*/
 
 import {empty,showLoadingSpinner,checkFetchResponse,convertUTCDateToLocalDate,
-    formatDate,getDateInt,getDateDayInt,getHoursInt,daysFromDate,authenticatedFetch} from '../../js/util.js';
+    formatDate,getDateInt,getDateDayInt,getHoursInt,daysFromDate,callApi} from '../../js/util.js';
 
-var apiUrl = window.__APP_CONFIG__.apiBaseUrl
+var apiUrl = ""
 
 
 var dailyTempCanvas
@@ -290,14 +290,14 @@ async function getGenvConfig(genvConfigId) {
 
 async function getGenvConfig(genvConfigId) {
   try {
-    //window.__APP_CONFIG__.apiBaseUrl + "GetGenvConfig",
-    const response = await authenticatedFetch("GetGenvConfig",
+    const response = await callApi("GetGenvConfig",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: genvConfigId
+        body: genvConfigId,
+        requireAuth: true
       }
-    );
+    )
 
     await checkFetchResponse(response);
     const genvConfigList = await response.json();

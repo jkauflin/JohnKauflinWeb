@@ -8,7 +8,10 @@
  *                  Loading... message with a built-in Bootstrap spinner
  * 2025-06-06 JJK   Added checkFetchResponse
  * 2026-07-29 JJK   Added apiUrl variable for the Azure Function API
- * 2026-08-02 JJK   Added authenticatedFetch for local/production API calls
+ * 2026-08-02 JJK   Added callApi for local/production API calls
+ * 2026-08-03 JJK   Modified the callApi function to handle local 
+ *                  authentication and token retrieval, and include the
+ *                  set of the uri prefix for the api
  *============================================================================*/
 
 //=================================================================================================================
@@ -42,6 +45,27 @@ export function empty(node) {
     }
 }
 
+export async function callApi(url, options = {}) {
+    const headers = new Headers(options.headers || {});
+    const isLocal =
+        typeof window !== "undefined" &&
+        window.__APP_CONFIG__?.isLocal === true;
+
+    const requireAuth = options.requireAuth || false; // Default to false if not provided
+
+    if (requireAuth && isLocal) {
+        const { login, getToken } = await import('./localAuth.js');
+        await login();
+        const token = await getToken();
+        headers.set("Authorization", `Bearer ${token}`);
+    }
+
+    return fetch(window.__APP_CONFIG__.apiBaseUrl + url, {
+        ...options,
+        headers
+    });
+}
+
 export async function checkFetchResponse(response) {
     if (!response.ok) {
         let errMessage = "Error unknown"
@@ -65,25 +89,6 @@ export async function checkFetchResponse(response) {
         }
         throw new Error(errMessage)
     } 
-}
-
-export async function authenticatedFetch(url, options = {}) {
-    const headers = new Headers(options.headers || {});
-    const isLocal =
-        typeof window !== "undefined" &&
-        window.__APP_CONFIG__?.isLocal === true;
-
-    if (isLocal) {
-        const { login, getToken } = await import('./localAuth.js');
-        await login();
-        const token = await getToken();
-        headers.set("Authorization", `Bearer ${token}`);
-    }
-
-    return fetch(window.__APP_CONFIG__.apiBaseUrl + url, {
-        ...options,
-        headers
-    });
 }
 
 export function convertUTCDateToLocalDate(date) {

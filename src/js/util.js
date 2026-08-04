@@ -9,13 +9,17 @@
  * 2025-06-06 JJK   Added checkFetchResponse
  * 2026-07-29 JJK   Added apiUrl variable for the Azure Function API
  * 2026-08-02 JJK   Added callApi for local/production API calls
- * 2026-08-03 JJK   Modified the callApi function to handle local 
- *                  authentication and token retrieval, and include the
- *                  set of the uri prefix for the api
+ * 2026-08-04 JJK   Modified to use authConfig.js module for authentication
+ *                  configuration, and added getToken() function to retrieve token
+ *                  for local and production authentication.
+ *                  Modified callApi to use getToken() for local and production 
+ *                  auth, and include the set of the uri prefix for the api
  *============================================================================*/
 
 //=================================================================================================================
 // Variables cached from the DOM
+
+import { getToken } from "./authConfig.js";
 
 var spanSpinner
 var spanSpinnerStatus
@@ -47,23 +51,15 @@ export function empty(node) {
 
 export async function callApi(url, options = {}) {
     const headers = new Headers(options.headers || {});
-    const isLocal =
-        typeof window !== "undefined" &&
-        window.__APP_CONFIG__?.isLocal === true;
+    const requireAuth = options.requireAuth || false;
 
-    const requireAuth = options.requireAuth || false; // Default to false if not provided
-
-    if (requireAuth && isLocal) {
-        const { login, getToken } = await import('./localAuth.js');
-        await login();
+    if (requireAuth) {
+        const { getToken } = await import('./authConfig.js'); // unified module now
         const token = await getToken();
         headers.set("Authorization", `Bearer ${token}`);
     }
 
-    return fetch(window.__APP_CONFIG__.apiBaseUrl + url, {
-        ...options,
-        headers
-    });
+    return fetch(window.__APP_CONFIG__.apiBaseUrl + url, { ...options, headers });
 }
 
 export async function checkFetchResponse(response) {

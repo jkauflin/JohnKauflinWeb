@@ -15,6 +15,8 @@ var PeopleAppendButton
 var PeopleInputList
 var PeopleSaveButton
 
+import { fetchApi } from './util.js';
+
 var peopleList = []
 var peopleSaveList
 var peopleSaveListDetail
@@ -107,9 +109,9 @@ export function setPeopleListenersDetail(peopleButton, inPeopleList) {
 // Query the database for people data and store in js variables
 //------------------------------------------------------------------------------------------------------------
 async function queryPeopleInfo() {
-    const endpoint = "/api/GetPeopleList";
-    const response = await fetch(endpoint, {
-        method: "POST"
+    const response = await fetchApi("GetPeopleList", {
+        method: "POST",
+        requireAuth: true
     })
     const result = await response.json()
     if (result.errors != null) {

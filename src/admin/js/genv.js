@@ -37,7 +37,7 @@ Modification History
 ================================================================================*/
 
 import {empty,showLoadingSpinner,checkFetchResponse,convertUTCDateToLocalDate,
-    formatDate,getDateInt,getDateDayInt,getHoursInt,daysFromDate,callApi} from '../../js/util.js';
+    formatDate,getDateInt,getDateDayInt,getHoursInt,daysFromDate,fetchApi} from '../../js/util.js';
 
 var apiUrl = ""
 
@@ -254,43 +254,9 @@ async function _lookup(event) {
     //getGenvMetricPoint()
 }
 
-/*
-async function getGenvConfig(genvConfigId) {
-    try {
-
-        await login(); // ensures user is authenticated
-        //const data = await callApi("GetSolarMetrics");
-        const token = await getToken();
-
-        //const response = await fetch(apiUrl + "GetGenvConfig", {
-        const response = await fetch(window.__APP_CONFIG__.apiBaseUrl + "GetGenvConfig", {
-            method: "POST",
-            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-            body: genvConfigId
-        })
-
-
-        await checkFetchResponse(response)
-        // Success
-        let genvConfigList = await response.json()
-        if (genvConfigList.length > 0) {
-            // Get the last one
-            let cr = genvConfigList[genvConfigList.length - 1]
-            messageDisplay.textContent = "GenvConfig loaded"
-            _renderConfig(cr);
-        } else {
-            messageDisplay.textContent = "No GenvConfig records found"
-        }   
-    } catch (err) {
-        console.error(err)
-        messageDisplay.textContent = `Error in Fetch: ${err.message}`
-    }
-}
-*/
-
 async function getGenvConfig(genvConfigId) {
   try {
-    const response = await callApi("GetGenvConfig",
+    const response = await fetchApi("GetGenvConfig",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -318,9 +284,10 @@ async function getGenvConfig(genvConfigId) {
 async function updateGenvConfig() {
     messageDisplay.textContent = "Updating GenvConfig..."
     try {
-        const response = await fetch(apiUrl + "UpdateGenvConfig", {
+        const response = await fetchApi("UpdateGenvConfig", {
             method: "POST",
-            body: new FormData(GenvFormData)
+            body: new FormData(GenvFormData),
+            requireAuth: true
         })
         await checkFetchResponse(response)
         // Success
@@ -338,10 +305,11 @@ async function getGenvConfigHistory() {
     let genvConfigId = "History"
     messageDisplay.textContent = "Getting History..."
     try {
-        const response = await fetch(apiUrl + "GetGenvConfig", {
+        const response = await fetchApi("GetGenvConfig", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: genvConfigId
+            body: genvConfigId,
+            requireAuth: true
         })
         await checkFetchResponse(response)
         // Success
@@ -408,8 +376,9 @@ function formatGenvConfigHistory(genvConfigList) {
 
 async function getGenvMetricPoint() {
     try {
-        const response = await fetch(apiUrl + "GetGenvMetricPoint", {
-            method: "GET"
+        const response = await fetchApi("GetGenvMetricPoint", {
+            method: "GET",
+            requireAuth: true
         })
         await checkFetchResponse(response)
         // Success
@@ -424,8 +393,9 @@ async function getGenvMetricPoint() {
 async function _getSelfie(event) {
     showLoadingSpinner(messageDisplay)
     try {
-        const response = await fetch(apiUrl + "GetGenvSelfie", {
-            method: "GET"
+        const response = await fetchApi("GetGenvSelfie", {
+            method: "GET",
+            requireAuth: true
         })
         await checkFetchResponse(response)
         // Success
@@ -472,10 +442,11 @@ async function requestCommand(paramData) {
     showLoadingSpinner(messageDisplay)
 
     try {
-        const response = await fetch(apiUrl + "GenvRequestCommand", {
+        const response = await fetchApi("GenvRequestCommand", {
             method: 'POST',
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(paramData)
+            body: JSON.stringify(paramData),
+            requireAuth: true
         })
         await checkFetchResponse(response)
         // Success
@@ -585,7 +556,6 @@ export async function queryGenvMetrics() {
     
     showLoadingSpinner(getMetricsButton)
     // Call server-side function that queries Cosmos DB and returns JSON array
-    const endpoint2 = "/api/GetGenvMetrics";
     const postBody = {
         pointDateStartBucket: pointDateStartBucket,
         startDayTime: startDayTime,
@@ -594,10 +564,11 @@ export async function queryGenvMetrics() {
     }
 
     try {
-        const response = await fetch(endpoint2, {
+        const response = await fetchApi("GetGenvMetrics", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(postBody)
+            body: JSON.stringify(postBody),
+            requireAuth: true
         })
         await checkFetchResponse(response)
         const items = await response.json()

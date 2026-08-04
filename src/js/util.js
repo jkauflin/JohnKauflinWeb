@@ -8,11 +8,11 @@
  *                  Loading... message with a built-in Bootstrap spinner
  * 2025-06-06 JJK   Added checkFetchResponse
  * 2026-07-29 JJK   Added apiUrl variable for the Azure Function API
- * 2026-08-02 JJK   Added callApi for local/production API calls
+ * 2026-08-02 JJK   Added fetchApi for local/production API calls
  * 2026-08-04 JJK   Modified to use authConfig.js module for authentication
  *                  configuration, and added getToken() function to retrieve token
  *                  for local and production authentication.
- *                  Modified callApi to use getToken() for local and production 
+ *                  Modified fetchApi to use getToken() for local and production 
  *                  auth, and include the set of the uri prefix for the api
  *============================================================================*/
 
@@ -49,7 +49,7 @@ export function empty(node) {
     }
 }
 
-export async function callApi(url, options = {}) {
+export async function fetchApi(url, options = {}) {
     const headers = new Headers(options.headers || {});
     const requireAuth = options.requireAuth || false;
 

@@ -18,7 +18,7 @@ Modification History
 ================================================================================*/
 
 var apiUrl = ""
-import {empty,showLoadingSpinner,checkFetchResponse,addDays,addHours,getDateInt,getDateDayInt,getHoursInt} from './util.js';
+import {empty,showLoadingSpinner,checkFetchResponse,fetchApi,addDays,addHours,getDateInt,getDateDayInt,getHoursInt} from './util.js';
 
 var gaugeVolts = null
 var gaugeAmps = null
@@ -98,8 +98,7 @@ export async function querySolarMetrics() {
 
     showLoadingSpinner(pointDateTimeDiv)
     try {
-        //const response = await fetch(apiUrl + "GetSolarMetrics", {
-        const response = await fetch(apiUrl + "GetSolarMetrics", {
+        const response = await fetchApi("GetSolarMetrics", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(paramData)

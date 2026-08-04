@@ -33,7 +33,7 @@ Modification History
 2026-05-02 JJK  Adding function to get timestamp from filename for multi-record updates
 ================================================================================*/
 var apiUrl = ""
-import {empty,showLoadingSpinner,callApi,checkFetchResponse,addDays} from './util.js';
+import {empty,showLoadingSpinner,fetchApi,checkFetchResponse,addDays} from './util.js';
 import {createMediaPage,displayCurrFileList,updateAdminMessage} from './mg-create-pages.js';
 import {updateMessage} from './mg-contextmenu.js';
 
@@ -586,8 +586,7 @@ export async function queryMediaInfo(paramData) {
 
     showLoadingSpinner(MediaPageMessage)
     try {
-        //const response = await fetch(apiUrl + "GetMediaInfo", {
-        const response = await callApi("GetMediaInfo", {
+        const response = await fetchApi("GetMediaInfo", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(paramData)
@@ -788,7 +787,7 @@ function buildFilterElements() {
 //------------------------------------------------------------------------------------------------------------
 export async function queryMediaAlbum(paramData) {
     try {
-        const response = await fetch(apiUrl + "GetMediaAlbum", {
+        const response = await fetchApi("GetMediaAlbum", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(paramData)
@@ -828,11 +827,11 @@ export async function updateMediaInfo(inIndex) {
         FileListIndex: index
     }
 
-    const endpoint = "/api/UpdateMediaInfo";
-    const response = await fetch(endpoint, {
+    const response = await fetchApi("UpdateMediaInfo", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(paramData)
+        body: JSON.stringify(paramData),
+        requireAuth: true
     })
     const returnMsg = await response.text()
     //console.log("result = "+returnMsg, ", index = "+index)

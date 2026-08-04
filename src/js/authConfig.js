@@ -5,7 +5,7 @@ DESCRIPTION:  Configuration for authentication and API calls using MSAL.js
               and Azure AD.  This will work for both local development and 
               production deployment.  It uses the msal-browser library to 
               handle authentication and token acquisition (which is 
-              included in the callApi function in util.js)
+              included in the fetchApi function in util.js)
               
 --------------------------------------------------------------------------------
 Modification History

@@ -8,7 +8,7 @@ Modification History
 2025-11-04 JJK  Updated display elements (dedicated modal is already in index.html)
 2025-11-24 JJK  Finished update by adding handling of Prev/Next and Save buttons
 ================================================================================*/
-import {empty} from './util.js';
+import {empty,fetchApi} from './util.js';
 import {isAdmin,mediaInfo,getFilePath,getFileName,updateMediaInfo,getAlbumList,categoryList,menuFilter,setMenuFilter} from './mg-data-repository.js'
 
 var mediaModal
@@ -302,9 +302,9 @@ function displayImgContextMenu(event) {
 // Query the database for people data and store in js variables
 //------------------------------------------------------------------------------------------------------------
 async function queryPeopleInfo() {
-    const endpoint = "/api/GetPeopleList";
-    const response = await fetch(endpoint, {
-        method: "POST"
+    const response = await fetchApi("GetPeopleList", {
+        method: "POST",
+        requireAuth: true
     })
     const result = await response.json()
     if (result.errors != null) {

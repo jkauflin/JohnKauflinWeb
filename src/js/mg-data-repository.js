@@ -33,7 +33,7 @@ Modification History
 2026-05-02 JJK  Adding function to get timestamp from filename for multi-record updates
 ================================================================================*/
 var apiUrl = ""
-import {empty,showLoadingSpinner,fetchApi,checkFetchResponse,addDays} from './util.js';
+import {empty,showLoadingSpinner,fetchApi,checkFetchResponse,addDaysLocale} from './util.js';
 import {createMediaPage,displayCurrFileList,updateAdminMessage} from './mg-create-pages.js';
 import {updateMessage} from './mg-contextmenu.js';
 
@@ -566,7 +566,7 @@ export async function queryMediaInfo(paramData) {
             paramData.MediaFilterStartDate = "1800-01-01"
             if (mediaType == 1) {
                 // If Photos, default display to last 60 days
-                paramData.MediaFilterStartDate = addDays(new Date(), -60)
+                paramData.MediaFilterStartDate = addDaysLocale(new Date(), -60)
             }
         } else {
             mediaFilterStartDate.value = paramData.MediaFilterStartDate.substring(0,10)

@@ -36,8 +36,8 @@ Modification History
 2025-11-29 JJK  Converted queryGenvMetrics to use Function API
 ================================================================================*/
 
-import {empty,showLoadingSpinner,checkFetchResponse,convertUTCDateToLocalDate,
-    formatDate,getDateInt,getDateDayInt,getHoursInt,daysFromDate,fetchApi} from '../../js/util.js';
+import {empty,fetchApi,showLoadingSpinner,checkFetchResponse,convertUTCDateToLocalDate,
+    formatDate,getDateInt,daysFromDate} from '../../js/util.js';
 
 var apiUrl = ""
 
@@ -239,9 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     })
 
-    
-    //await login(); // ensures user is authenticated
-    //_lookup()
+    _lookup()
 })
 
  //=================================================================================================================
@@ -250,8 +248,7 @@ async function _lookup(event) {
     showLoadingSpinner(messageDisplay)
     // Just default to get the last record when page loads
     getGenvConfig()
-
-    //getGenvMetricPoint()
+    getGenvMetricPoint()
 }
 
 async function getGenvConfig(genvConfigId) {

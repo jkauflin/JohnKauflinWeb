@@ -15,10 +15,13 @@ Modification History
 2025-06-29 JJK  Working on queries to make them quicker and more reliable
 2025-10-24 JJK  Converted data-api calls to api function calls
 2026-03-12 JJK  Commented out display of the Volt and Amp gauges for now
+2026-08-05 JJK  Added getHoursIntFromStr to fix the problem of getting the correct
+                hour bucket for the metrics query
 ================================================================================*/
 
 var apiUrl = ""
-import {empty,showLoadingSpinner,checkFetchResponse,fetchApi,addDays,addHours,getDateInt,getDateDayInt,getHoursInt} from './util.js';
+import {empty,fetchApi,showLoadingSpinner,checkFetchResponse,
+    addDays,addHours,getDateInt,getDateDayInt,getHoursIntFromStr,getHoursInt} from './util.js';
 
 var gaugeVolts = null
 var gaugeAmps = null
@@ -67,15 +70,19 @@ document.addEventListener('DOMContentLoaded', () => {
 export async function querySolarMetrics() {
     let currDate = new Date()
     let pointDate = addDays(currDate, -1)
+    // add Days returns a data string - is this correct?  Should it be a Date object?
     let pointDateStartBucket = getDateDayInt(pointDate)
 
-    // Start Points query at current date minus 3 hours
+    // Start Points query at current date minus X hours
     //let pointHours = addHours(currDate, -3)
     let pointHours = addHours(currDate, -2)
     //let pointHours = addHours(currDate, -1)
     //let pointDayTime = parseInt(currDate.toISOString().substring(2,4) + "093000")
     //2024-01-31T19:37:12.291Z
-    let pointDayTime = getHoursInt(pointHours)
+
+    // *********************************** PROBLEM - getHoursInt is returning 2024013119 instead of 2024013109
+    let pointDayTime = getHoursIntFromStr(pointHours)
+
     //let pointMaxRows = 1500
     let pointMaxRows = 500
 
@@ -83,7 +90,10 @@ export async function querySolarMetrics() {
     //let tempDays = 30
     let tempDays = 14
     let dayTotalStartDate = addDays(new Date(), -tempDays)
+    
+    // addDays returns a data string - is this correct?  Should it be a Date object?
     //let dayTotalStartBucket = getDateInt(dayTotalStartDate)
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> problem want string
     let dayTotalStartBucket = getDateDayInt(dayTotalStartDate)
     let dayTotalMaxRows = tempDays
 

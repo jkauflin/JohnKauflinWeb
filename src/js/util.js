@@ -7,13 +7,15 @@
  * 2024-11-30 JJK   Added the showLoadingSpinner function to display a 
  *                  Loading... message with a built-in Bootstrap spinner
  * 2025-06-06 JJK   Added checkFetchResponse
- * 2026-07-29 JJK   Added apiUrl variable for the Azure Function API
  * 2026-08-02 JJK   Added fetchApi for local/production API calls
  * 2026-08-04 JJK   Modified to use authConfig.js module for authentication
  *                  configuration, and added getToken() function to retrieve token
  *                  for local and production authentication.
  *                  Modified fetchApi to use getToken() for local and production 
  *                  auth, and include the set of the uri prefix for the api
+ * 2026-08-05 JJK   Consolidated functions from Admin to this single location
+ *                  and corrected a few issues with differences between the
+ *                  Admin and Util versions of the functions.        
  *============================================================================*/
 
 //=================================================================================================================
@@ -32,7 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
     spanSpinnerStatus.setAttribute("role","status")
     spanSpinnerStatus.textContent = "Loading..."
 })
-
 
 //=================================================================================================================
 // Module methods
@@ -239,7 +240,13 @@ export function addDays(inDate, days) {
     //return td.toLocaleDateString()
     //return td.toISOString().substring(0,10)  //2024-01-31T19:37:12.291Z
     
-    //return td.toISOString()  //2024-01-31T19:37:12.291Z
+    return td.toISOString()  //2024-01-31T19:37:12.291Z
+}
+
+export function addDaysLocale(inDate, days) {
+    //let td = new Date(inDate)
+    let td = inDate
+    td.setDate(td.getDate() + (parseInt(days)+1))
     return td.toLocaleDateString()
 }
 
@@ -265,7 +272,6 @@ export function getDateInt(inDateStr) {
 }
 
 // Return an integer of the date + hours (2024123101)
-/*
 export function getDateDayInt(inDateStr) {
     let formattedDate = "1800-01-01 00:00:00"
     if (inDateStr != null) {
@@ -274,53 +280,27 @@ export function getDateDayInt(inDateStr) {
 
     return(parseInt(formattedDate))
 }
-*/
-// Return an integer of the date (20241231) from input of a Date object, and days to add
-export function getDateDayInt(inDate, days=0) {
-    let td = new Date()
-    if (inDate != null) {
-        td = inDate
-    }
 
-    // Add or Subtract days if passed
-    if (days != 0) {
-        td.setDate(td.getDate() + parseInt(days))
-    }
-
-    let dateStr = td.toISOString()  //2024-01-31T19:37:12.291Z
-    let formattedDate = "1800-01-01 00:00:00"
-    if (dateStr != null) {
-        formattedDate = dateStr.substring(0,4) + dateStr.substring(5,7) + dateStr.substring(8,10)
-    }
-
-    return(parseInt(formattedDate))
-}
-
-/*
-export function getHoursInt(inDateStr) {
+export function getHoursIntFromStr(inDateStr) {
   let formattedDate = "1800-01-01 00:00:00"
   if (inDateStr != null) {
     formattedDate = inDateStr.substring(2,4) + inDateStr.substring(11,13) + inDateStr.substring(14,16) + inDateStr.substring(17,19)
   }
   return(parseInt(formattedDate))
 }
-*/
+
 export function getHoursInt(inDate,startHour=7,numHours=2) {
     let td = new Date()
     if (inDate != null) {
         td = inDate
     }
 
-    //td.setHours(td.getHours() + (parseInt(hours)-gmtAdjustment))  // Adjust for GMT time
-
     let dateStr = td.toISOString()  //2024-01-31T19:37:12.291Z
 
     //"PointDayTime": 24060011,
-
     // Example usage
     //let gmtDate = new Date('2025-01-26T12:00:00Z'); // GMT date
     //console.log(getESTTime(gmtDate)); // Convert GMT to EST/EDT
-
 
     let formattedDate = "1800-01-01 00:00:00"
     if (dateStr != null) {
@@ -328,7 +308,6 @@ export function getHoursInt(inDate,startHour=7,numHours=2) {
     }
     return(parseInt(formattedDate))
 }
-
 
 export function daysFromDate(dateStr) {
     let date1 = new Date(dateStr);

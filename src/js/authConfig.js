@@ -12,10 +12,14 @@ Modification History
 2026-08-04 JJK  Initial version - added for new auth and Function API calls
 ================================================================================*/
 
+const spaWebClientId = "39494882-3d4a-4ba1-a756-985acd5d42bb"
+const apiFunctionId = "d12f5b02-ce09-47a5-ab32-1adba17e382f"
+const tenantId = "69b45237-b1d8-4ef3-b620-ddb23592e2f3"
+
 const msalConfig = {
     auth: {
-        clientId: "39494882-3d4a-4ba1-a756-985acd5d42bb",
-        authority: "https://login.microsoftonline.com/69b45237-b1d8-4ef3-b620-ddb23592e2f3",
+        clientId: spaWebClientId,
+        authority: "https://login.microsoftonline.com/" + tenantId,
         redirectUri: window.__APP_CONFIG__.isLocal
             ? "http://localhost:4280"
             : "https://johnkauflin.com"
@@ -25,12 +29,13 @@ const msalConfig = {
     }
 };
 
-const apiScopes = ["api://d12f5b02-ce09-47a5-ab32-1adba17e382f/user_impersonation"];
+const apiScopes = ["api://"+apiFunctionId+"/user_impersonation"];
 
 const msalInstance = new msal.PublicClientApplication(msalConfig);
 let initPromise = msalInstance.initialize();
+let tokenPromise = null;
 
-export async function getToken() {
+async function acquireToken() {
     await initPromise;
     const accounts = msalInstance.getAllAccounts();
     const request = { scopes: apiScopes };
@@ -42,11 +47,22 @@ export async function getToken() {
             return result.accessToken;
         } catch (err) {
             if (!(err instanceof msal.InteractionRequiredAuthError)) throw err;
+            console.warn("MSAL acquireTokenSilent failed and requires interaction:", err.errorCode || err.name, err.errorMessage || err.message);
         }
     }
 
     // No cached account, or silent failed — go interactive
+    console.debug("Falling back to acquireTokenPopup for interactive auth");
     const result = await msalInstance.acquireTokenPopup(request);
     // or acquireTokenRedirect(request) if you'd rather avoid popups
     return result.accessToken;
+}
+
+export async function getToken() {
+    if (!tokenPromise) {
+        tokenPromise = acquireToken().finally(() => {
+            tokenPromise = null;
+        });
+    }
+    return tokenPromise;
 }

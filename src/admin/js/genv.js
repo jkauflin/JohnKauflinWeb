@@ -247,8 +247,8 @@ document.addEventListener('DOMContentLoaded', () => {
 async function _lookup(event) {
     showLoadingSpinner(messageDisplay)
     // Just default to get the last record when page loads
-    getGenvConfig()
-    getGenvMetricPoint()
+    await getGenvConfig()
+    await getGenvMetricPoint()
 }
 
 async function getGenvConfig(genvConfigId) {

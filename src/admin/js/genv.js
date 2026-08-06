@@ -239,7 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     })
 
-    _lookup()
+    //_lookup()
 })
 
  //=================================================================================================================
@@ -248,7 +248,7 @@ async function _lookup(event) {
     showLoadingSpinner(messageDisplay)
     // Just default to get the last record when page loads
     await getGenvConfig()
-    await getGenvMetricPoint()
+    //await getGenvMetricPoint()
 }
 
 async function getGenvConfig(genvConfigId) {

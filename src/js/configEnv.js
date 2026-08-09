@@ -1,6 +1,7 @@
 (function () {
     const localApiBaseUrl = "http://localhost:7071/api/"
-    const productionApiBaseUrl = "https://jjkwebfunctions2.azurewebsites.net/api/"
+    //const productionApiBaseUrl = "/api/"
+    const productionApiBaseUrl = "https://jjkwebapifunctions-dmdvd8hqbjg0g3a9.eastus2-01.azurewebsites.net/api/"
 
     function isLocalHost(hostname) {
         return hostname === "localhost" || hostname === "127.0.0.1" || hostname.startsWith("0.0.0.0")

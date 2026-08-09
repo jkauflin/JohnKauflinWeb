@@ -12,8 +12,8 @@ Modification History
 2026-08-04 JJK  Initial version - added for new auth and Function API calls
 ================================================================================*/
 
-const spaWebClientId = "39494882-3d4a-4ba1-a756-985acd5d42bb"
-const apiFunctionId = "d12f5b02-ce09-47a5-ab32-1adba17e382f"
+const spaWebClientId = "3e204d6c-5390-45ac-994b-63cca938dca4"
+const apiFunctionId = "3e204d6c-5390-45ac-994b-63cca938dca4"
 const tenantId = "69b45237-b1d8-4ef3-b620-ddb23592e2f3"
 
 const msalConfig = {
@@ -29,7 +29,8 @@ const msalConfig = {
     }
 };
 
-const apiScopes = ["api://"+apiFunctionId+"/user_impersonation"];
+// user_impersonation scope for the Azure Function API.  This is the default scope name for Azure Functions, but it can be changed in the Function App settings if desired.
+const apiScopes = ["api://"+apiFunctionId+"/access_as_user"];
 
 const msalInstance = new msal.PublicClientApplication(msalConfig);
 let initPromise = msalInstance.initialize();

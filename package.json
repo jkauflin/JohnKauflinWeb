@@ -2,6 +2,6 @@
   "name": "johnkauflinweb",
   "version": "4.2.0",
   "scripts": {
-    "start": "swa start ./src --api-location http://localhost:7071 "
+    "start": "swa start ./src --api-location http://localhost:7071"
   }
 }

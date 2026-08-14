@@ -1,5 +1,5 @@
 /*==============================================================================
-(C) Copyright 2023,2024 John J Kauflin, All rights reserved.
+(C) Copyright 2023,2024,2026 John J Kauflin, All rights reserved.
 --------------------------------------------------------------------------------
 DESCRIPTION:  Main module to handle interactions with database and file system
                 as well as keeping mediaInfo and menu data structures
@@ -408,7 +408,16 @@ var mediaAlbumMenuCanvas
 var menuAlbumContainer
 var mediaAlbumMenuCanvasLabel
 
+var CheckAdminButton
+var CheckAdminMessage
+
 document.addEventListener('DOMContentLoaded', () => {
+    CheckAdminButton = document.getElementById("CheckAdminButton")
+    CheckAdminMessage = document.getElementById("CheckAdminMessage")
+    CheckAdminButton.addEventListener("click", function (event) {
+        checkAdmin()
+    })
+
     MediaPageFilterContainer = document.getElementById("MediaPageFilterContainer")
     MediaPageMessage = document.getElementById("MediaPageMessage")
     MediaPageThumbnailContainer = document.getElementById("MediaPageThumbnailContainer")
@@ -478,6 +487,31 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     })
 })
+
+async function checkAdmin() {
+    CheckAdminMessage.textContent = ""
+    try {
+        const response = await fetchApi("CheckAdminRole",
+        {
+            method: "POST",
+            requireAuth: true
+        })
+
+        await checkFetchResponse(response);
+        isAdmin = await response.json()
+        if (isAdmin) {
+            CheckAdminMessage.textContent = "User is Admin"
+        } else {
+            CheckAdminMessage.textContent = "User is NOT Admin"
+        }
+
+    } catch (err) {
+        //console.error(err);
+        //CheckAdminMessage.textContent = `Error in Fetch: ${err.message}`;
+        //CheckAdminMessage.textContent = `${err.message}`;
+        CheckAdminMessage.textContent = "User is NOT Admin"
+    }
+}
 
 export function setMediaType(inMediaType) {
     mediaType = parseInt(inMediaType)
@@ -595,10 +629,7 @@ export async function queryMediaInfo(paramData) {
         // >>>>>>>>>>>>>>>>>  Should there be some kind of retry for certain failures?
         // Success
         let mediaInfoColl = await response.json()
-        isAdmin = mediaInfoColl.isAdmin
-        
-        //console.log("mediaInfoList.length = ",mediaInfoColl.mediaInfoList.length,", isAdmin = ",isAdmin)
-        
+        //console.log("mediaInfoList.length = ",mediaInfoColl.mediaInfoList.length,")
         mediaInfo.fileList.length = 0
         mediaInfo.fileList = mediaInfoColl.mediaInfoList
         mediaInfo.filterList = []

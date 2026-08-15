@@ -681,7 +681,9 @@ export function updateAdminMessage(displayMessage) {
                 img.setAttribute('data-index', index)
                 // Thumbnails are created as 130 x 130, but display is 110?
                 // 2024-04-06 Testing 120, but 110 seems better
-                img.height = 110
+                //img.height = 110
+                // 2026-08-14 Reducing the thumbnail height to 96 for better display on mobile devices
+                img.height = 96
 
                 // Make sure the 1st image is cached (for the lightbox display)
                 if (index == 0) {

@@ -39,9 +39,6 @@ Modification History
 import {empty,fetchApi,showLoadingSpinner,checkFetchResponse,convertUTCDateToLocalDate,
     formatDate,getDateInt,daysFromDate} from '../../js/util.js';
 
-var apiUrl = ""
-
-
 var dailyTempCanvas
 var dailyTempChart = null
 var metricsStartDate
@@ -397,7 +394,7 @@ async function _getSelfie(event) {
         await checkFetchResponse(response)
         // Success
         messageDisplay.textContent = ""
-        imgDisplay.src = await response.text()
+        imgDisplay.src = await response.json()
     } catch (err) {
         console.error(err)
         messageDisplay.textContent = `Error in Fetch: ${err.message}`

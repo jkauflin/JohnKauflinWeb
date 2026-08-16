@@ -19,7 +19,6 @@ Modification History
                 hour bucket for the metrics query
 ================================================================================*/
 
-var apiUrl = ""
 import {empty,fetchApi,showLoadingSpinner,checkFetchResponse,
     addDays,addHours,getDateInt,getDateDayInt,getHoursIntFromStr,getHoursInt} from './util.js';
 

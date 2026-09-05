@@ -88,6 +88,7 @@ var mediaAlbumMenuCanvasLabel
 
 var CheckAdminButton
 var CheckAdminMessage
+var SearchButton
 
 document.addEventListener('DOMContentLoaded', () => {
     CheckAdminButton = document.getElementById("CheckAdminButton")
@@ -95,7 +96,6 @@ document.addEventListener('DOMContentLoaded', () => {
     CheckAdminButton.addEventListener("click", function (event) {
         checkAdmin()
     })
-
     MediaPageFilterContainer = document.getElementById("MediaPageFilterContainer")
     MediaPageMessage = document.getElementById("MediaPageMessage")
     MediaPageThumbnailContainer = document.getElementById("MediaPageThumbnailContainer")
@@ -103,7 +103,23 @@ document.addEventListener('DOMContentLoaded', () => {
     mediaFilterCategory = document.getElementById('MediaFilterCategory')
     mediaFilterCategory.onchange = function () { executeFilter() }
     mediaFilterStartDate = document.getElementById('MediaFilterStartDate')
-    mediaFilterStartDate.onchange = function () { executeFilter(mediaFilterStartDate.value) }
+
+    SearchButton = document.getElementById("SearchButton")
+    SearchButton.addEventListener("click", function (event) {
+        executeFilter(mediaFilterStartDate.value)
+    })
+    /*
+    mediaFilterStartDate.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            event.preventDefault()
+            executeFilter(event.currentTarget.value)
+        }
+    })
+
+    mediaFilterStartDate.addEventListener("change", (event) => {
+        executeFilter(event.currentTarget.value)
+    })
+    */
     mediaFilterSearchStr = document.getElementById('MediaFilterSearchStr')
     mediaFilterSearchStr.addEventListener("keydown", (event) => {
         if (event.key === "Enter") {

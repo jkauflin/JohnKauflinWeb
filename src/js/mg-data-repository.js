@@ -108,14 +108,13 @@ document.addEventListener('DOMContentLoaded', () => {
     SearchButton.addEventListener("click", function (event) {
         executeFilter(mediaFilterStartDate.value)
     })
-    /*
     mediaFilterStartDate.addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
             event.preventDefault()
             executeFilter(event.currentTarget.value)
         }
     })
-
+    /*
     mediaFilterStartDate.addEventListener("change", (event) => {
         executeFilter(event.currentTarget.value)
     })
